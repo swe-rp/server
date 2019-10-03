@@ -1,0 +1,8 @@
+ curl --request POST   --url localhost:3000/test   --header 'content-type: application/json'   --data '{
+    "json-parsing": "just with Express",
+    "no": "body-parser"
+}'
+
+
+
+ curl --request GET   --url localhost:3000

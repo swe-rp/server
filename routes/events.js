@@ -11,10 +11,10 @@ router.post('/', async function (req, res) {
         name : req.body.name,
         description : req.body.description,
         visibility: req.body.visibility,
-        location_x: req.body.location_x,
-        location_y: req.body.location_y,
-        start_time: req.body.start_time,
-        end_time: req.body.end_time,
+        // location_x: req.body.location_x,
+        // location_y: req.body.location_y,
+        // start_time: req.body.start_time,
+        // end_time: req.body.end_time,
     });
     try{
         await newEvent.save();
@@ -26,13 +26,8 @@ router.post('/', async function (req, res) {
 
 router.get('/', function (req, res){
     try{
-        console.log('here');
-        var allEvents = EventModel.find();
-        console.log(allEvents);
-        console.log('here2');
-        // res.status(200).json({success: true, events: allEvents});
-        res.json(allEvents, 200);
-        console.log('here3');
+        var allEvents = await EventModel.find();
+        res.status(200).json(allEvents);
     }catch(err){
         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
     }

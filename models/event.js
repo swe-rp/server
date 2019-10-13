@@ -19,21 +19,3 @@ eventSchema = mongoose.Schema({
 
 var Event = mongoose.model(model_names.EVENT, eventSchema);
 module.exports = Event;
-
-// module.exports.getEventsForUser = (user_id, callback) => {
-// 	var query = {
-//         $or:[ 
-//             {visibility:true}, {attendants_list:user_id} 
-//           ]
-//     }
-// 	Event.find(query,{},callback);
-// }
-
-// module.exports.suggestEventsForUser = (user_id, callback) => {
-// 	var query = {
-//         $or:[ 
-//             {visibility:true}, {attendants_list:user_id} 
-//           ]
-//     }
-// 	Event.find(query,{},callback);
-// }

@@ -23,12 +23,14 @@ admin.initializeApp({
 const users = require('./routes/users');
 const events = require('./routes/events');
 const plans = require('./routes/plans');
+const messages = require('./routes/messages');
 
 //middleware
 app.use(express.json());
 app.use('/users', users);
 app.use('/events', events);
 app.use('/plans', plans);
+app.use('/messages', messages);
 
 //testing endpoints
 app.listen(port, function () {
@@ -47,37 +49,3 @@ app.post(
 app.get('/', function (req, res) {
     res.send('Hello World!');
 });
-
-
-
-
-
-// Plan api
-// Create plan
-// app.post('/plans', passportJWT, function (req, res) {
-//     console.log("Creating plan");
-//     res.send('Hello World!');
-// });
-
-// // Edit plan, new people added to plan, new event added to plan
-// app.put('/plans', passportJWT, function (req, res) {
-//     console.log("Editing plan");
-//     res.send('Hello World!');
-// });
-
-// // Delete plan
-// app.delete('/plans', passportJWT, function (req, res) {
-//     console.log("Deleting plan");
-//     res.send('Hello World!');
-// });
-
-// // Get all plans for user
-// app.get('/plans/:_user_id', passportJWT, function (req, res) {
-//     console.log("Get all plans visible for user");
-//     res.send('Hello World!');
-// });
-
-// function errorHandler(err, res){
-//     if(err)
-//         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-// }

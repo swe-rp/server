@@ -5,10 +5,8 @@ var planSchema = mongoose.Schema;
 
 planSchema = mongoose.Schema({
     name: {type: String, required: true},
-    // creator: { type: mongoose.Schema.Types.ObjectId, ref: model_names.USER},
-    // member_list: [{ type: mongoose.Schema.Types.ObjectId, ref: model_names.USER} ],
-    // attendants_list: [{ type: mongoose.Schema.Types.ObjectId, ref: model_names.USER} ],
-    // event_list: [{ type: mongoose.Schema.Types.ObjectId, ref: model_names.EVENT} ],
+    member_list: [{ type: mongoose.Schema.Types.ObjectId, ref: model_names.USER} ],
+    event_list: [{ type: mongoose.Schema.Types.ObjectId, ref: model_names.EVENT} ],
     start_time: {type: Date, required: true},
     end_time: {type: Date, required: true},
 });

@@ -55,7 +55,7 @@ router.get('/', async function (req, res) {
 })
 
 // Edit event, changed public/private, changed time or location
-router.put('/events/:user_id', async function (req, res) {
+router.put('/:user_id', async function (req, res) {
     var user_id = req.params.user_id;
     try {
         var query = {
@@ -92,7 +92,7 @@ router.put('/events/:user_id', async function (req, res) {
 });
 
 // // Delete event
-router.delete('/events/:user_id', async function (req, res) {
+router.delete('/:user_id', async function (req, res) {
     var user_id = req.params.user_id;
     try {
         var query = {
@@ -107,7 +107,7 @@ router.delete('/events/:user_id', async function (req, res) {
 });
 
 // // Get suggested event for user
-router.get('/events/suggest/:user_id', async function (req, res) {
+router.get('/suggest/:user_id', async function (req, res) {
     var user_id = req.params.user_id;
     try {
         var user = await UserModel.findOne({ facebook_id: user_id }).populate(attended_events_list);
@@ -138,7 +138,7 @@ router.get('/events/suggest/:user_id', async function (req, res) {
 });
 
 // Get all events for user, used in browse events
-router.get('/events/:user_id', function (req, res) {
+router.get('/:user_id', function (req, res) {
     var user_id = req.params.user_id;
     try {
         var events = getVisibleEventsForUser(user_id);

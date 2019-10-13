@@ -34,16 +34,41 @@ router.get('/', async function (req, res) {
 })
 
 // Edit event, changed public/private, changed time or location
-// app.put('/events', passportJWT, function (req, res) {
-//     console.log("Editing events");
-//     res.send('Hello World!');
-// });
+router.put('/events/:user_id', async function (req, res) {
+    var user_id = req.params.user_id;
+    try{
+        var query = {
+            $and: [{ _id: req.body.id }, { host_list: user_id }]
+        }
+        var update = {
+            name: req.body.name,
+            description: req.body.description,
+            visibility: req.body.visibility,
+            // location_x: req.body.location_x,
+            // location_y: req.body.location_y,
+            // start_time: req.body.start_time,
+            // end_time: req.body.end_time
+        }
+        await EventModel.findOneAndUpdate(query, update);
+        res.status(200);
+    }catch(err){
+        res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+    }
+});
 
 // // Delete event
-// app.delete('/events', passportJWT, function (req, res) {
-//     console.log("Deleting events");
-//     res.send('Hello World!');
-// });
+router.delete('/events/:user_id', async function (req, res) {
+    var user_id = req.params.user_id;
+    try{
+        var query = {
+            $and: [{ _id: req.body.id }, { host_list: user_id }]
+        }
+        await EventModel.remove(query);
+        res.status(200);
+    }catch(err){
+        res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+    }
+});
 
 // // Get suggested event for user
 router.get('/events/suggest/:user_id', async function (req, res) {

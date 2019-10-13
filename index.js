@@ -32,7 +32,7 @@ app.use('/plans', plans);
 
 //testing endpoints
 app.listen(port, function () {
-    console.log(`Server listening on port ${port}`);
+   console.log(`Server listening on port ${port}`);
 });
 
 app.post(
@@ -81,4 +81,3 @@ app.get('/', function (req, res) {
 //     if(err)
 //         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
 // }
-

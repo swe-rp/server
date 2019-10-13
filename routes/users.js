@@ -13,7 +13,7 @@ router.route('/oauth')
 router.get('/:id', async function (req, res) {
   var id = req.params.id;
   try{
-    const user = await UserModel.findOne({facebook_id: id})
+    const user = await UserModel.findById(id)
     res.status(200).json(user);
   }catch(err){
     res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });

@@ -1,21 +1,28 @@
 const port = 3000;
-const express = require('express');
-const app = express();
+const app = require('express')();
+http = require('http').createServer(app);
 
 //oauth
 const passport = require('passport');
 const passportJWT = passport.authenticate('jwt', { session: false });
-
-//routes
-const users = require('./routes/users');
-const events = require('./routes/events');
-const plans = require('./routes/plans');
 
 //database
 const mongoose = require('mongoose');
 mongoose.connect("mongodb://localhost:27017/Evnt",function(err){
      if(err) console.log(err);
 });
+
+//firebase
+var admin = require('firebase-admin');
+var serviceAccount = require('./ServiceAccountKey.json');
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
+//routes
+const users = require('./routes/users');
+const events = require('./routes/events');
+const plans = require('./routes/plans');
 
 //middleware
 app.use(express.json());
@@ -74,3 +81,4 @@ app.get('/', function (req, res) {
 //     if(err)
 //         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
 // }
+

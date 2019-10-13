@@ -1,23 +1,44 @@
 const express = require('express');
 const router = express.Router();
 
+var admin = require('firebase-admin');
+var serviceAccount = require('./ServiceAccountKey.json');
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+});
+
 const EventModel = require('../models/event');
 const UserModel = require('../models/user');
 
 // Event api
 // Create event
 router.post('/', async function (req, res) {
-    const newEvent = new EventModel({
-        name: req.body.name,
-        description: req.body.description,
-        visibility: req.body.visibility,
-        // location_x: req.body.location_x,
-        // location_y: req.body.location_y,
-        // start_time: req.body.start_time,
-        // end_time: req.body.end_time,
-    });
     try {
+        const newEvent = new EventModel({
+            name: req.body.name,
+            description: req.body.description,
+            visibility: req.body.visibility,
+            // location_x: req.body.location_x,
+            // location_y: req.body.location_y,
+            // start_time: req.body.start_time,
+            // end_time: req.body.end_time,
+        });
         await newEvent.save();
+        var registrationTokens = [];
+        newEvent.host_list.forEach(host_id => {
+            var token = (await UserModel.findById(host_id)).registrationToken;
+            registrationTokens.push(token);
+        });
+        //TODO fix this
+        admin.messaging().subscribeToTopic(registrationTokens, newEvent._id)
+            .then(function (response) {
+                // See the MessagingTopicManagementResponse reference documentation
+                // for the contents of response.
+                console.log(`Successfully subscribed to topic: ${newEvent._id}`, response);
+            })
+            .catch(function (error) {
+                console.log(`Error subscribing to topic: ${newEvent._id}`, error);
+            });
         res.status(200).json(newEvent);
     } catch (err) {
         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
@@ -36,9 +57,9 @@ router.get('/', async function (req, res) {
 // Edit event, changed public/private, changed time or location
 router.put('/events/:user_id', async function (req, res) {
     var user_id = req.params.user_id;
-    try{
+    try {
         var query = {
-            $and: [{ _id: req.body.id }, { host_list: user_id }]
+            $and: [{ _id: req.body._id }, { host_list: user_id }]
         }
         var update = {
             name: req.body.name,
@@ -50,8 +71,22 @@ router.put('/events/:user_id', async function (req, res) {
             // end_time: req.body.end_time
         }
         await EventModel.findOneAndUpdate(query, update);
+        var message = {
+            data: {
+                content: `${update.name} event was updated`
+            },
+            topic: req.body._id
+        }
+        admin.messaging().send(message)
+            .then((response) => {
+                // Response is a message ID string.
+                console.log(`Successfully sent message to topic: ${message.topic}`, response);
+            })
+            .catch((error) => {
+                console.log(`Error sending message to topic: ${message.topic}`, error);
+            });
         res.status(200);
-    }catch(err){
+    } catch (err) {
         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
     }
 });
@@ -59,13 +94,14 @@ router.put('/events/:user_id', async function (req, res) {
 // // Delete event
 router.delete('/events/:user_id', async function (req, res) {
     var user_id = req.params.user_id;
-    try{
+    try {
         var query = {
-            $and: [{ _id: req.body.id }, { host_list: user_id }]
+            $and: [{ _id: req.body._id }, { host_list: user_id }]
         }
         await EventModel.remove(query);
+        //TODO notify on delete
         res.status(200);
-    }catch(err){
+    } catch (err) {
         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
     }
 });
@@ -103,7 +139,7 @@ router.get('/events/suggest/:user_id', async function (req, res) {
 
 // Get all events for user, used in browse events
 router.get('/events/:user_id', function (req, res) {
-    var user_id = req.params.id;
+    var user_id = req.params.user_id;
     try {
         var events = getVisibleEventsForUser(user_id);
         res.status(200).json(events);

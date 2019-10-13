@@ -15,9 +15,9 @@ router.get('/:id', async function (req, res) {
   try{
     const user = await UserModel.findOne({facebook_id: id})
     res.status(200).json(user);
-  }catch(err){
+  } catch(err) {
     res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
   }
 });
 
-module.exports = router ;
+module.exports = router;

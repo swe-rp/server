@@ -1,5 +1,5 @@
-const JWT = require('jsonwebtoken');
-const { JWT_SECRET } = require('../configuration/config');
+const JWT = require("jsonwebtoken");
+const { JWT_SECRET } = require("../configuration/config");
 
 signToken = user => {
   return JWT.sign({
@@ -11,11 +11,11 @@ signToken = user => {
 }
 
 module.exports = {
-  facebookOAuth: async (req, res, next) => {
+  facebookOAuth: async (req, res) => {
     const token = signToken(req.user);
-    res.cookie('access_token', token, {
+    res.cookie("access_token", token, {
       httpOnly: true
     });
     res.status(200).json({ success: true });
-  },
-}
+  }
+};

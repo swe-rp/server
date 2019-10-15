@@ -1,4 +1,3 @@
-const port = 3000;
 const express = require('express');
 const app = express();
 
@@ -11,11 +10,19 @@ const users = require('./routes/users');
 const events = require('./routes/events');
 const plans = require('./routes/plans');
 
+// env
+const env = require('dotenv').config();
+const port = 3000;
 //database
 const mongoose = require('mongoose');
-mongoose.connect("mongodb://localhost:27017/Evnt",function(err){
-     if(err) console.log(err);
-});
+mongoose.connect(process.env.COSMOSDB_CONNSTR+"?ssl=true&replicaSet=globaldb", {
+  auth: {
+    user: process.env.COSMODDB_USER,
+    password: process.env.COSMOSDB_PASSWORD
+  }
+})
+.then(() => console.log('Connection to CosmosDB successful'))
+.catch((err) => console.error(err));
 
 //middleware
 app.use(express.json());

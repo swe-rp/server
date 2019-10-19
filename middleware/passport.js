@@ -7,8 +7,8 @@ passport.use(
   "facebookToken",
   new FacebookTokenStrategy(
     {
-      clientID: config.facebook.clientID,
-      clientSecret: config.facebook.clientSecret,
+      clientID: process.env.FB_CLIENT_ID,
+      clientSecret: process.env.FB_CLIENT_SECRET,
       passReqToCallback: true
     },
     async (req, accessToken, refreshToken, profile, done) => {

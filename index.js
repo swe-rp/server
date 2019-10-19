@@ -1,6 +1,7 @@
-const port = 3000;
-const app = require('express')();
-http = require('http').createServer(app);
+const express = require('express');
+const app = express();
+const fs = require("fs");
+const https = require("https");
 
 //oauth
 const passport = require('passport');
@@ -8,9 +9,14 @@ const passportJWT = passport.authenticate('jwt', { session: false });
 
 //database
 const mongoose = require('mongoose');
-mongoose.connect("mongodb://localhost:27017/Evnt",function(err){
-     if(err) console.log(err);
-});
+mongoose.connect(process.env.COSMOSDB_CONNSTR+"?ssl=true&replicaSet=globaldb", {
+  auth: {
+    user: process.env.COSMODDB_USER,
+    password: process.env.COSMOSDB_PASSWORD
+  }
+})
+.then(() => console.log('Connection to CosmosDB successful'))
+.catch((err) => console.error(err));
 
 //firebase
 var admin = require('firebase-admin');
@@ -32,10 +38,13 @@ app.use('/events', events);
 app.use('/plans', plans);
 app.use('/messages', messages);
 
-//testing endpoints
-app.listen(port, function () {
-   console.log(`Server listening on port ${port}`);
-});
+let privKey = fs.readFileSync(process.env.SSL_KEY_PATH);
+let certificate = fs.readFileSync(process.env.SSL_CERT_PATH);
+
+https.createServer({
+    key: privKey,
+    cert: certificate
+}, app).listen(process.env.PORT);
 
 app.post(
     '/test',
@@ -47,5 +56,5 @@ app.post(
 );
 
 app.get('/', function (req, res) {
-    res.send('Hello World!');
+    res.send('Empty endpoint!');
 });

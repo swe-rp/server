@@ -1,6 +1,5 @@
 const passport = require("passport");
 const FacebookTokenStrategy = require("passport-facebook-token");
-const config = require("../configuration/config");
 const User = require("../models/user");
 
 passport.use(

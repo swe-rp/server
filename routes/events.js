@@ -2,10 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 var admin = require('firebase-admin');
-var serviceAccount = require('./ServiceAccountKey.json');
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
 
 const EventModel = require('../models/event');
 const UserModel = require('../models/user');
@@ -25,7 +21,7 @@ router.post('/', async function (req, res) {
         });
         await newEvent.save();
         var registrationTokens = [];
-        newEvent.host_list.forEach(host_id => {
+        newEvent.host_list.forEach(async (host_id) => {
             var token = (await UserModel.findById(host_id)).registrationToken;
             registrationTokens.push(token);
         });

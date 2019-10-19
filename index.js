@@ -20,7 +20,7 @@ mongoose.connect(process.env.COSMOSDB_CONNSTR+"?ssl=true&replicaSet=globaldb", {
 
 //firebase
 var admin = require('firebase-admin');
-var serviceAccount = require('./ServiceAccountKey.json');
+const serviceAccount = require('./ServiceAccountKey.json');
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });

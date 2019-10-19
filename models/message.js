@@ -6,9 +6,9 @@ messageSchema = mongoose.Schema({
     sender: {type: String, required: true},
     content: {type: String, required: true},
     timeStamp: {type: Date, required:true},
-    plan_id: {type: mongoose.Schema.Types.ObjectId, ref: model_names.PLAN}
+    plan_id: {type: mongoose.Schema.Types.ObjectId, ref: model_names.MESSAGE}
 });
 
-var UserModel = mongoose.model(model_names.PLAN, messageSchema);
+var UserModel = mongoose.model(model_names.MESSAGE, messageSchema);
 
 module.exports = UserModel;

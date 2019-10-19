@@ -1,14 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const express = require('express');
-const router = express.Router();
-
 var admin = require('firebase-admin');
-var serviceAccount = require('./ServiceAccountKey.json');
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-});
 
 const PlanModel = require('../models/plan');
 const EventModel = require('../models/event');
@@ -27,7 +20,7 @@ router.post('/', async function (req, res) {
         });
         await newPlan.save();
         var registrationTokens = [];
-        newPlan.member_list.forEach(member_id => {
+        newPlan.member_list.forEach(async (member_id) => {
             var token = (await UserModel.findById(member_id)).registrationToken;
             registrationTokens.push(token);
         });

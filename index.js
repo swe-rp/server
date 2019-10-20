@@ -28,8 +28,8 @@ admin.initializeApp({
 //routes
 const users = require('./routes/users');
 const events = require('./routes/events');
-const plans = require('./routes/plans');
-const messages = require('./routes/messages');
+// const plans = require('./routes/plans');
+// const messages = require('./routes/messages');
 
 //middleware
 app.use(express.json());

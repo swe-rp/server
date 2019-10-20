@@ -34,7 +34,6 @@ async function createEvent(body){
 }
 
 async function updateEvent(id, body){
-    var query = { _id: id }
     var update = {
         name: body.name,
         description: body.description,
@@ -42,11 +41,36 @@ async function updateEvent(id, body){
         start_time: body.start_time,
         end_time: body.end_time
     }
-    var updated = await EventModel.findOneAndUpdate(query, update);
+    var updated = await EventModel.findByIdAndUpdate(id, update);
+    // add push notif here
     return ({ "id": updated.id, "data": updated });
 }
 
+async function getEvents(user_id){
+    var today = new Date();
+    var tomorrow = new Date();
+    tomorrow.setDate(today.getDate()+1);
+    const query = EventModel.find();
+    query.where('start_time').gte(today).lt(tomorrow);
+    query.where('attendants_list').nin(user_id);
+    var events = await query.exec()
+    return ({"data": events});
+}
+
+async function addAttendant(id, user_id){
+    const event = await EventModel.findById(id);
+    event.attendants_list.push(user_id);
+    const update = {
+        attendants_list: event.attendants_list
+    }
+    const updatedEvent = await EventModel.findByIdAndUpdate(id, update);
+    return ({ "id": updated.id, "data": updatedEvent });
+}
+
+
 module.exports = {
     "createEvent": createEvent,
-    "updateEvent": updateEvent
+    "updateEvent": updateEvent,
+    "getEvents": getEvents,
+    "addAttendant": addAttendant
 };

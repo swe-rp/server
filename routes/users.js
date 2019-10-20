@@ -10,13 +10,13 @@ router.route('/oauth')
   .post(passport.authenticate('facebookToken', { session: false }), UserController.facebookOAuth);
 
 
-router.put('/', async function (req, res){
-  try{
-    const update = UserModel.addEvent(req.body);
-  } catch(err) {
-    res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-  }
-});
+// router.put('/', async function (req, res){
+//   try{
+//     const update = UserModel.addEvent(req.body);
+//   } catch(err) {
+//     res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+//   }
+// });
 // // Get user information
 // router.get('/:id', async function (req, res) {
 //   var id = req.params.id;

@@ -15,10 +15,10 @@ userSchema = mongoose.Schema({
 
 var UserModel = mongoose.model(model_names.USER, userSchema);
 
-async function getUser(id){
-    return await UserModel.findById(id);
-}
+// async function getUser(id){
+//     return await UserModel.findById(id);
+// }
 
 module.exports = {
-    "addEvent": addEvent
+    // "addEvent": addEvent
 };

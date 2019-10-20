@@ -50,7 +50,12 @@ router.get('/:user_id', function (req, res) {
 
 // Suggest event
 router.get('/suggest/:user_id', function(req, res){
-    
+    try{
+        const event = Event.suggestEvent(req.params.user_id);
+        res.status(200).json(event);
+    } catch (err) {
+        res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
+    }
 });
 
 

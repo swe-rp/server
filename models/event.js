@@ -57,6 +57,13 @@ async function getEvents(user_id){
     return ({"data": events});
 }
 
+async function getAttendedEvents(user_id){
+    const query = EventModel.find();
+    query.where('attendants_list').in(user_id);
+    var events = await query.exec()
+    return ({"data": events});
+}
+
 async function addAttendant(id, user_id){
     const event = await EventModel.findById(id);
     event.attendants_list.push(user_id);
@@ -67,10 +74,43 @@ async function addAttendant(id, user_id){
     return ({ "id": updated.id, "data": updatedEvent });
 }
 
+async function suggestEvent(user_id){
+    const events = getEvents(user_id).data;
+    const attended_events = getAttendedEvents(user_id).data;
+    var tagFreq = {};
+    attended_events.forEach(event => {
+        event.tag_list.forEach(tag => {
+            if (!tagFreq[tag])
+                tagFreq[tag] = 0;
+            tagFreq[tag] = tagFreq[tag] + 1;
+        });
+    });
+    var best_event = events[0];
+    var best_score = getScore(tagFreq, events[0]);
+    for (var i = 1; i < events.length; i++) {
+        var score = getScore(tagFreq, events[i]);
+        if (score > best_score) {
+            best_score = score;
+            best_event = events[i];
+        }
+    }
+    return ({"data": best_event});
+}
+
+function getScore(tagFreq, event){
+    var score = 0;
+    event.tag_list.forEach(tag => {
+        if (tagFreq[tag])
+            score += 5 * tagFreq[tag];
+    });
+    return score;
+}
+
 
 module.exports = {
     "createEvent": createEvent,
     "updateEvent": updateEvent,
     "getEvents": getEvents,
-    "addAttendant": addAttendant
+    "addAttendant": addAttendant,
+    "suggestEvent": suggestEvent
 };

@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const notification = require('../common/notification');
 
 var admin = require('firebase-admin');
 
@@ -36,15 +37,39 @@ router.post('/', async function (req, res) {
     }
 });
 
-router.get('/:plan_id', async function(req, res){
-    try{
-        var messages = await MessageModel.find({plan_id: req.params.plan_id})
-                            .sort('-timestamp');
+router.get('/:plan_id', async function (req, res) {
+    try {
+        var messages = await MessageModel.find({ plan_id: req.params.plan_id })
+            .sort('-timestamp');
         res.status(200).json(messages);
     }
     catch (err) {
         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
     }
 });
+
+router.get('/notify/:topic/:title/:body', async (req, res) => {
+    const notif = {
+        title: req.params.title,
+        body: req.params.body
+    };
+    notification.sendNotification(req.params.topic, notif)
+        .then((done) => {
+            res.status(200).send(done);
+        })
+        .catch((err) => {
+            res.status(401).send(err);
+        })
+});
+
+router.get('/create/:topic/:token', async (req, res) => {
+    notification.subscribeToTopic(req.params.topic, req.params.token)
+        .then((done) => {
+            res.status(200).send(done);
+        })
+        .catch((err) => {
+            res.status(401).send(err);
+        })
+})
 
 module.exports = router;

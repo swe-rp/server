@@ -12,7 +12,7 @@ But the latter has the problem of not being able access the key.
 
 We preload our dotenv so we can use it everywhere.
 
-# Environment Variables
+## Environment Variables
 
 ```
 FB_CLIENT_ID=
@@ -24,3 +24,7 @@ SSL_KEY_PATH=
 SSL_CERT_PATH=
 JWT_SECRET=
 ```
+
+## Firebase Cloud Messaging
+
+We need a `ServiceAccountKey.json` at our top level in order to connect with Firebase for our notifications.

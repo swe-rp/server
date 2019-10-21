@@ -1,63 +1,99 @@
-const express = require('express');
+const express = require("express");
+const path = require("path");
 const router = express.Router();
-
-var admin = require('firebase-admin');
-
-const Event = require('../models/event');
-const UserModel = require('../models/user');
+const Event = require("../common/event");
+const User = require("../common/user");
+const utils = require("../common/utils");
+const notifications = require("../common/notification");
 
 // Event api
 // Create event
-router.post('/', async function (req, res) {
-    try{
-        const newEvent = Event.createEvent(req.body);
-        res.status(200).json(newEvent);
-    } catch (err) {
-        res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-    }
+router.post("/api", async (req, res) => {
+  try {
+    const newEvent = await Event.createEvent(req.body);
+    res.status(200).json(newEvent);
+    utils.log(await notifications.sendNotification("event", {title: "New event created", body: "Check it out!"}));
+    utils.log("Event creation success.");
+  } catch (err) {
+    res
+      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .send({ success: false, message: err.message });
+    utils.log("Event creation failed.");
+  }
 });
 
 //Add attendant
-router.put('/:id/:user_id', async function (req, res){
-    try{
-        const updatedEvent = Event.addAttendant(req.params.id, req.params.user_id);
-        res.status(200).json(updatedEvent);
-    }catch{
-        res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-    }
+router.put("/api/:id/:user_id", async (req, res) => {
+  try {
+    const updatedEvent = await Event.addAttendant(
+      req.params.id,
+      req.params.user_id
+    );
+    res.status(200).json(updatedEvent);
+  } catch (err) {
+    res
+      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .send({ success: false, message: err.message });
+  }
 });
 
 //Edit event
-router.put('/:id', async function (req, res) {
-    try{
-        const updatedEvent = Event.updateEvent(req.params.id, req.body);
-        res.status(200).json(updatedEvent);
-    }catch (err) {
-        res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-    }
+router.put("/api/:id", async (req, res) => {
+  try {
+    const updatedEvent = await Event.updateEvent(req.params.id, req.body);
+    res.status(200).json(updatedEvent);
+  } catch (err) {
+    res
+      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .send({ success: false, message: err.message });
+  }
+});
+
+router.get("/api/avail/:user_id", async (req, res) => {
+  try {
+    const events = await Event.getAvailableEvents(req.params.user_id);
+    res.status(200).json(events);
+  } catch (err) {
+    res
+      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .send({ success: false, message: err.message });
+  }
 });
 
 // Get events
-router.get('/:user_id', function (req, res) {
-    try{
-        const events = Event.getEvents(req.params.user_id);
-        res.status(200).json(events);
-    } catch (err) {
-        res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-    }
+router.get("/api/in/:user_id", async (req, res) => {
+  try {
+    const events = await Event.getUserEvents(req.params.user_id);
+    res.status(200).json(events);
+  } catch (err) {
+    res
+      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .send({ success: false, message: err.message });
+  }
 });
-
 
 // Suggest event
-router.get('/suggest/:user_id', function(req, res){
-    try{
-        const event = Event.suggestEvent(req.params.user_id);
-        res.status(200).json(event);
-    } catch (err) {
-        res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-    }
+router.get("/api/suggest/:user_id", async (req, res) => {
+  try {
+    const event = await Event.suggestEvent(req.params.user_id);
+    res.status(200).json(event);
+  } catch (err) {
+    res
+      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .send({ success: false, message: err.message });
+  }
 });
 
+/**
+ * Temporarily allow us to create events through a webpage.
+ */
+router.get("/create/:id", async (req, res) => {
+  if (await User.doesUserExist(req.params.id)) {
+    res.sendFile(path.join(__dirname, "../public/index.html"));
+  } else {
+    res.status(500).send("No user.");
+  }
+});
 
 // router.get('/', async function (req, res) {
 //     try {

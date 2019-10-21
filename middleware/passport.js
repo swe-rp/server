@@ -3,7 +3,7 @@ const FacebookTokenStrategy = require("passport-facebook-token");
 const User = require("../models/user");
 
 passport.use(
-  "facebookToken",
+  "facebook-token",
   new FacebookTokenStrategy(
     {
       clientID: process.env.FB_CLIENT_ID,
@@ -18,10 +18,11 @@ passport.use(
           return done(null, existingUser);
         }
 
-        const newUser = new User({
+        let newUser = new User({
           name: profile.displayName,
           email: profile.emails[0].value,
-          facebook_id: profile.id
+          facebook_id: profile.id,
+          registration_token: req.header("registration_token")
         });
 
         await newUser.save();

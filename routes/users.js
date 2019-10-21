@@ -1,14 +1,25 @@
-const express = require('express');
-const passport = require('passport');
-const passportConf = require('../middleware/passport');
+const express = require("express");
+const passport = require("passport");
+const passportConf = require("../middleware/passport");
 const router = express.Router();
 
-const UserController = require('../controllers/user');
-const UserModel = require('../models/user');
+const utils = require("../common/utils");
+const notifications = require("../common/notification");
 
-router.route('/oauth')
-  .post(passport.authenticate('facebookToken', { session: false }), UserController.facebookOAuth);
-
+router
+  .route("/oauth")
+  .post(
+    passport.authenticate("facebook-token", { session: false }),
+    async (req, res) => {
+      utils.log("User authenticated", req.user);
+      utils.log(req.user.registration_token);
+      utils.log(await notifications.subscribeToTopic("event", req.user.registration_token));
+      res.status(200).json({
+        success: true,
+        user_id: req.user.id
+      });
+    }
+  );
 
 // router.put('/', async function (req, res){
 //   try{

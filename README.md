@@ -2,7 +2,7 @@
 
 Sudo is required to actually listen on port 80/443.
 
-Or `sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 3000`. 
+Or `sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 3000`.
 
 But the latter has the problem of not being able access the key.
 

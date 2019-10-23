@@ -62,11 +62,6 @@ let getAvailableEvents = async userId => {
 let mapSortEventByScore = (attendedEvents, events) => {
   let tagFreq = {};
 
-  events.map((el) => {
-    el.score = getScore(tagFreq, el);
-    return el;
-  });
-
   attendedEvents.data.forEach(event => {
     event.tag_list.forEach(tag => {
       if (!tagFreq[tag]) {
@@ -74,6 +69,11 @@ let mapSortEventByScore = (attendedEvents, events) => {
       }
       tagFreq[tag]++;
     });
+  });
+
+  events.map((el) => {
+    el.score = getScore(tagFreq, el);
+    return el;
   });
 
   events.sort((a, b) => {
@@ -142,7 +142,8 @@ let removeAttendant = async(id, userId) => {
   let event = await EventModel.findById(id);
 
   let newList = event.attendants_list.filter((e) => {
-    return e !== id;
+    // This is required since we have different escape characters
+    return JSON.stringify(e) !== JSON.stringify(userId);
   });
 
   let update = {

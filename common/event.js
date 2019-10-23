@@ -50,6 +50,27 @@ let getAvailableEvents = async userId => {
 
   let events = await query.exec();
 
+  let attendedEvents = await getAttendedEvents(userId).data;
+
+  let tagFreq = {};
+
+  attendedEvents.forEach(event => {
+    event.tag_list.forEach(tag => {
+      if (!tagFreq[tag]) {
+        tagFreq[tag] = 0;
+      }
+      tagFreq[tag]++;
+    });
+  });
+
+  events.sort((a, b) => {
+    let aScore = getScore(tagFreq, a);
+    let bScore = getScore(tagFreq, b);
+    if (aScore < bScore) return -1;
+    if (aScore > bScore) return 1;
+    return 0;
+  });
+
   return {
     data: events
   };
@@ -124,6 +145,7 @@ let suggestEvent = async userId => {
   for (let i = 0; i < events.length; i++) {
     let score = getScore(tagFreq, events[i]);
     if (score > bestScore) {
+
       bestEvent = events[i];
       bestScore = score;
     }

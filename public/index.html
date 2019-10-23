@@ -30,6 +30,7 @@
           start_time: new Date(getElementValue("start-time")).toUTCString(),
           end_time: new Date(getElementValue("end-time")).toUTCString(),
           tags: getElementValue("tags")
+            .toLowerCase()
             .replace(/ /g, "")
             .split(",")
         };

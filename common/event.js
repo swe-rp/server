@@ -7,7 +7,8 @@ let createEvent = async body => {
     host: body.host,
     attendants_list: [body.host],
     start_time: body.start_time,
-    end_time: body.end_time
+    end_time: body.end_time,
+    tag_list: body.tags
   });
 
   await newEvent.save();

@@ -48,13 +48,26 @@ let getAvailableEvents = async userId => {
   // .lt(tomorrow);
   query.where("attendants_list").nin(userId);
 
-  let events = await query.exec();
+  let allEvents = await query.exec();
+  let attendedEvents = await getAttendedEvents(userId);
 
-  let attendedEvents = await getAttendedEvents(userId).data;
+  let events = (attendedEvents) ? 
+      mapSortEventByScore(attendedEvents, allEvents) : allEvents;
 
+  return {
+    data: events
+  };
+};
+
+let mapSortEventByScore = (attendedEvents, events) => {
   let tagFreq = {};
 
-  attendedEvents.forEach(event => {
+  events.map((el) => {
+    el.score = getScore(tagFreq, el);
+    return el;
+  });
+
+  attendedEvents.data.forEach(event => {
     event.tag_list.forEach(tag => {
       if (!tagFreq[tag]) {
         tagFreq[tag] = 0;
@@ -64,16 +77,17 @@ let getAvailableEvents = async userId => {
   });
 
   events.sort((a, b) => {
-    let aScore = getScore(tagFreq, a);
-    let bScore = getScore(tagFreq, b);
-    if (aScore < bScore) return -1;
-    if (aScore > bScore) return 1;
+    if (a.score > b.score) return -1;
+    if (a.score < b.score) return 1;
     return 0;
   });
 
-  return {
-    data: events
-  };
+  events.map((el) => {
+    delete el.score;
+    return el;
+  });
+
+  return events;
 };
 
 let getUserEvents = async userId => {
@@ -122,6 +136,25 @@ let addAttendant = async (id, userId) => {
     id: updated.id,
     data: updated
   };
+};
+
+let removeAttendant = async(id, userId) => {
+  let event = await EventModel.findById(id);
+
+  let newList = event.attendants_list.filter((e) => {
+    return e !== id;
+  });
+
+  let update = {
+    attendants_list: newList
+  };
+
+  let updated = await EventModel.findByIdAndUpdate(id, update);
+
+  return {
+    id: updated.id,
+    data: updated
+  }
 };
 
 let suggestEvent = async userId => {
@@ -174,5 +207,6 @@ module.exports = {
   getAvailableEvents,
   getUserEvents,
   addAttendant,
+  removeAttendant,
   suggestEvent
 };

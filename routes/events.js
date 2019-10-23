@@ -23,12 +23,28 @@ router.post("/api", async (req, res) => {
 });
 
 //Add attendant
-router.put("/api/:id/:user_id", async (req, res) => {
+router.put("/api/add/:id/:user_id", async (req, res) => {
   try {
     const updatedEvent = await Event.addAttendant(
       req.params.id,
       req.params.user_id
     );
+    utils.log("Sucessfully added", req.params.user_id, "from", req.params.id);
+    res.status(200).json(updatedEvent);
+  } catch (err) {
+    res
+      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .send({ success: false, message: err.message });
+  }
+});
+
+router.put("/api/remove/:id/:user_id", async (req, res) => {
+  try {
+    const updatedEvent = await Event.removeAttendant(
+      req.params.id,
+      req.params.user_id
+    );
+    utils.log("Sucessfully removed", req.params.user_id, "from", req.params.id);
     res.status(200).json(updatedEvent);
   } catch (err) {
     res

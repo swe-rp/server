@@ -17,7 +17,7 @@ passport.use(
         
         if (existingUser) {
           existingUser.registration_token = req.header("registration_token");
-          await EventModel.findByIdAndUpdate(existingUser.id, existingUser);
+          await User.findByIdAndUpdate(existingUser.id, existingUser);
           return done(null, existingUser);
         }
 

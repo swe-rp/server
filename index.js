@@ -14,7 +14,8 @@ mongoose
       password: process.env.COSMOSDB_PASSWORD
     },
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
   })
   .then(res => utils.log("Connection to CosmosDB successful."))
   .catch(err => utils.log("Connection to CosmosDB failed.", err));

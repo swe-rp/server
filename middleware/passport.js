@@ -14,7 +14,10 @@ passport.use(
       try {
         // We're in the account creation process
         let existingUser = await User.findOne({ facebook_id: profile.id });
+        
         if (existingUser) {
+          existingUser.registration_token = req.header("registration_token");
+          await EventModel.findByIdAndUpdate(existingUser.id, existingUser);
           return done(null, existingUser);
         }
 

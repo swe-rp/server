@@ -94,11 +94,11 @@ let addAttendant = async (id, userId) => {
     attendants_list: event.attendants_list
   };
 
-  let updatedEvent = await EventModel.findByIdAndUpdate(id, update);
+  let updated = await EventModel.findByIdAndUpdate(id, update);
 
   return {
     id: updated.id,
-    data: updatedEvent
+    data: updated
   };
 };
 

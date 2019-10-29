@@ -8,11 +8,7 @@ const utils = require("./common/utils");
 
 // DB init
 mongoose
-  .connect(process.env.COSMOSDB_CONNSTR + "?ssl=true&replicaSet=globaldb", {
-    auth: {
-      user: process.env.COSMODDB_USER,
-      password: process.env.COSMOSDB_PASSWORD
-    },
+  .connect(process.env.MONGODB_CONNSTR, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false

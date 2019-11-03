@@ -12,11 +12,16 @@ router
     passport.authenticate("facebook-token", { session: false }),
     async (req, res) => {
       utils.log("User authenticated", req.user);
-      utils.log(req.user.registration_token);
-      utils.log(await notifications.subscribeToTopic("event", req.user.registration_token));
+      utils.log(req.user.registrationToken);
+      utils.log(
+        await notifications.subscribeToTopic(
+          "event",
+          req.user.registrationToken
+        )
+      );
       res.status(200).json({
         success: true,
-        user_id: req.user.id
+        userId: req.user.id
       });
     }
   );
@@ -51,8 +56,8 @@ router
 //         // visibility: req.body.visibility,
 //         // location_x: req.body.location_x,
 //         // location_y: req.body.location_y,
-//         // start_time: req.body.start_time,
-//         // end_time: req.body.end_time
+//         // startTime: req.body.startTime,
+//         // endTime: req.body.endTime
 //     }
 //     await UserModel.findOneAndUpdate(query, update);
 //     res.status(200);

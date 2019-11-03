@@ -15,10 +15,10 @@ let sendNotification = (topic, notification) => {
     admin
       .messaging()
       .send(payload)
-      .then(response => {
+      .then((response) => {
         resolve("Created message: " + response);
       })
-      .catch(err => {
+      .catch((err) => {
         reject("Error: " + err);
       });
   });
@@ -34,10 +34,10 @@ let subscribeToTopic = (topic, token) => {
     admin
       .messaging()
       .subscribeToTopic([token], topic)
-      .then(response => {
+      .then((response) => {
         resolve("Created/subscribed to topic: " + response);
       })
-      .catch(err => {
+      .catch((err) => {
         reject("Error: " + err);
       });
   });

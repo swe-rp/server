@@ -13,8 +13,8 @@ mongoose
     useUnifiedTopology: true,
     useFindAndModify: false
   })
-  .then(res => utils.log("Connection to CosmosDB successful."))
-  .catch(err => utils.log("Connection to CosmosDB failed.", err));
+  .then((res) => utils.log("Connection to CosmosDB successful."))
+  .catch((err) => utils.log("Connection to CosmosDB failed.", err));
 
 // Firebase Admin init
 admin.initializeApp({

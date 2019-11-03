@@ -1,11 +1,11 @@
-const model_names = require("./shared");
+const modelNames = require("./shared");
 const mongoose = require("mongoose");
 
 let messageSchema = mongoose.Schema({
   sender: { type: String, required: true },
   content: { type: String, required: true },
   timeStamp: { type: Date, required: true },
-  plan_id: { type: mongoose.Schema.Types.ObjectId, ref: model_names.MESSAGE }
+  planId: { type: mongoose.Schema.Types.ObjectId, ref: modelNames.MESSAGE }
 });
 
-module.exports = mongoose.model(model_names.MESSAGE, messageSchema);
+module.exports = mongoose.model(modelNames.MESSAGE, messageSchema);

@@ -12,7 +12,12 @@ router.post("/api", async (req, res) => {
   try {
     const newEvent = await Event.createEvent(req.body);
     res.status(200).json(newEvent);
-    utils.log(await notifications.sendNotification("event", {title: "New event created", body: "Check it out!"}));
+    utils.log(
+      await notifications.sendNotification("event", {
+        title: "New event created",
+        body: "Check it out!"
+      })
+    );
     utils.log("Event creation success.");
   } catch (err) {
     res
@@ -23,13 +28,13 @@ router.post("/api", async (req, res) => {
 });
 
 //Add attendant
-router.put("/api/add/:id/:user_id", async (req, res) => {
+router.put("/api/add/:id/:userId", async (req, res) => {
   try {
     const updatedEvent = await Event.addAttendant(
       req.params.id,
-      req.params.user_id
+      req.params.userId
     );
-    utils.log("Sucessfully added", req.params.user_id, "from", req.params.id);
+    utils.log("Sucessfully added", req.params.userId, "from", req.params.id);
     res.status(200).json(updatedEvent);
   } catch (err) {
     res
@@ -38,13 +43,13 @@ router.put("/api/add/:id/:user_id", async (req, res) => {
   }
 });
 
-router.put("/api/remove/:id/:user_id", async (req, res) => {
+router.put("/api/remove/:id/:userId", async (req, res) => {
   try {
     const updatedEvent = await Event.removeAttendant(
       req.params.id,
-      req.params.user_id
+      req.params.userId
     );
-    utils.log("Sucessfully removed", req.params.user_id, "from", req.params.id);
+    utils.log("Sucessfully removed", req.params.userId, "from", req.params.id);
     res.status(200).json(updatedEvent);
   } catch (err) {
     res
@@ -65,9 +70,9 @@ router.put("/api/:id", async (req, res) => {
   }
 });
 
-router.get("/api/avail/:user_id", async (req, res) => {
+router.get("/api/avail/:userId", async (req, res) => {
   try {
-    const events = await Event.getAvailableEvents(req.params.user_id);
+    const events = await Event.getAvailableEvents(req.params.userId);
     res.status(200).json(events);
   } catch (err) {
     res
@@ -77,9 +82,9 @@ router.get("/api/avail/:user_id", async (req, res) => {
 });
 
 // Get events
-router.get("/api/in/:user_id", async (req, res) => {
+router.get("/api/in/:userId", async (req, res) => {
   try {
-    const events = await Event.getUserEvents(req.params.user_id);
+    const events = await Event.getUserEvents(req.params.userId);
     res.status(200).json(events);
   } catch (err) {
     res
@@ -89,9 +94,9 @@ router.get("/api/in/:user_id", async (req, res) => {
 });
 
 // Suggest event
-router.get("/api/suggest/:user_id", async (req, res) => {
+router.get("/api/suggest/:userId", async (req, res) => {
   try {
-    const event = await Event.suggestEvent(req.params.user_id);
+    const event = await Event.suggestEvent(req.params.userId);
     res.status(200).json(event);
   } catch (err) {
     res
@@ -121,11 +126,11 @@ router.get("/create/:id", async (req, res) => {
 // })
 
 // // Edit event, changed public/private, changed time or location
-// router.put('/:user_id', async function (req, res) {
-//     var user_id = req.params.user_id;
+// router.put('/:userId', async function (req, res) {
+//     var userId = req.params.userId;
 //     try {
 //         var query = {
-//             $and: [{ _id: req.body._id }, { host_list: user_id }]
+//             $and: [{ _id: req.body._id }, { host_list: userId }]
 //         }
 //         var update = {
 //             name: req.body.name,
@@ -133,8 +138,8 @@ router.get("/create/:id", async (req, res) => {
 //             visibility: req.body.visibility,
 //             // location_x: req.body.location_x,
 //             // location_y: req.body.location_y,
-//             // start_time: req.body.start_time,
-//             // end_time: req.body.end_time
+//             // startTime: req.body.startTime,
+//             // endTime: req.body.endTime
 //         }
 //         await EventModel.findOneAndUpdate(query, update);
 //         var message = {
@@ -158,11 +163,11 @@ router.get("/create/:id", async (req, res) => {
 // });
 
 // // // Delete event
-// router.delete('/:user_id', async function (req, res) {
-//     var user_id = req.params.user_id;
+// router.delete('/:userId', async function (req, res) {
+//     var userId = req.params.userId;
 //     try {
 //         var query = {
-//             $and: [{ _id: req.body._id }, { host_list: user_id }]
+//             $and: [{ _id: req.body._id }, { host_list: userId }]
 //         }
 //         await EventModel.remove(query);
 //         //TODO notify on delete
@@ -173,10 +178,10 @@ router.get("/create/:id", async (req, res) => {
 // });
 
 // // // Get suggested event for user
-// router.get('/suggest/:user_id', async function (req, res) {
-//     var user_id = req.params.user_id;
+// router.get('/suggest/:userId', async function (req, res) {
+//     var userId = req.params.userId;
 //     try {
-//         var user = await UserModel.findOne({ facebook_id: user_id }).populate(attended_events_list);
+//         var user = await UserModel.findOne({ facebookId: userId }).populate(attended_events_list);
 //         var tagFreq = {};
 //         user.attended_events_list.forEach(event => {
 //             event.tag_list.forEach(tag => {
@@ -204,10 +209,10 @@ router.get("/create/:id", async (req, res) => {
 // });
 
 // // Get all events for user, used in browse events
-// router.get('/:user_id', function (req, res) {
-//     var user_id = req.params.user_id;
+// router.get('/:userId', function (req, res) {
+//     var userId = req.params.userId;
 //     try {
-//         var events = getVisibleEventsForUser(user_id);
+//         var events = getVisibleEventsForUser(userId);
 //         res.status(200).json(events);
 //     } catch (err) {
 //         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
@@ -227,10 +232,10 @@ router.get("/create/:id", async (req, res) => {
 //     return score;
 // }
 
-// async function getVisibleEventsForUser(user_id) {
+// async function getVisibleEventsForUser(userId) {
 //     var query = {
-//         $or: [{ visibility: true }, { guest_list: user_id },
-//         { host_list: user_id }
+//         $or: [{ visibility: true }, { guest_list: userId },
+//         { host_list: userId }
 //         ]
 //     }
 //     return await EventModel.find(query);

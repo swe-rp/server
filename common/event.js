@@ -36,28 +36,28 @@ let updateEvent = async (id, body) => {
   };
 };
 
-let getAvailableEvents = async (userId) => {
-  let today = new Date();
-  //   let tomorrow = new Date();
-
-  //   tomorrow.setDate(today.getDate() + 1);
-
+let getAttendedEvents = async (userId) => {
   let query = EventModel.find();
 
-  query.where("startTime").gte(today);
-  // .lt(tomorrow);
-  query.where("attendants_list").nin(userId);
+  query.where("attendants_list").in(userId);
 
-  let allEvents = await query.exec();
-  let attendedEvents = await getAttendedEvents(userId);
-
-  let events = attendedEvents
-    ? mapSortEventByScore(attendedEvents, allEvents)
-    : allEvents;
+  let events = await query.exec();
 
   return {
     data: events
   };
+};
+
+let getScore = (tagFreq, event) => {
+  let score = 0;
+
+  event.tag_list.forEach((tag) => {
+    if (tagFreq[tag]) {
+      score += 5 * tagFreq[tag];
+    }
+  });
+
+  return score;
 };
 
 let mapSortEventByScore = (attendedEvents, events) => {
@@ -91,6 +91,30 @@ let mapSortEventByScore = (attendedEvents, events) => {
   return events;
 };
 
+let getAvailableEvents = async (userId) => {
+  let today = new Date();
+  //   let tomorrow = new Date();
+
+  //   tomorrow.setDate(today.getDate() + 1);
+
+  let query = EventModel.find();
+
+  query.where("startTime").gte(today);
+  // .lt(tomorrow);
+  query.where("attendants_list").nin(userId);
+
+  let allEvents = await query.exec();
+  let attendedEvents = await getAttendedEvents(userId);
+
+  let events = attendedEvents
+    ? mapSortEventByScore(attendedEvents, allEvents)
+    : allEvents;
+
+  return {
+    data: events
+  };
+};
+
 let getUserEvents = async (userId) => {
   let today = new Date();
   //   let tomorrow = new Date();
@@ -101,18 +125,6 @@ let getUserEvents = async (userId) => {
 
   query.where("startTime").gte(today);
   // .lt(tomorrow);
-  query.where("attendants_list").in(userId);
-
-  let events = await query.exec();
-
-  return {
-    data: events
-  };
-};
-
-let getAttendedEvents = async (userId) => {
-  let query = EventModel.find();
-
   query.where("attendants_list").in(userId);
 
   let events = await query.exec();
@@ -188,18 +200,6 @@ let suggestEvent = async (userId) => {
   return {
     data: bestEvent
   };
-};
-
-let getScore = (tagFreq, event) => {
-  let score = 0;
-
-  event.tag_list.forEach((tag) => {
-    if (tagFreq[tag]) {
-      score += 5 * tagFreq[tag];
-    }
-  });
-
-  return score;
 };
 
 module.exports = {

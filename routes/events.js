@@ -222,7 +222,7 @@ router.get("/create/:id", async (req, res) => {
 // async function getEventScoreForUser(tagFreq, friends_list, event) {
 //     var score = 0;
 //     friends_list.forEach(friend => {
-//         if (event.attendants_list.includes(friend))
+//         if (event.attendantsList.includes(friend))
 //             score += 30;
 //     });
 //     event.tag_list.forEach(tag => {

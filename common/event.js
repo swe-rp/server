@@ -5,7 +5,7 @@ let createEvent = async (body) => {
     name: body.name,
     description: body.description,
     host: body.host,
-    attendants_list: [body.host],
+    attendantsList: [body.host],
     startTime: body.startTime,
     endTime: body.endTime,
     tag_list: body.tags
@@ -39,7 +39,7 @@ let updateEvent = async (id, body) => {
 let getAttendedEvents = async (userId) => {
   let query = EventModel.find();
 
-  query.where("attendants_list").in(userId);
+  query.where("attendantsList").in(userId);
 
   let events = await query.exec();
 
@@ -101,7 +101,7 @@ let getAvailableEvents = async (userId) => {
 
   query.where("startTime").gte(today);
   // .lt(tomorrow);
-  query.where("attendants_list").nin(userId);
+  query.where("attendantsList").nin(userId);
 
   let allEvents = await query.exec();
   let attendedEvents = await getAttendedEvents(userId);
@@ -125,7 +125,7 @@ let getUserEvents = async (userId) => {
 
   query.where("startTime").gte(today);
   // .lt(tomorrow);
-  query.where("attendants_list").in(userId);
+  query.where("attendantsList").in(userId);
 
   let events = await query.exec();
 
@@ -137,10 +137,10 @@ let getUserEvents = async (userId) => {
 let addAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
 
-  event.attendants_list.push(userId);
+  event.attendantsList.push(userId);
 
   let update = {
-    attendants_list: event.attendants_list
+    attendantsList: event.attendantsList
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update);
@@ -154,13 +154,13 @@ let addAttendant = async (id, userId) => {
 let removeAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
 
-  let newList = event.attendants_list.filter((e) => {
+  let newList = event.attendantsList.filter((e) => {
     // This is required since we have different escape characters
     return JSON.stringify(e) !== JSON.stringify(userId);
   });
 
   let update = {
-    attendants_list: newList
+    attendantsList: newList
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update);

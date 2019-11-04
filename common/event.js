@@ -49,9 +49,9 @@ let getAttendedEvents = async (userId) => {
 };
 
 /**
- * Just a placeholder to specify type. 
- * @param {Map} tagFreq 
- * @param {*} event 
+ * Just a placeholder to specify type.
+ * @param {Map} tagFreq
+ * @param {*} event
  */
 let getScore = (tagFreq, event) => {
   let score = 0;
@@ -200,13 +200,13 @@ let suggestEvent = async (userId) => {
   let bestEvent = events[0];
   let bestScore = getScore(tagFreq, bestEvent);
 
-  for (let i = 0; i < events.length; i++) {
-    let score = getScore(tagFreq, events[i]);
+  events.map((event) => {
+    let score = getScore(tagFreq, event);
     if (score > bestScore) {
-      bestEvent = events[i];
+      bestEvent = event;
       bestScore = score;
     }
-  }
+  });
 
   return {
     data: bestEvent

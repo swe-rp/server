@@ -20,6 +20,7 @@ router.post("/api", async (req, res) => {
     );
     utils.log("Event creation success.");
   } catch (err) {
+    utils.error(err);
     res
       .status(err.code >= 100 && err.code < 600 ? err.code : 500)
       .send({ success: false, message: err.message });
@@ -37,6 +38,7 @@ router.put("/api/add/:id/:userId", async (req, res) => {
     utils.log("Sucessfully added", req.params.userId, "from", req.params.id);
     res.status(200).json(updatedEvent);
   } catch (err) {
+    utils.error(err);
     res
       .status(err.code >= 100 && err.code < 600 ? err.code : 500)
       .send({ success: false, message: err.message });
@@ -52,6 +54,7 @@ router.put("/api/remove/:id/:userId", async (req, res) => {
     utils.log("Sucessfully removed", req.params.userId, "from", req.params.id);
     res.status(200).json(updatedEvent);
   } catch (err) {
+    utils.error(err);
     res
       .status(err.code >= 100 && err.code < 600 ? err.code : 500)
       .send({ success: false, message: err.message });
@@ -64,6 +67,7 @@ router.put("/api/:id", async (req, res) => {
     const updatedEvent = await Event.updateEvent(req.params.id, req.body);
     res.status(200).json(updatedEvent);
   } catch (err) {
+    utils.error(err);
     res
       .status(err.code >= 100 && err.code < 600 ? err.code : 500)
       .send({ success: false, message: err.message });
@@ -75,6 +79,7 @@ router.get("/api/avail/:userId", async (req, res) => {
     const events = await Event.getAvailableEvents(req.params.userId);
     res.status(200).json(events);
   } catch (err) {
+    utils.error(err);
     res
       .status(err.code >= 100 && err.code < 600 ? err.code : 500)
       .send({ success: false, message: err.message });
@@ -87,6 +92,7 @@ router.get("/api/in/:userId", async (req, res) => {
     const events = await Event.getUserEvents(req.params.userId);
     res.status(200).json(events);
   } catch (err) {
+    utils.error(err);
     res
       .status(err.code >= 100 && err.code < 600 ? err.code : 500)
       .send({ success: false, message: err.message });
@@ -99,6 +105,7 @@ router.get("/api/suggest/:userId", async (req, res) => {
     const event = await Event.suggestEvent(req.params.userId);
     res.status(200).json(event);
   } catch (err) {
+    utils.error(err);
     res
       .status(err.code >= 100 && err.code < 600 ? err.code : 500)
       .send({ success: false, message: err.message });

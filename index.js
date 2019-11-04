@@ -30,7 +30,7 @@ app.use((req, res, next) => {
 app.use("/users", require("./routes/users"));
 app.use("/events", require("./routes/events"));
 app.use((err, req, res, next) => {
-  utils.log("Cannot", req.method, req.originalUrl);
+  utils.error("Cannot", req.method, req.originalUrl);
   res.status(500).send("Failed to call API.");
 });
 // app.use("/plans", require("./routes/plans"));

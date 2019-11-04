@@ -1,6 +1,7 @@
 const passport = require("passport");
 const FacebookTokenStrategy = require("passport-facebook-token");
 const User = require("../models/user");
+const utils = require("../common/utils");
 
 passport.use(
   "facebook-token",
@@ -31,6 +32,7 @@ passport.use(
         await newUser.save();
         done(null, newUser);
       } catch (error) {
+        utils.log(error);
         done(error, false, error.message);
       }
     }

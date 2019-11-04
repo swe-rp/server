@@ -1,7 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const passportConf = require("../middleware/passport");
-const router = express.Router();
+const router = new express.Router();
 
 const utils = require("../common/utils");
 const notifications = require("../common/notification");

@@ -1,6 +1,6 @@
 const express = require("express");
 const path = require("path");
-const router = express.Router();
+const router = new express.Router();
 const Event = require("../common/event");
 const User = require("../common/user");
 const utils = require("../common/utils");

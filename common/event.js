@@ -1,13 +1,13 @@
 const EventModel = require("../models/event");
 
-let createEvent = async body => {
+let createEvent = async (body) => {
   let newEvent = new EventModel({
     name: body.name,
     description: body.description,
     host: body.host,
-    attendants_list: [body.host],
-    start_time: body.start_time,
-    end_time: body.end_time,
+    attendantsList: [body.host],
+    startTime: body.startTime,
+    endTime: body.endTime,
     tag_list: body.tags
   });
 
@@ -24,8 +24,8 @@ let updateEvent = async (id, body) => {
     name: body.name,
     description: body.description,
     host: body.host,
-    start_time: body.start_time,
-    end_time: body.end_time
+    startTime: body.startTime,
+    endTime: body.endTime
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update);
@@ -36,34 +36,35 @@ let updateEvent = async (id, body) => {
   };
 };
 
-let getAvailableEvents = async userId => {
-  let today = new Date();
-  //   let tomorrow = new Date();
-
-  //   tomorrow.setDate(today.getDate() + 1);
-
+let getAttendedEvents = async (userId) => {
   let query = EventModel.find();
 
-  query.where("start_time").gte(today);
-  // .lt(tomorrow);
-  query.where("attendants_list").nin(userId);
+  query.where("attendantsList").in(userId);
 
-  let allEvents = await query.exec();
-  let attendedEvents = await getAttendedEvents(userId);
-
-  let events = (attendedEvents) ? 
-      mapSortEventByScore(attendedEvents, allEvents) : allEvents;
+  let events = await query.exec();
 
   return {
     data: events
   };
 };
 
+let getScore = (tagFreq, event) => {
+  let score = 0;
+
+  event.tag_list.forEach((tag) => {
+    if (tagFreq[tag]) {
+      score += 5 * tagFreq[tag];
+    }
+  });
+
+  return score;
+};
+
 let mapSortEventByScore = (attendedEvents, events) => {
   let tagFreq = {};
 
-  attendedEvents.data.forEach(event => {
-    event.tag_list.forEach(tag => {
+  attendedEvents.data.forEach((event) => {
+    event.tag_list.forEach((tag) => {
       if (!tagFreq[tag]) {
         tagFreq[tag] = 0;
       }
@@ -77,8 +78,12 @@ let mapSortEventByScore = (attendedEvents, events) => {
   });
 
   events.sort((a, b) => {
-    if (a.score > b.score) return -1;
-    if (a.score < b.score) return 1;
+    if (a.score > b.score) {
+      return -1;
+    }
+    if (a.score < b.score) {
+      return 1;
+    }
     return 0;
   });
 
@@ -90,7 +95,7 @@ let mapSortEventByScore = (attendedEvents, events) => {
   return events;
 };
 
-let getUserEvents = async userId => {
+let getAvailableEvents = async (userId) => {
   let today = new Date();
   //   let tomorrow = new Date();
 
@@ -98,21 +103,33 @@ let getUserEvents = async userId => {
 
   let query = EventModel.find();
 
-  query.where("start_time").gte(today);
+  query.where("startTime").gte(today);
   // .lt(tomorrow);
-  query.where("attendants_list").in(userId);
+  query.where("attendantsList").nin(userId);
 
-  let events = await query.exec();
+  let allEvents = await query.exec();
+  let attendedEvents = await getAttendedEvents(userId);
+
+  let events = attendedEvents
+    ? mapSortEventByScore(attendedEvents, allEvents)
+    : allEvents;
 
   return {
     data: events
   };
 };
 
-let getAttendedEvents = async userId => {
+let getUserEvents = async (userId) => {
+  let today = new Date();
+  //   let tomorrow = new Date();
+
+  //   tomorrow.setDate(today.getDate() + 1);
+
   let query = EventModel.find();
 
-  query.where("attendants_list").in(userId);
+  query.where("startTime").gte(today);
+  // .lt(tomorrow);
+  query.where("attendantsList").in(userId);
 
   let events = await query.exec();
 
@@ -124,10 +141,10 @@ let getAttendedEvents = async userId => {
 let addAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
 
-  event.attendants_list.push(userId);
+  event.attendantsList.push(userId);
 
   let update = {
-    attendants_list: event.attendants_list
+    attendantsList: event.attendantsList
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update);
@@ -138,16 +155,16 @@ let addAttendant = async (id, userId) => {
   };
 };
 
-let removeAttendant = async(id, userId) => {
+let removeAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
 
-  let newList = event.attendants_list.filter((e) => {
+  let newList = event.attendantsList.filter((e) => {
     // This is required since we have different escape characters
     return JSON.stringify(e) !== JSON.stringify(userId);
   });
 
   let update = {
-    attendants_list: newList
+    attendantsList: newList
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update);
@@ -155,17 +172,17 @@ let removeAttendant = async(id, userId) => {
   return {
     id: updated.id,
     data: updated
-  }
+  };
 };
 
-let suggestEvent = async userId => {
+let suggestEvent = async (userId) => {
   let events = getAvailableEvents(userId).data;
   let attendedEvents = getAttendedEvents(userId).data;
 
   let tagFreq = {};
 
-  attendedEvents.forEach(event => {
-    event.tag_list.forEach(tag => {
+  attendedEvents.forEach((event) => {
+    event.tag_list.forEach((tag) => {
       if (!tagFreq[tag]) {
         tagFreq[tag] = 0;
       }
@@ -179,7 +196,6 @@ let suggestEvent = async userId => {
   for (let i = 0; i < events.length; i++) {
     let score = getScore(tagFreq, events[i]);
     if (score > bestScore) {
-
       bestEvent = events[i];
       bestScore = score;
     }
@@ -188,18 +204,6 @@ let suggestEvent = async userId => {
   return {
     data: bestEvent
   };
-};
-
-let getScore = (tagFreq, event) => {
-  let score = 0;
-
-  event.tag_list.forEach(tag => {
-    if (tagFreq[tag]) {
-      score += 5 * tagFreq[tag];
-    }
-  });
-
-  return score;
 };
 
 module.exports = {

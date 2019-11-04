@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "serve": "sudo node -r dotenv/config index.js",
-    "prod": "sudo node -r dotenv/config index.js >> output.log &"
+    "prod": "sudo node -r dotenv/config index.js >> output.log &",
+    "lint": "prettier --write '**/*.js'"
   },
   "author": "",
   "license": "ISC",
@@ -22,5 +23,11 @@
     "passport-facebook-token": "^3.3.0",
     "passport-jwt": "^4.0.0",
     "socket.io": "^2.3.0"
+  },
+  "prettier": {
+    "arrowParens": "always"
+  },
+  "devDependencies": {
+    "prettier": "1.18.2"
   }
 }

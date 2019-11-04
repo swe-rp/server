@@ -1,7 +1,7 @@
 const UserModel = require("../models/user");
 const utils = require("./utils");
 
-let doesUserExist = async userId => {
+let doesUserExist = async (userId) => {
   try {
     let user = await UserModel.findById(userId);
     utils.log("User", userId, "exists.");

@@ -13,11 +13,11 @@
         }
       };
 
-      let getElementValue = elem => {
+      let getElementValue = (elem) => {
         return document.getElementById(elem).value;
       };
 
-      let setMessage = msg => {
+      let setMessage = (msg) => {
         document.getElementById("msg").innerHTML = msg;
       };
 
@@ -27,8 +27,8 @@
           name: getElementValue("name"),
           description: getElementValue("description"),
           host: getUserId(),
-          start_time: new Date(getElementValue("start-time")).toUTCString(),
-          end_time: new Date(getElementValue("end-time")).toUTCString(),
+          startTime: new Date(getElementValue("start-time")).toUTCString(),
+          endTime: new Date(getElementValue("end-time")).toUTCString(),
           tags: getElementValue("tags")
             .toLowerCase()
             .replace(/ /g, "")
@@ -42,9 +42,9 @@
           setMessage("Description cannot be empty!");
           return null;
         } else if (
-          form.start_time.startsWith("Invalid") ||
-          form.end_time.startsWith("Invalid") ||
-          new Date(form.start_time) > new Date(form.end_time)
+          form.startTime.startsWith("Invalid") ||
+          form.endTime.startsWith("Invalid") ||
+          new Date(form.startTime) > new Date(form.endTime)
         ) {
           setMessage("Invalid dates!");
           return null;
@@ -54,9 +54,9 @@
         }
       };
 
-      document.addEventListener("DOMContentLoaded", e => {
+      document.addEventListener("DOMContentLoaded", (e) => {
         let form = document.getElementById("event-form");
-        form.addEventListener("submit", e => {
+        form.addEventListener("submit", (e) => {
           e.preventDefault();
           let formJson = getFormData();
           if (formJson) {

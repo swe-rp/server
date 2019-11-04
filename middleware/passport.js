@@ -13,10 +13,10 @@ passport.use(
     async (req, accessToken, refreshToken, profile, done) => {
       try {
         // We're in the account creation process
-        let existingUser = await User.findOne({ facebook_id: profile.id });
-        
+        let existingUser = await User.findOne({ facebookId: profile.id });
+
         if (existingUser) {
-          existingUser.registration_token = req.header("registration_token");
+          existingUser.registrationToken = req.header("registrationToken");
           await User.findByIdAndUpdate(existingUser.id, existingUser);
           return done(null, existingUser);
         }
@@ -24,8 +24,8 @@ passport.use(
         let newUser = new User({
           name: profile.displayName,
           email: profile.emails[0].value,
-          facebook_id: profile.id,
-          registration_token: req.header("registration_token")
+          facebookId: profile.id,
+          registrationToken: req.header("registrationToken")
         });
 
         await newUser.save();

@@ -1,16 +1,12 @@
-const model_names = require("./shared");
+const modelNames = require("./shared");
 const mongoose = require("mongoose");
 
-let planSchema = mongoose.Schema({
+let planSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  member_list: [
-    { type: mongoose.Schema.Types.ObjectId, ref: model_names.USER }
-  ],
-  event_list: [
-    { type: mongoose.Schema.Types.ObjectId, ref: model_names.EVENT }
-  ],
-  start_time: { type: Date, required: true },
-  end_time: { type: Date, required: true }
+  memberList: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER }],
+  eventList: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.EVENT }],
+  startTime: { type: Date, required: true },
+  endTime: { type: Date, required: true }
 });
 
-module.exports = mongoose.model(model_names.PLAN, planSchema);
+module.exports = mongoose.model(modelNames.PLAN, planSchema);

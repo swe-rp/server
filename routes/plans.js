@@ -13,14 +13,14 @@
 //     try {
 //         const newPlan = new EventModel({
 //             name: req.body.name,
-//             member_list: req.body.member_list,
-//             // event_list: [{ type: mongoose.Schema.Types.ObjectId, ref: model_names.EVENT} ],
-//             // start_time: {type: Date, required: true},
-//             // end_time: {type: Date, required: true},
+//             memberList: req.body.memberList,
+//             // eventList: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.EVENT} ],
+//             // startTime: {type: Date, required: true},
+//             // endTime: {type: Date, required: true},
 //         });
 //         await newPlan.save();
 //         var registrationTokens = [];
-//         newPlan.member_list.forEach(async (member_id) => {
+//         newPlan.memberList.forEach(async (member_id) => {
 //             var token = (await UserModel.findById(member_id)).registrationToken;
 //             registrationTokens.push(token);
 //         });
@@ -49,20 +49,20 @@
 // })
 
 // // Edit event, changed public/private, changed time or location
-// router.put('/:user_id', async function (req, res) {
-//     var user_id = req.params.user_id;
+// router.put('/:userId', async function (req, res) {
+//     var userId = req.params.userId;
 //     try {
 //         var query = {
 //             $and: [{ _id: req.body._id }]
 //         }
 //         var update = {
 //             name: req.body.name,
-//             member_list: req.body.member_list,
+//             memberList: req.body.memberList,
 //             // visibility: req.body.visibility,
 //             // location_x: req.body.location_x,
 //             // location_y: req.body.location_y,
-//             // start_time: req.body.start_time,
-//             // end_time: req.body.end_time
+//             // startTime: req.body.startTime,
+//             // endTime: req.body.endTime
 //         }
 //         await PlanModel.findOneAndUpdate(query, update);
 //         var message = {
@@ -86,8 +86,8 @@
 // });
 
 // // // Delete event
-// router.delete('/:user_id', async function (req, res) {
-//     var user_id = req.params.user_id;
+// router.delete('/:userId', async function (req, res) {
+//     var userId = req.params.userId;
 //     try {
 //         var query = {
 //             $and: [{ _id: req.body._id }]

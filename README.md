@@ -1,4 +1,4 @@
-# Setup on Azure
+## Setup on Azure
 
 Sudo is required to actually listen on port 80/443.
 
@@ -6,7 +6,7 @@ Or `sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 
 
 But the latter has the problem of not being able access the key.
 
-# Usage
+## Usage
 
 `node -r dotenv/config index.js`
 
@@ -14,7 +14,7 @@ We preload our dotenv so we can use it everywhere.
 
 ## Environment Variables
 
-```
+```shell
 FB_CLIENT_ID=
 FB_CLIENT_SECRET=
 MONGODB_CONNSTR=

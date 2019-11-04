@@ -48,12 +48,17 @@ let getAttendedEvents = async (userId) => {
   };
 };
 
+/**
+ * Just a placeholder to specify type. 
+ * @param {Map} tagFreq 
+ * @param {*} event 
+ */
 let getScore = (tagFreq, event) => {
   let score = 0;
 
   event.tagList.forEach((tag) => {
-    if (tagFreq[tag]) {
-      score += 5 * tagFreq[tag];
+    if (tagFreq.has(tag)) {
+      score += 5 * tagFreq.get(tag);
     }
   });
 
@@ -61,14 +66,15 @@ let getScore = (tagFreq, event) => {
 };
 
 let mapSortEventByScore = (attendedEvents, events) => {
-  let tagFreq = {};
+  let tagFreq = new Map();
 
   attendedEvents.data.forEach((event) => {
     event.tagList.forEach((tag) => {
-      if (!tagFreq[tag]) {
-        tagFreq[tag] = 0;
+      if (!tagFreq.has(tag)) {
+        tagFreq.set(tag, 0);
       }
-      tagFreq[tag]++;
+      let count = tagFreq.get(tag) + 1;
+      tagFreq.set(tag, count);
     });
   });
 
@@ -179,14 +185,15 @@ let suggestEvent = async (userId) => {
   let events = getAvailableEvents(userId).data;
   let attendedEvents = getAttendedEvents(userId).data;
 
-  let tagFreq = {};
+  let tagFreq = new Map();
 
   attendedEvents.forEach((event) => {
     event.tagList.forEach((tag) => {
-      if (!tagFreq[tag]) {
-        tagFreq[tag] = 0;
+      if (!tagFreq.has(tag)) {
+        tagFreq.set(tag, 0);
       }
-      tagFreq[tag]++;
+      let count = tagFreq.get(tag) + 1;
+      tagFreq.set(tag, count);
     });
   });
 

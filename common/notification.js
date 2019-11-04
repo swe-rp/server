@@ -8,8 +8,8 @@ var admin = require("firebase-admin");
  */
 let sendNotification = (topic, notification) => {
   const payload = {
-    topic: topic,
-    notification: notification
+    topic,
+    notification
   };
   return new Promise((resolve, reject) => {
     admin

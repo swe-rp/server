@@ -1,7 +1,7 @@
 const modelNames = require("./shared");
 const mongoose = require("mongoose");
 
-let userSchema = mongoose.Schema({
+let userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   // email: {type: String, required: true, unique: true},
   // friends_list: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER} ],

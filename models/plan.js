@@ -1,7 +1,7 @@
 const modelNames = require("./shared");
 const mongoose = require("mongoose");
 
-let planSchema = mongoose.Schema({
+let planSchema = new mongoose.Schema({
   name: { type: String, required: true },
   memberList: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER }],
   eventList: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.EVENT }],

@@ -1,7 +1,7 @@
 const modelNames = require("./shared");
 const mongoose = require("mongoose");
 
-let messageSchema = mongoose.Schema({
+let messageSchema = new mongoose.Schema({
   sender: { type: String, required: true },
   content: { type: String, required: true },
   timeStamp: { type: Date, required: true },

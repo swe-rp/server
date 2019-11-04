@@ -1,7 +1,7 @@
 const modelNames = require("./shared");
 const mongoose = require("mongoose");
 
-let eventSchema = mongoose.Schema({
+let eventSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   // visibility: {type: Boolean, required: true},

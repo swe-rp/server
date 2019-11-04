@@ -8,7 +8,7 @@ let createEvent = async (body) => {
     attendantsList: [body.host],
     startTime: body.startTime,
     endTime: body.endTime,
-    tag_list: body.tags
+    tagList: body.tags
   });
 
   await newEvent.save();
@@ -51,7 +51,7 @@ let getAttendedEvents = async (userId) => {
 let getScore = (tagFreq, event) => {
   let score = 0;
 
-  event.tag_list.forEach((tag) => {
+  event.tagList.forEach((tag) => {
     if (tagFreq[tag]) {
       score += 5 * tagFreq[tag];
     }
@@ -64,7 +64,7 @@ let mapSortEventByScore = (attendedEvents, events) => {
   let tagFreq = {};
 
   attendedEvents.data.forEach((event) => {
-    event.tag_list.forEach((tag) => {
+    event.tagList.forEach((tag) => {
       if (!tagFreq[tag]) {
         tagFreq[tag] = 0;
       }
@@ -182,7 +182,7 @@ let suggestEvent = async (userId) => {
   let tagFreq = {};
 
   attendedEvents.forEach((event) => {
-    event.tag_list.forEach((tag) => {
+    event.tagList.forEach((tag) => {
       if (!tagFreq[tag]) {
         tagFreq[tag] = 0;
       }

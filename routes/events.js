@@ -184,7 +184,7 @@ router.get("/create/:id", async (req, res) => {
 //         var user = await UserModel.findOne({ facebookId: userId }).populate(attended_events_list);
 //         var tagFreq = {};
 //         user.attended_events_list.forEach(event => {
-//             event.tag_list.forEach(tag => {
+//             event.tagList.forEach(tag => {
 //                 if (!tagFreq[tag])
 //                     tagFreq[tag] = 0;
 //                 tagFreq[tag] = tagFreq[tag] + 1;
@@ -225,7 +225,7 @@ router.get("/create/:id", async (req, res) => {
 //         if (event.attendantsList.includes(friend))
 //             score += 30;
 //     });
-//     event.tag_list.forEach(tag => {
+//     event.tagList.forEach(tag => {
 //         if (tagFreq[tag])
 //             score += 5 * tagFreq[tag];
 //     });

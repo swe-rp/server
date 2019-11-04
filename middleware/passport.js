@@ -17,7 +17,7 @@ passport.use(
         let existingUser = await User.findOne({ facebookId: profile.id });
 
         if (existingUser) {
-          existingUser.registrationToken = req.header("registrationToken");
+          existingUser.registrationToken = req.header("registration_token");
           await User.findByIdAndUpdate(existingUser.id, existingUser);
           return done(null, existingUser);
         }
@@ -26,7 +26,7 @@ passport.use(
           name: profile.displayName,
           email: profile.emails[0].value,
           facebookId: profile.id,
-          registrationToken: req.header("registrationToken")
+          registrationToken: req.header("registration_token")
         });
 
         await newUser.save();

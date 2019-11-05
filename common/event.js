@@ -1,5 +1,7 @@
 const EventModel = require("../models/event");
 
+const EVENT_MULTIPLIER = 5;
+
 let createEvent = async (body) => {
   let newEvent = new EventModel({
     name: body.name,
@@ -58,7 +60,7 @@ let getScore = (tagFreq, event) => {
 
   event.tagList.forEach((tag) => {
     if (tagFreq.has(tag)) {
-      score += 5 * tagFreq.get(tag);
+      score += EVENT_MULTIPLIER * tagFreq.get(tag);
     }
   });
 
@@ -183,33 +185,9 @@ let removeAttendant = async (id, userId) => {
 
 let suggestEvent = async (userId) => {
   let events = getAvailableEvents(userId).data;
-  let attendedEvents = getAttendedEvents(userId).data;
-
-  let tagFreq = new Map();
-
-  attendedEvents.forEach((event) => {
-    event.tagList.forEach((tag) => {
-      if (!tagFreq.has(tag)) {
-        tagFreq.set(tag, 0);
-      }
-      let count = tagFreq.get(tag) + 1;
-      tagFreq.set(tag, count);
-    });
-  });
-
-  let bestEvent = events[0];
-  let bestScore = getScore(tagFreq, bestEvent);
-
-  events.map((event) => {
-    let score = getScore(tagFreq, event);
-    if (score > bestScore) {
-      bestEvent = event;
-      bestScore = score;
-    }
-  });
 
   return {
-    data: bestEvent
+    data: events[0]
   };
 };
 

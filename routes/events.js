@@ -123,6 +123,21 @@ router.get("/create/:id", async (req, res) => {
   }
 });
 
+router.get("/notify/:topic", async (req, res) => {
+  try {
+    utils.log(
+      await notifications.sendNotification(req.params.topic, {
+        title: `Test for topic ${req.params.topic}`,
+        body: "..from the GET endpoint."
+      })
+    );
+    res.status(200).send("Success.");
+  } catch (e) {
+    utils.error(e);
+    res.status(500).send("Failure.");
+  }
+});
+
 // router.get('/', async function (req, res) {
 //     try {
 //         var allEvents = await EventModel.find();

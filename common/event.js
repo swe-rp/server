@@ -140,9 +140,7 @@ let getAvailableEvents = async (userId) => {
   let allEvents = await query.exec();
   let attendedEvents = await getAttendedEvents(userId);
 
-  let events = attendedEvents
-    ? mapSortEventByScore(attendedEvents, allEvents)
-    : allEvents;
+  let events = mapSortEventByScore(attendedEvents, allEvents);
 
   return {
     data: events

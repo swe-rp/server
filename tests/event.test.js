@@ -206,12 +206,35 @@ describe("events", () => {
 
       testEvent = new EventModel(TestData.completeEvent);
       testEvent.tagList = ["sports"];
+      testEvent.startTime = yesterday;
+      testEvent.attendantsList.push(testUser._id);
+      await testEvent.save();
+
+      testEvent = new EventModel(TestData.completeEvent);
+      testEvent.tagList = ["toys"];
+      testEvent.startTime = yesterday;
+      testEvent.attendantsList.push(testUser._id);
+      await testEvent.save();
+
+      testEvent = new EventModel(TestData.completeEvent);
+      testEvent.tagList = ["sports"];
+      testEvent.startTime = tomorrow;
+      await testEvent.save();
+      let expected = testEvent._id;
+
+      testEvent = new EventModel(TestData.completeEvent);
+      testEvent.tagList = ["fun"];
+      testEvent.startTime = tomorrow;
+      await testEvent.save();
+
+      testEvent = new EventModel(TestData.completeEvent);
+      testEvent.tagList = ["toys"];
       testEvent.startTime = tomorrow;
       await testEvent.save();
 
       let retVal = await event.suggestEvent(testUser._id);
 
-      expect(retVal.data.toJSON()._id).toEqual(testEvent._id);
+      expect(retVal.data.toJSON()._id).toEqual(expected);
     });
 
     test("Get suggested events for unexisting user", async () => {

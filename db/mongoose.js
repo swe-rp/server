@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const utils = require("../common/utils.js");
 
 let init = () => {
-  mongoose
+  return mongoose
     .connect(process.env.MONGO_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,

@@ -8,7 +8,7 @@ const notifications = require("../common/notification");
 
 // Event api
 // Create event
-router.post("/api", async (req, res) => {
+router.post("/api", async (req, res, next) => {
   try {
     const newEvent = await Event.createEvent(req.body);
     res.status(200).json(newEvent);
@@ -20,16 +20,13 @@ router.post("/api", async (req, res) => {
     );
     utils.log("Event creation success.");
   } catch (err) {
-    utils.error(err);
-    res
-      .status(500)
-      .send({ success: false, message: err.message });
     utils.log("Event creation failed.");
+    next({ success: false, message: err.message });
   }
 });
 
 //Add attendant
-router.put("/api/add/:id/:userId", async (req, res) => {
+router.put("/api/add/:id/:userId", async (req, res, next) => {
   try {
     const updatedEvent = await Event.addAttendant(
       req.params.id,
@@ -38,14 +35,11 @@ router.put("/api/add/:id/:userId", async (req, res) => {
     utils.log("Sucessfully added", req.params.userId, "from", req.params.id);
     res.status(200).json(updatedEvent);
   } catch (err) {
-    utils.error(err);
-    res
-      .status(500)
-      .send({ success: false, message: err.message });
+    next({ success: false, message: err.message });
   }
 });
 
-router.put("/api/remove/:id/:userId", async (req, res) => {
+router.put("/api/remove/:id/:userId", async (req, res, next) => {
   try {
     const updatedEvent = await Event.removeAttendant(
       req.params.id,
@@ -54,68 +48,53 @@ router.put("/api/remove/:id/:userId", async (req, res) => {
     utils.log("Sucessfully removed", req.params.userId, "from", req.params.id);
     res.status(200).json(updatedEvent);
   } catch (err) {
-    utils.error(err);
-    res
-      .status(500)
-      .send({ success: false, message: err.message });
+    next({ success: false, message: err.message });
   }
 });
 
 //Edit event
-router.put("/api/:id", async (req, res) => {
+router.put("/api/:id", async (req, res, next) => {
   try {
     const updatedEvent = await Event.updateEvent(req.params.id, req.body);
     res.status(200).json(updatedEvent);
   } catch (err) {
-    utils.error(err);
-    res
-      .status(500)
-      .send({ success: false, message: err.message });
+    next({ success: false, message: err.message });
   }
 });
 
-router.get("/api/avail/:userId", async (req, res) => {
+router.get("/api/avail/:userId", async (req, res, next) => {
   try {
     const events = await Event.getAvailableEvents(req.params.userId);
     res.status(200).json(events);
   } catch (err) {
-    utils.error(err);
-    res
-      .status(500)
-      .send({ success: false, message: err.message });
+    next({ success: false, message: err.message });
   }
 });
 
 // Get events
-router.get("/api/in/:userId", async (req, res) => {
+router.get("/api/in/:userId", async (req, res, next) => {
   try {
     const events = await Event.getUserEvents(req.params.userId);
     res.status(200).json(events);
   } catch (err) {
-    utils.error(err);
-    res
-      .status(500)
-      .send({ success: false, message: err.message });
+    next({ success: false, message: err.message });
   }
 });
 
 // Suggest event
-router.get("/api/suggest/:userId", async (req, res) => {
+router.get("/api/suggest/:userId", async (req, res, next) => {
   try {
     const event = await Event.suggestEvent(req.params.userId);
     res.status(200).json(event);
   } catch (err) {
-    utils.error(err);
-    res
-      .status(500)
-      .send({ success: false, message: err.message });
+    next({ success: false, message: err.message });
   }
 });
 
 /**
  * Temporarily allow us to create events through a webpage.
  */
-router.get("/create/:id", async (req, res) => {
+router.get("/create/:id", async (req, res, next) => {
   if (await User.doesUserExist(req.params.id)) {
     res.sendFile(path.join(__dirname, "../public/index.html"));
   } else {
@@ -123,7 +102,7 @@ router.get("/create/:id", async (req, res) => {
   }
 });
 
-router.get("/notify/:topic", async (req, res) => {
+router.get("/notify/:topic", async (req, res, next) => {
   try {
     utils.log(
       await notifications.sendNotification(req.params.topic, {
@@ -133,8 +112,7 @@ router.get("/notify/:topic", async (req, res) => {
     );
     res.status(200).send("Success.");
   } catch (e) {
-    utils.error(e);
-    res.status(500).send("Failure.");
+    next("Failure.");
   }
 });
 

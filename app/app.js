@@ -17,7 +17,7 @@ app.use("/events", require("../routes/events"));
 // Failure catch
 app.use((err, req, res, next) => {
   utils.error("Cannot", req.method, req.originalUrl);
-  res.status(500).send("Failed to call API.");
+  res.status(500).send(err);
 });
 
 // Splash

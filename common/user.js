@@ -13,6 +13,10 @@ let doesUserExist = async (userId) => {
 };
 
 let userLogin = async (profile, registrationToken) => {
+  if (!profile || !registrationToken) {
+    throw "Wrong params";
+  }
+
   let existingUser = await UserModel.findOne({ facebookId: profile.id });
 
   if (existingUser) {

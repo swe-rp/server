@@ -11,7 +11,7 @@ router
   .route("/oauth")
   .post(
     passport.authenticate("facebook-token", { session: false }),
-    async (req, res) => {
+    async (req, res, next) => {
       try {
         let userValue = await user.userLogin(req.user, req.header("registration_token"));
         utils.log("User authenticated", req.user);
@@ -27,8 +27,7 @@ router
           userId: userValue.id
         });
       } catch (e) {
-        utils.error(e);
-        res.status(500).send("Failure.");
+        next(e);
       }
     }
   );

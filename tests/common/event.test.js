@@ -1,8 +1,8 @@
-const event = require("../common/event.js");
+const event = require("../../common/event.js");
 const mongoose = require("mongoose");
-const TestData = require("./test_data");
-const EventModel = require("../models/event");
-const UserModel = require("../models/user");
+const TestData = require("../test_data");
+const EventModel = require("../../models/event");
+const UserModel = require("../../models/user");
 
 describe("events", () => {
   let db;

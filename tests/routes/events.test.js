@@ -10,14 +10,19 @@
 //     - GET /api/suggest/:userId
 //     - GET /notify/:topic
 
-const TestData = require("./test_data");
+process.env = Object.assign(process.env, {
+  FB_CLIENT_ID: "test",
+  FB_CLIENT_SECRET: "test"
+});
+
+const TestData = require("../test_data");
 const request = require("supertest");
-const app = require("../app/app.js");
-const db = require("../db/mongoose.js");
+const app = require("../../app/app.js");
+const db = require("../../db/mongoose.js");
 const mongoose = require("mongoose");
-const EventModel = require("../models/event");
-const UserModel = require("../models/user");
-const utils = require("../common/utils.js");
+const EventModel = require("../../models/event");
+const UserModel = require("../../models/user");
+const utils = require("../../common/utils.js");
 
 const admin = require("firebase-admin");
 
@@ -47,7 +52,7 @@ jest.mock("firebase-admin", () => {
 });
 
 // Supress the logging
-jest.mock("../common/utils.js", () => {
+jest.mock("../../common/utils.js", () => {
   return {
     log: (e) => {},
     error: (e) => {}
@@ -65,7 +70,7 @@ let createExpectedReturn = (event) => {
   return expectedEvent;
 };
 
-describe("routes/event.js tests", () => {
+describe("routes/events.js tests", () => {
   let userId;
   let eventId;
 
@@ -94,8 +99,8 @@ describe("routes/event.js tests", () => {
       .send(TestData.completeEvent)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
-      .expect(200)
       .end((err, res) => {
+        expect(res.status).toBe(200);
         expect(res.body.data).toMatchObject(
           createExpectedReturn(TestData.completeEvent)
         );
@@ -109,8 +114,8 @@ describe("routes/event.js tests", () => {
       .send(TestData.incompleteEvent)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
-      .expect(500)
       .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });
@@ -122,8 +127,8 @@ describe("routes/event.js tests", () => {
       .put(`/events/api/add/${eventId}/${userId}`)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
-      .expect(200)
       .end((err, res) => {
+        expect(res.status).toBe(200);
         expect(res.body.data).toMatchObject(expectedReturn);
         done();
       });
@@ -134,8 +139,8 @@ describe("routes/event.js tests", () => {
       .put(`/events/api/add/missing/${userId}`)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
-      .expect(500)
       .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });
@@ -145,8 +150,8 @@ describe("routes/event.js tests", () => {
       .put(`/events/api/add/${eventId}/missing`)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
-      .expect(500)
       .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });
@@ -156,8 +161,8 @@ describe("routes/event.js tests", () => {
       .put(`/events/api/remove/${eventId}/${userId}`)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
-      .expect(200)
       .end((err, res) => {
+        expect(res.status).toBe(200);
         expect(res.body.data).toMatchObject(
           createExpectedReturn(TestData.completeEvent)
         );
@@ -170,8 +175,8 @@ describe("routes/event.js tests", () => {
       .put(`/events/api/remove/missing/${userId}`)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
-      .expect(500)
       .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });
@@ -185,8 +190,8 @@ describe("routes/event.js tests", () => {
       .send(updated)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
-      .expect(200)
       .end((err, res) => {
+        expect(res.status).toBe(200);
         expect(res.body.data).toMatchObject(expectedReturn);
         done();
       });
@@ -200,8 +205,8 @@ describe("routes/event.js tests", () => {
       .send(updated)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
-      .expect(500)
       .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });
@@ -253,8 +258,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/api/avail/${userId}`)
       .expect("Content-Type", /json/)
-      .expect(200)
       .end((err, res) => {
+        expect(res.status).toBe(200);
         expect(res.body.data).toHaveLength(4);
         done();
       });
@@ -264,8 +269,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/api/avail/missing`)
       .expect("Content-Type", /json/)
-      .expect(500)
-      .end(() => {
+      .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });
@@ -303,8 +308,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/api/in/${userId}`)
       .expect("Content-Type", /json/)
-      .expect(200)
       .end((err, res) => {
+        expect(res.status).toBe(200);
         expect(res.body.data).toHaveLength(1);
         done();
       });
@@ -314,8 +319,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/api/in/missing`)
       .expect("Content-Type", /json/)
-      .expect(500)
       .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });
@@ -331,8 +336,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/api/suggest/${userId}`)
       .expect("Content-Type", /json/)
-      .expect(200)
       .end((err, res) => {
+        expect(res.status).toBe(200);
         expect(res.body.data).toMatchObject(
           createExpectedReturn(testEvent.toJSON())
         );
@@ -344,8 +349,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/api/suggest/missing`)
       .expect("Content-Type", /json/)
-      .expect(500)
       .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });
@@ -354,8 +359,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/api/suggest/${userId}`)
       .expect("Content-Type", /json/)
-      .expect(500)
       .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });
@@ -364,8 +369,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/create/${userId}`)
       .expect("Content-Type", /json/)
-      .expect(200)
       .end((err, res) => {
+        expect(res.status).toBe(200);
         done();
       });
   });
@@ -374,8 +379,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/create/missing`)
       .expect("Content-Type", /json/)
-      .expect(500)
       .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });
@@ -384,8 +389,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/notify/topic`)
       .expect("Content-Type", /json/)
-      .expect(200)
       .end((err, res) => {
+        expect(res.status).toBe(200);
         done();
       });
   });
@@ -394,8 +399,8 @@ describe("routes/event.js tests", () => {
     request(app)
       .get(`/events/notify/fail`)
       .expect("Content-Type", /json/)
-      .expect(500)
       .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });

@@ -1,4 +1,4 @@
-const utils = require("../common/utils.js");
+const utils = require("../../common/utils.js");
 
 global.console = {
   log: jest.fn()

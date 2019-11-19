@@ -1,4 +1,4 @@
-const notification = require("../common/notification.js");
+const notification = require("../../common/notification.js");
 const admin = require("firebase-admin");
 
 jest.mock("firebase-admin", () => {

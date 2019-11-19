@@ -13,7 +13,10 @@ router
     passport.authenticate("facebook-token", { session: false }),
     async (req, res, next) => {
       try {
-        let userValue = await user.userLogin(req.user, req.header("registration_token"));
+        let userValue = await user.userLogin(
+          req.user,
+          req.header("registration_token")
+        );
         utils.log("User authenticated", req.user);
         utils.log("Reg token:", req.header("registration_token"));
         utils.log(

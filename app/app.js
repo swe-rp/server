@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-const utils = require("./common/utils");
+const utils = require("../common/utils.js");
 
 app.use(express.json());
 

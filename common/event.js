@@ -47,8 +47,7 @@ let updateEvent = async (id, body) => {
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
-  if( !updated )
-    throw "Event does not exist";
+  if (!updated) throw "Event does not exist";
 
   return {
     id: updated._id,
@@ -123,8 +122,7 @@ let mapSortEventByScore = (attendedEvents, events) => {
 
 let getAvailableEvents = async (userId) => {
   let user = await UserModel.findById(userId);
-  if( !user )
-    throw "User doesnt exist";
+  if (!user) throw "User doesnt exist";
 
   let today = new Date();
   //   let tomorrow = new Date();
@@ -149,8 +147,7 @@ let getAvailableEvents = async (userId) => {
 
 let getUserEvents = async (userId) => {
   let user = await UserModel.findById(userId);
-  if( !user )
-    throw "User doesnt exist";
+  if (!user) throw "User doesnt exist";
 
   let today = new Date();
   //   let tomorrow = new Date();
@@ -172,12 +169,10 @@ let getUserEvents = async (userId) => {
 
 let addAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
-  if ( !event )
-    throw "Event doesnt exist";
+  if (!event) throw "Event doesnt exist";
 
   let user = await UserModel.findById(userId);
-    if( !user )
-      throw "User doesnt exist";
+  if (!user) throw "User doesnt exist";
 
   event.attendantsList.push(userId);
 
@@ -195,14 +190,10 @@ let addAttendant = async (id, userId) => {
 
 let removeAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
-  if ( !event )
-    throw "Event doesnt exist";
+  if (!event) throw "Event doesnt exist";
 
   let user = await UserModel.findById(userId);
-    if( !user )
-      throw "User doesnt exist";
-
-
+  if (!user) throw "User doesnt exist";
 
   let newList = event.attendantsList.filter((e) => {
     // This is required since we have different escape characters
@@ -213,7 +204,7 @@ let removeAttendant = async (id, userId) => {
     attendantsList: newList
   };
 
-  let updated = await EventModel.findByIdAndUpdate(id, update, {new : true});
+  let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
   return {
     id: updated.id,
@@ -224,8 +215,7 @@ let removeAttendant = async (id, userId) => {
 let suggestEvent = async (userId) => {
   let events = (await getAvailableEvents(userId)).data;
 
-  if( events.length == 0 )
-    throw "No events";
+  if (events.length == 0) throw "No events";
 
   return {
     data: events[0]

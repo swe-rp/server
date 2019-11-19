@@ -2,14 +2,18 @@ const EventModel = require("../models/event");
 
 const EVENT_MULTIPLIER = 5;
 
-function wrongParams (body) {
-  return !body.name || !body.description || !body.host || 
-  !body.startTime || !body.endTime;
+function wrongParams(body) {
+  return (
+    !body.name ||
+    !body.description ||
+    !body.host ||
+    !body.startTime ||
+    !body.endTime
+  );
 }
 
 let createEvent = async (body) => {
-  if( wrongParams(body) )
-    throw "Wrong params";
+  if (wrongParams(body)) throw "Wrong params";
 
   let newEvent = new EventModel({
     name: body.name,
@@ -30,8 +34,7 @@ let createEvent = async (body) => {
 };
 
 let updateEvent = async (id, body) => {
-  if( wrongParams(body) )
-    throw "Wrong params";
+  if (wrongParams(body)) throw "Wrong params";
 
   let update = {
     name: body.name,
@@ -41,7 +44,7 @@ let updateEvent = async (id, body) => {
     endTime: body.endTime
   };
 
-  let updated = await EventModel.findByIdAndUpdate(id, update);
+  let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
   return {
     id: updated._id,

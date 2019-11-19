@@ -18,7 +18,6 @@ const TestData = require("./test_data");
 
 // const request = require('supertest');
 const app = require("../index.js");
-jest.setTimeout(30000);
 
 describe("routes/event.js tests", function() {
   test("create event and returns successfully", function(done) {

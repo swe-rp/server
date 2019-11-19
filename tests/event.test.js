@@ -1,5 +1,6 @@
 const event = require("../common/event.js");
 const mongoose = require("mongoose");
+const TestData = require("./test_data");
 
 test("mock", () => {
   expect(3).toBe(3);
@@ -27,42 +28,43 @@ describe("events", () => {
 
   describe("createEvent", () => {
     test("Create a new event", async () => {
-      let userId = mongoose.Types.ObjectId();
-      let testEvent = {
-        name: "event",
-        description: "event description",
-        host: userId,
-        attendantsList: [userId],
-        startTime: "1",
-        endTime: "2",
-        tags: ["fun", "social"]
-      };
+      let testEvent = Object.assign({}, TestData.completeEvent);
 
-      let expectedEvent = {
-        name: "event",
-        description: "event description",
-        host: userId,
-        attendantsList: [userId],
-        startTime: new Date("1"),
-        endTime: new Date("2"),
-        tagList: ["fun", "social"]
-      };
+      let expectedEvent = Object.assign({}, TestData.completeEvent);
+      expectedEvent.startTime = new Date(expectedEvent.startTime);
+      expectedEvent.endTime = new Date(expectedEvent.endTime);
 
       let retVal = await event.createEvent(testEvent);
 
-      expect(retVal.data.toObject()).toMatchObject(expectedEvent);
+      expect(retVal.data.toJSON()).toMatchObject(expectedEvent);
+    });
+
+    test("Try to create new event missing field", async () => {
+      let testEvent = TestData.incompleteEvent;
+
+      expect(event.createEvent(testEvent)).rejects.toEqual("Wrong params");
     });
   });
 
   describe("updateEvent", () => {
-    test("Update an event", () => {});
+    test("Update an event", () => {
+      let expectedEvent = TestData.eventArray[0];
+
+
+    });
+
+    test("Update incomplete event", () => {});
   });
 
   describe("getAvailableEvents", () => {
     test("Get available events", () => {});
+
+    test("Get available events for unexisting user", () => {});
   });
 
-  describe("getUserEvents", () => {});
+  describe("getUserEvents", () => {
+
+  });
 
   describe("addAttendant", () => {});
 

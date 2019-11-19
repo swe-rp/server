@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const GLOBAL_USER_ID = mongoose.Types.ObjectId();
 
 let completeEvent = {
@@ -5,8 +7,8 @@ let completeEvent = {
   description: "event description",
   host: GLOBAL_USER_ID,
   attendantsList: [GLOBAL_USER_ID],
-  startTime: "12323232",
-  endTime: "12323232",
+  startTime: 12323232,
+  endTime: 12323232,
   tagList: ["fun", "social"]
 };
 

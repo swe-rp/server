@@ -17,7 +17,7 @@
 // });
 const TestData = require('./test_data');
 
-const request = require('supertest');
+// const request = require('supertest');
 const app = require('../index.js');
 jest.setTimeout(30000);
 

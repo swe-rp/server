@@ -10,28 +10,47 @@ test("another mock", () => {
 });
 
 describe("events", () => {
+  let db;
+
   beforeAll(async () => {
-    await mongoose
-      .connect(process.env.MONGO_URL, {
+    try {
+      db = await mongoose.connect(process.env.MONGO_URL, {
         useNewUrlParser: true,
         useUnifiedTopology: true,
         useFindAndModify: false
-      })
-      .then((res) => console.log("Connection to CosmosDB successful."))
-      .catch((err) => console.log("Connection to CosmosDB failed.", err));
+      });
+    } catch (e) {
+      console.log(e);
+      process.exit();
+    }
   });
 
   describe("createEvent", () => {
-    test("Create a new event", () => {
-      let a = event.createEvent({
+    test("Create a new event", async () => {
+      let userId = mongoose.Types.ObjectId();
+      let testEvent = {
         name: "event",
         description: "event description",
-        host: "123456",
-        attendantsList: ["123456"],
-        startTime: "12323232",
-        endTime: "12323232",
+        host: userId,
+        attendantsList: [userId],
+        startTime: "1",
+        endTime: "2",
+        tags: ["fun", "social"]
+      };
+
+      let expectedEvent = {
+        name: "event",
+        description: "event description",
+        host: userId,
+        attendantsList: [userId],
+        startTime: new Date("1"),
+        endTime: new Date("2"),
         tagList: ["fun", "social"]
-      });
+      };
+
+      let retVal = await event.createEvent(testEvent);
+
+      expect(retVal.data.toObject()).toMatchObject(expectedEvent);
     });
   });
 
@@ -50,4 +69,8 @@ describe("events", () => {
   describe("removeAttendant", () => {});
 
   describe("suggestEvent", () => {});
+
+  afterAll(async () => {
+    await db.close();
+  });
 });

@@ -3,7 +3,7 @@ const UserModel = require("../models/user");
 
 const EVENT_MULTIPLIER = 5;
 
-function wrongParams(body) {
+let wrongParams = (body) => {
   return (
     !body.name ||
     !body.description ||
@@ -11,7 +11,7 @@ function wrongParams(body) {
     !body.startTime ||
     !body.endTime
   );
-}
+};
 
 let createEvent = async (body) => {
   if (wrongParams(body)) {
@@ -223,7 +223,7 @@ let removeAttendant = async (id, userId) => {
 let suggestEvent = async (userId) => {
   let events = (await getAvailableEvents(userId)).data;
 
-  if (events.length == 0) throw "No events";
+  if (events.length === 0) throw "No events";
 
   return {
     data: events[0]

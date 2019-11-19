@@ -14,7 +14,9 @@ function wrongParams(body) {
 }
 
 let createEvent = async (body) => {
-  if (wrongParams(body)) throw "Wrong params";
+  if (wrongParams(body)) {
+    throw "Wrong params";
+  }
 
   let newEvent = new EventModel({
     name: body.name,
@@ -35,7 +37,9 @@ let createEvent = async (body) => {
 };
 
 let updateEvent = async (id, body) => {
-  if (wrongParams(body)) throw "Wrong params";
+  if (wrongParams(body)) {
+    throw "Wrong params";
+  }
 
   let update = {
     name: body.name,
@@ -169,10 +173,14 @@ let getUserEvents = async (userId) => {
 
 let addAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
-  if (!event) throw "Event doesnt exist";
+  if (!event) {
+    throw "Event doesnt exist";
+  }
 
   let user = await UserModel.findById(userId);
-  if (!user) throw "User doesnt exist";
+  if (!user) {
+    throw "User doesnt exist";
+  }
 
   event.attendantsList.push(userId);
 

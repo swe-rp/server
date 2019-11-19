@@ -23,7 +23,6 @@ describe("non function requirements", () => {
         useFindAndModify: false
       });
     } catch (e) {
-      console.log(e);
       process.exit();
     }
   });

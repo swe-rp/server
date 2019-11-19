@@ -21,7 +21,6 @@ describe("user", () => {
         useFindAndModify: false
       });
     } catch (e) {
-      console.log(e);
       process.exit();
     }
   });

@@ -29,7 +29,7 @@ let userLogin = async (profile, registrationToken) => {
     name: profile.displayName,
     email: profile.emails[0].value,
     facebookId: profile.id,
-    registrationToken: registrationToken
+    registrationToken
   });
 
   await newUser.save();

@@ -49,8 +49,6 @@ describe("events", () => {
   describe("updateEvent", () => {
     test("Update an event", () => {
       let expectedEvent = TestData.eventArray[0];
-
-
     });
 
     test("Update incomplete event", () => {});
@@ -62,9 +60,7 @@ describe("events", () => {
     test("Get available events for unexisting user", () => {});
   });
 
-  describe("getUserEvents", () => {
-
-  });
+  describe("getUserEvents", () => {});
 
   describe("addAttendant", () => {});
 

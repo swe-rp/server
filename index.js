@@ -8,13 +8,13 @@ const utils = require("./common/utils");
 
 // DB init
 mongoose
-  .connect(process.env.MONGODB_CONNSTR, {
+  .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false
   })
-  .then((res) => utils.log("Connection to CosmosDB successful."))
-  .catch((err) => utils.log("Connection to CosmosDB failed.", err));
+  .then((res) => utils.log("Connection to MongoDB successful."))
+  .catch((err) => utils.log("Connection to MongoDB failed.", err));
 
 // Firebase Admin init
 admin.initializeApp({

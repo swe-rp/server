@@ -17,7 +17,7 @@ We preload our dotenv so we can use it everywhere.
 ```shell
 FB_CLIENT_ID=
 FB_CLIENT_SECRET=
-MONGODB_CONNSTR=
+MONGO_URL=
 SSL_KEY_PATH=
 SSL_CERT_PATH=
 JWT_SECRET=

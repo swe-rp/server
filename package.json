@@ -4,7 +4,7 @@
   "description": "321 backend",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --detectOpenHandles --coverage --forceExit --maxWorkers=10",
     "serve": "sudo node -r dotenv/config index.js",
     "prod": "sudo node -r dotenv/config index.js >> output.log &",
     "lint": "prettier --write '**/*.js'"

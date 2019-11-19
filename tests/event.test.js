@@ -1,6 +1,7 @@
 const event = require("../common/event.js");
 const mongoose = require("mongoose");
 const TestData = require("./test_data");
+const EventModel = require("../models/event");
 
 test("mock", () => {
   expect(3).toBe(3);
@@ -40,20 +41,37 @@ describe("events", () => {
     });
 
     test("Try to create new event missing field", async () => {
-      let testEvent = TestData.incompleteEvent;
+      let testEvent = Object.assign({}, TestData.incompleteEvent);
 
       expect(event.createEvent(testEvent)).rejects.toEqual("Wrong params");
     });
   });
 
   describe("updateEvent", () => {
-    test("Update an event", () => {
-      let expectedEvent = TestData.eventArray[0];
+    test("Update an event", async () => {
+      let testEvent = new EventModel(TestData.completeEvent);
+      await testEvent.save();
+      testEvent.description = "new desc";
 
+      let expectedEvent = Object.assign({}, TestData.completeEvent);
+      expectedEvent.startTime = new Date(expectedEvent.startTime);
+      expectedEvent.endTime = new Date(expectedEvent.endTime);
+      expectedEvent.description = "new desc";
 
+      let retVal = await event.updateEvent(testEvent._id, testEvent);
+
+      expect(retVal.data.toJSON()).toMatchObject(expectedEvent);
     });
 
-    test("Update incomplete event", () => {});
+    test("Update incomplete event", async () => {
+      let testEvent = Object.assign({}, TestData.incompleteEvent);
+
+      expect(event.updateEvent(testEvent._id, testEvent)).rejects.toEqual("Wrong params");
+    });
+
+    test("Update unexistent event", async () => {
+      let retVal = a
+    });
   });
 
   describe("getAvailableEvents", () => {

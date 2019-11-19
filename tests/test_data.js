@@ -21,6 +21,12 @@ let incompleteEvent = {
   tagList: ["fun", "social"]
 };
 
+let user = {
+  name: "Sam",
+  facebookId: "1",
+  registrationToken: "randomToken"
+};
+
 let eventArray = [
   {
     _id: mongoose.Types.ObjectId(),
@@ -251,8 +257,9 @@ let userArray = [
 module.exports = {
   completeEvent: completeEvent,
   incompleteEvent: incompleteEvent,
-  eventArray: eventArray,
-  userArray: userArray
+  // eventArray: eventArray,
+  // userArray: userArray
+  user: user
   // "sessionRequest": sessionRequest,
   // "sessionOracle": sessionOracle,
   // "userControllerReq": userControllerReq,

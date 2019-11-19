@@ -1,4 +1,5 @@
 const EventModel = require("../models/event");
+const UserModel = require("../models/user");
 
 const EVENT_MULTIPLIER = 5;
 
@@ -121,6 +122,10 @@ let mapSortEventByScore = (attendedEvents, events) => {
 };
 
 let getAvailableEvents = async (userId) => {
+  let user = await UserModel.findById(userId);
+  if( !user )
+    throw "User doesnt exist";
+
   let today = new Date();
   //   let tomorrow = new Date();
 
@@ -145,6 +150,10 @@ let getAvailableEvents = async (userId) => {
 };
 
 let getUserEvents = async (userId) => {
+  let user = await UserModel.findById(userId);
+  if( !user )
+    throw "User doesnt exist";
+
   let today = new Date();
   //   let tomorrow = new Date();
 
@@ -165,6 +174,12 @@ let getUserEvents = async (userId) => {
 
 let addAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
+  if ( !event )
+    throw "Event doesnt exist";
+
+  let user = await UserModel.findById(userId);
+    if( !user )
+      throw "User doesnt exist";
 
   event.attendantsList.push(userId);
 
@@ -172,10 +187,10 @@ let addAttendant = async (id, userId) => {
     attendantsList: event.attendantsList
   };
 
-  let updated = await EventModel.findByIdAndUpdate(id, update);
+  let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
   return {
-    id: updated.id,
+    id: updated._id,
     data: updated
   };
 };

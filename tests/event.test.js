@@ -2,6 +2,7 @@ const event = require("../common/event.js");
 const mongoose = require("mongoose");
 const TestData = require("./test_data");
 const EventModel = require("../models/event");
+const UserModel = require("../models/user");
 
 test("mock", () => {
   expect(3).toBe(3);
@@ -70,19 +71,81 @@ describe("events", () => {
     });
 
     test("Update unexistent event", async () => {
-      
+      let testEvent = Object.assign({}, TestData.completeEvent);
+
+      expect(event.updateEvent(mongoose.Types.ObjectId(), testEvent)).rejects.toEqual("Event does not exist");
     });
   });
 
   describe("getAvailableEvents", () => {
-    test("Get available events", () => {});
+    test("Get available events", async () => {
+      let testUser = new UserModel(TestData.user);
+      await testUser.save();
 
-    test("Get available events for unexisting user", () => {});
+      let testEvent = new EventModel(TestData.completeEvent);
+      let tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      testEvent.startTime = tomorrow;
+      await testEvent.save();
+
+      let retVal = await event.getAvailableEvents(testUser._id);
+
+      expect(retVal.data).toHaveLength(1);
+      // expect(retVal.data[0].toJSON()).toMatchObject(TestData.completeEvent);
+    });
+
+    test("Get available events for unexisting user", async () => {
+      expect(event.getAvailableEvents(mongoose.Types.ObjectId())).rejects.toEqual("User doesnt exist");
+    });
   });
 
-  describe("getUserEvents", () => {});
+  describe("getUserEvents", () => {
+    test("Get user events", async () => {
+      let testUser = new UserModel(TestData.user);
+      await testUser.save();
 
-  describe("addAttendant", () => {});
+      let testEvent = new EventModel(TestData.completeEvent);
+      testEvent.attendantsList.push(testUser._id);
+      let tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      testEvent.startTime = tomorrow;
+      await testEvent.save();
+
+      let retVal = await event.getUserEvents(testUser._id);
+
+      expect(retVal.data).toHaveLength(1);
+      // expect(retVal.data[0].toJSON()).toMatchObject(TestData.completeEvent);
+    });
+
+    test("Get user events for unexisting user", async () => {
+      expect(event.getUserEvents(mongoose.Types.ObjectId())).rejects.toEqual("User doesnt exist");
+    });
+  });
+
+  describe("addAttendant", () => {
+    test("Add attendant", async () => {
+      let testUser = new UserModel(TestData.user);
+      await testUser.save();
+
+      let testEvent = new EventModel(TestData.completeEvent);
+      await testEvent.save();
+
+      let retVal = await event.addAttendant(testEvent._id, testUser._id);
+
+      expect(retVal.data.toJSON().attendantsList).toContain(testUser._id);
+    });
+
+    test("Add attendant for unexisting event", async () => {
+      expect(event.addAttendant(mongoose.Types.ObjectId(), mongoose.Types.ObjectId())).rejects.toEqual("Event doesnt exist");
+    });
+
+    test("Add attendant for unexisting user", async () => {
+      let testEvent = new EventModel(TestData.completeEvent);
+      await testEvent.save();
+
+      expect(event.addAttendant(testEvent._id, mongoose.Types.ObjectId())).rejects.toEqual("User doesnt exist");
+    });
+  });
 
   describe("removeAttendant", () => {});
 

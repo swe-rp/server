@@ -1,40 +1,53 @@
+const GLOBAL_USER_ID = mongoose.Types.ObjectId();
+
 let completeEvent = {
-    name: "event",
-    description: "event description",
-    host: "123456",
-    attendantsList: ["123456"],
-    startTime: "12323232",
-    endTime: "12323232",
-    tagList: ["fun", "social"]
+  name: "event",
+  description: "event description",
+  host: GLOBAL_USER_ID,
+  attendantsList: [GLOBAL_USER_ID],
+  startTime: "12323232",
+  endTime: "12323232",
+  tagList: ["fun", "social"]
 };
 
 let incompleteEvent = {
-    name: "event",
-    description: "event description",
-    host: "123456",
-    attendantsList: ["123456"],
-    startTime: "12323232",
-    tagList: ["fun", "social"]
+  name: "event",
+  description: "event description",
+  host: GLOBAL_USER_ID,
+  attendantsList: [GLOBAL_USER_ID],
+  startTime: "12323232",
+  tagList: ["fun", "social"]
 };
 
 let eventArray = [
-    {
-        id: "e1",
-        name: "event1",
-        description: "event description",
-        host: "123456",
-        attendantsList: ["123456"],
-        startTime: "12323232",
-        endTime: "12323232",
-        tagList: ["fun", "social"]
-    },
-]
+  {
+    name: "event1",
+    description: "event description",
+    host: GLOBAL_USER_ID,
+    attendantsList: [GLOBAL_USER_ID],
+    startTime: "12323232",
+    endTime: "12323232",
+    tagList: ["fun", "social"]
+  }
+];
 
 let userArray = [
-    {
-        id: "u1"
-    }
-]
+  {
+    name: "Sam",
+    facebookId: "1",
+    registrationToken: "randomToken"
+  },
+  {
+    name: "Dry",
+    facebookId: "2",
+    registrationToken: "anotherRandomToken"
+  },
+  {
+    name: "Test",
+    facebookId: "3",
+    registrationToken: "yetAnotherToken"
+  }
+];
 
 // let userArray = [
 //     {
@@ -134,7 +147,7 @@ let userArray = [
 // let sessionRequest = {
 // 	"travellerID": "Traveller",
 // 	"watcherIDs": ["MatchingCompanion", "FemaleUser", "MaleUser"],
-// 	"travellerDest": new firebase.firestore.GeoPoint(0, 0), 
+// 	"travellerDest": new firebase.firestore.GeoPoint(0, 0),
 // 	"travellerSource": new firebase.firestore.GeoPoint(0, 0),
 // 	"travellerLocation": new firebase.firestore.GeoPoint(0, 0),
 // 	"lastUpdated": 0
@@ -157,7 +170,6 @@ let userArray = [
 // 	}
 // };
 
-
 // let userControllerReq = {
 // 	"userName": "Test User",
 // 	"ratingHistory": [1, 3, 2, 4, 7, 5, 0, 5],
@@ -172,7 +184,7 @@ let userArray = [
 // 	"preferences.ageMax": 100,
 // 	"preferences.proximity": 20,
 // 	"deviceToken": "TestUserDeviceToken"
-// }; 
+// };
 
 // let locationTestUser = {
 //     "userName": "Location Test User",
@@ -233,20 +245,19 @@ let userArray = [
 //     coordinates: new firebase.firestore.GeoPoint(37.79, -122.56)
 // };
 
-
 module.exports = {
-    "completeEvent": completeEvent,
-    "incompleteEvent": incompleteEvent,
-    "eventArray": eventArray,
-    "userArray": userArray
-	// "sessionRequest": sessionRequest,
-	// "sessionOracle": sessionOracle,
-	// "userControllerReq": userControllerReq,
-	// "locationTestUser": locationTestUser,
-	// "locOracle": locOracle,
-	// "testLocDoc": testLocDoc,
-	// "locationTestNearbyUser": locationTestNearbyUser,
-    // "testLocDocOutsideRange": testLocDocOutsideRange,
-	// "locationTestOutsideRangeUser": locationTestOutsideRangeUser,
-	// "recommendationOracle": recommendationOracle
-}
+  completeEvent: completeEvent,
+  incompleteEvent: incompleteEvent,
+  eventArray: eventArray,
+  userArray: userArray
+  // "sessionRequest": sessionRequest,
+  // "sessionOracle": sessionOracle,
+  // "userControllerReq": userControllerReq,
+  // "locationTestUser": locationTestUser,
+  // "locOracle": locOracle,
+  // "testLocDoc": testLocDoc,
+  // "locationTestNearbyUser": locationTestNearbyUser,
+  // "testLocDocOutsideRange": testLocDocOutsideRange,
+  // "locationTestOutsideRangeUser": locationTestOutsideRangeUser,
+  // "recommendationOracle": recommendationOracle
+};

@@ -17,6 +17,25 @@ let incompleteEvent = {
     tagList: ["fun", "social"]
 };
 
+let eventArray = [
+    {
+        id: "e1",
+        name: "event1",
+        description: "event description",
+        host: "123456",
+        attendantsList: ["123456"],
+        startTime: "12323232",
+        endTime: "12323232",
+        tagList: ["fun", "social"]
+    },
+]
+
+let userArray = [
+    {
+        id: "u1"
+    }
+]
+
 // let userArray = [
 //     {
 //         "userName": "Traveller",
@@ -218,6 +237,8 @@ let incompleteEvent = {
 module.exports = {
     "completeEvent": completeEvent,
     "incompleteEvent": incompleteEvent,
+    "eventArray": eventArray,
+    "userArray": userArray
 	// "sessionRequest": sessionRequest,
 	// "sessionOracle": sessionOracle,
 	// "userControllerReq": userControllerReq,

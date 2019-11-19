@@ -15,6 +15,7 @@
 //     const db = require('./test_db');
 //     return db;
 // });
+const TestData = require('./test_data');
 
 const request = require('supertest');
 const app = require('../index.js');
@@ -22,68 +23,83 @@ jest.setTimeout(30000);
 
 describe('routes/event.js tests', function () {
     test('create event and returns successfully', function (done){
-        let a = {
-            name: "event",
-            description: "event description",
-            host: "123456",
-            attendantsList: ["123456"],
-            startTime: "12323232",
-            endTime: "12323232",
-            tagList: ["fun", "social"]
-        };
-
         request(app)
             .post('/events/api')
-            .send(a)
+            .send(TestData.completeEvent)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
-            .expect(200, done);
+            .expect(200);
     });
 
     test('throw error when creating event with missing information', function (done){
-        let a = {
-            name: "event",
-            description: "event description",
-            host: "123456",
-            attendantsList: ["123456"],
-            startTime: "12323232",
-            tagList: ["fun", "social"]
-        };
-
         request(app)
-            .get('/events/api')
-            .send(a)
+            .post('/events/api')
+            .send(TestData.incompleteEvent)
             .set('Accept', 'application/json')
             .expect('Content-Type', /json/)
             .expect(500);
     });
 
     test('add user to existing event and return successfully', function (done){
-        
+        request(app)
+            .put(`/events/api/add/${TestData.eventArray[0].id}/${TestData.eventArray[0].id}`)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200);
     });
 
     test('throw error when adding user to unexisting event', function (done){
-
+        request(app)
+            .put(`/events/api/add/missing/${TestData.eventArray[0].id}`)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(500);
     });
 
     test('throw error when adding unexisting user', function (done){
-
+        request(app)
+            .put(`/events/api/add/${TestData.eventArray[0].id}/missing`)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(500);
     });
 
     test('remove user from existing event and return successfully', function (done){
-
+        request(app)
+            .put(`/events/api/remove/${TestData.eventArray[0].id}/${TestData.eventArray[0].id}`)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200);
     });
 
     test('throw error when removing user from unexisting event', function (done){
-
+        request(app)
+            .put(`/events/api/remove/missing/${TestData.eventArray[0].id}`)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(500);
     });
 
     test('update event and returns successfully', function (done){
-
+        let updated = Object.assign({}, TestData.eventArray[0]);
+        updated.description = "new description";
+        request(app)
+            .put(`/events/api/${TestData.eventArray[0].id}`)
+            .send(updated)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(200);
     });
 
     test('throw error when updating event with missing information', function (done){
-
+        let updated = Object.assign({}, TestData.eventArray[0]);
+        updated.description = null;
+        request(app)
+            .put(`/events/api/${TestData.eventArray[0].id}`)
+            .send(updated)
+            .set('Accept', 'application/json')
+            .expect('Content-Type', /json/)
+            .expect(500);
     });
 
     test('get available events and return successfully', function (done){

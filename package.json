@@ -4,7 +4,7 @@
   "description": "321 backend",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "serve": "sudo node -r dotenv/config index.js",
     "prod": "sudo node -r dotenv/config index.js >> output.log &",
     "lint": "prettier --write '**/*.js'"
@@ -28,6 +28,8 @@
     "arrowParens": "always"
   },
   "devDependencies": {
+    "@shelf/jest-mongodb": "^1.1.3",
+    "jest": "^24.9.0",
     "prettier": "1.18.2"
   }
 }

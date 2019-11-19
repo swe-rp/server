@@ -197,6 +197,14 @@ let addAttendant = async (id, userId) => {
 
 let removeAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
+  if ( !event )
+    throw "Event doesnt exist";
+
+  let user = await UserModel.findById(userId);
+    if( !user )
+      throw "User doesnt exist";
+
+
 
   let newList = event.attendantsList.filter((e) => {
     // This is required since we have different escape characters
@@ -207,7 +215,7 @@ let removeAttendant = async (id, userId) => {
     attendantsList: newList
   };
 
-  let updated = await EventModel.findByIdAndUpdate(id, update);
+  let updated = await EventModel.findByIdAndUpdate(id, update, {new : true});
 
   return {
     id: updated.id,
@@ -217,6 +225,9 @@ let removeAttendant = async (id, userId) => {
 
 let suggestEvent = async (userId) => {
   let events = getAvailableEvents(userId).data;
+
+  if( !events )
+    throw "No events";
 
   return {
     data: events[0]

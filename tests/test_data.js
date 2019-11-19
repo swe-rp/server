@@ -23,6 +23,7 @@ let incompleteEvent = {
 
 let eventArray = [
   {
+    _id: mongoose.Types.ObjectId(),
     name: "event1",
     description: "event description",
     host: GLOBAL_USER_ID,

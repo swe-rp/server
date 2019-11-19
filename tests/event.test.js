@@ -80,9 +80,7 @@ describe("events", () => {
     test("Get available events for unexisting user", () => {});
   });
 
-  describe("getUserEvents", () => {
-
-  });
+  describe("getUserEvents", () => {});
 
   describe("addAttendant", () => {});
 

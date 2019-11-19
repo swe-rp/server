@@ -3,8 +3,7 @@ const EventModel = require("../models/event");
 const EVENT_MULTIPLIER = 5;
 
 let createEvent = async (body) => {
-  if( !body.endTime )
-    throw "Wrong params";
+  if (!body.endTime) throw "Wrong params";
 
   let newEvent = new EventModel({
     name: body.name,

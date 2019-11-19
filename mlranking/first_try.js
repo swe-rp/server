@@ -4,40 +4,44 @@ import trainingData from "./trainingData.json";
 
 const numberOfTags = 3;
 
-function getPredictions(eventList, userTag){
+function getPredictions(eventList, userTag) {
   let mappedData = mapData();
   const model = buildModel();
 }
 
 //mapData
-function mapData(){
+function mapData() {}
 
-}
-
-function buildModel(){
+function buildModel() {
   const model = tf.sequential();
-  
-  model.add(tf.layers.dense({
-    inputShape: [2*numberOfTags],
-    activation: "sigmoid",
-    units: 5,
-  }));
 
-  model.add(tf.layers.dense({
-    inputShape: [5],
-    activation: "sigmoid",
-    units: 3,
-  }));
+  model.add(
+    tf.layers.dense({
+      inputShape: [2 * numberOfTags],
+      activation: "sigmoid",
+      units: 5
+    })
+  );
 
-  model.add(tf.layers.dense({
-    inputShape: [3],
-    activation: "sigmoid",
-    units: 1,
-  }));
+  model.add(
+    tf.layers.dense({
+      inputShape: [5],
+      activation: "sigmoid",
+      units: 3
+    })
+  );
+
+  model.add(
+    tf.layers.dense({
+      inputShape: [3],
+      activation: "sigmoid",
+      units: 1
+    })
+  );
 
   model.compile({
     loss: "meanSquaredError",
-    optimizer: tf.train.adam(.06),
+    optimizer: tf.train.adam(0.06)
   });
 
   return model;
@@ -54,9 +58,8 @@ function buildModel(){
 // ]))
 
 // train/fit our network
-const startTime = Date.now()
-model.fit(trainingData, outputData, {epochs: 100})
-  .then((history) => {
-    // console.log(history)
-    model.predict(testingData).print()
-  })
+const startTime = Date.now();
+model.fit(trainingData, outputData, { epochs: 100 }).then((history) => {
+  // console.log(history)
+  model.predict(testingData).print();
+});

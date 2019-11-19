@@ -25,4 +25,4 @@ JWT_SECRET=
 
 ## Firebase Cloud Messaging
 
-We need a `ServiceAccountKey.json` at our top level in order to connect with Firebase for our notifications.
+We need a `ServiceAccountKey.json` in `firebase/` in order to connect with Firebase for our notifications.

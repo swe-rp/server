@@ -22,7 +22,7 @@ router.post("/api", async (req, res) => {
   } catch (err) {
     utils.error(err);
     res
-      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .status(500)
       .send({ success: false, message: err.message });
     utils.log("Event creation failed.");
   }
@@ -40,7 +40,7 @@ router.put("/api/add/:id/:userId", async (req, res) => {
   } catch (err) {
     utils.error(err);
     res
-      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .status(500)
       .send({ success: false, message: err.message });
   }
 });
@@ -56,7 +56,7 @@ router.put("/api/remove/:id/:userId", async (req, res) => {
   } catch (err) {
     utils.error(err);
     res
-      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .status(500)
       .send({ success: false, message: err.message });
   }
 });
@@ -69,7 +69,7 @@ router.put("/api/:id", async (req, res) => {
   } catch (err) {
     utils.error(err);
     res
-      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .status(500)
       .send({ success: false, message: err.message });
   }
 });
@@ -81,7 +81,7 @@ router.get("/api/avail/:userId", async (req, res) => {
   } catch (err) {
     utils.error(err);
     res
-      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .status(500)
       .send({ success: false, message: err.message });
   }
 });
@@ -94,7 +94,7 @@ router.get("/api/in/:userId", async (req, res) => {
   } catch (err) {
     utils.error(err);
     res
-      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .status(500)
       .send({ success: false, message: err.message });
   }
 });
@@ -107,7 +107,7 @@ router.get("/api/suggest/:userId", async (req, res) => {
   } catch (err) {
     utils.error(err);
     res
-      .status(err.code >= 100 && err.code < 600 ? err.code : 500)
+      .status(500)
       .send({ success: false, message: err.message });
   }
 });

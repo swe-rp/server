@@ -26,7 +26,11 @@ jest.mock("firebase-admin", () => {
     messaging: jest.fn().mockReturnValue({
       send: (e) => {
         if (e.topic) {
-          return Promise.resolve(e.topic);
+          if (e.topic === "fail") {
+            return Promise.reject("fail");
+          } else {
+            return Promise.resolve(e.topic);
+          }
         } else {
           return Promise.reject("no topic");
         }
@@ -49,6 +53,17 @@ jest.mock("../common/utils.js", () => {
     error: (e) => {}
   };
 });
+
+// Sanitize our events to a string
+let createExpectedReturn = (event) => {
+  let expectedEvent = Object.assign({}, event);
+  expectedEvent.startTime = new Date(event.startTime).toISOString();
+  expectedEvent.endTime = new Date(event.endTime).toISOString();
+  expectedEvent.host = event.host.toString();
+  expectedEvent.attendantsList = event.attendantsList.map((e) => e.toString());
+  delete expectedEvent._id;
+  return expectedEvent;
+};
 
 describe("routes/event.js tests", () => {
   let userId;
@@ -80,7 +95,10 @@ describe("routes/event.js tests", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(200)
-      .end(() => {
+      .end((err, res) => {
+        expect(res.body.data).toMatchObject(
+          createExpectedReturn(TestData.completeEvent)
+        );
         done();
       });
   });
@@ -92,18 +110,21 @@ describe("routes/event.js tests", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(500)
-      .end(() => {
+      .end((err, res) => {
         done();
       });
   });
 
   test("add user to existing event and return successfully", (done) => {
+    let expectedReturn = createExpectedReturn(TestData.completeEvent);
+    expectedReturn.attendantsList.push(userId.toString());
     request(app)
       .put(`/events/api/add/${eventId}/${userId}`)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(200)
-      .end(() => {
+      .end((err, res) => {
+        expect(res.body.data).toMatchObject(expectedReturn);
         done();
       });
   });
@@ -114,7 +135,7 @@ describe("routes/event.js tests", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(500)
-      .end(() => {
+      .end((err, res) => {
         done();
       });
   });
@@ -125,7 +146,7 @@ describe("routes/event.js tests", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(500)
-      .end(() => {
+      .end((err, res) => {
         done();
       });
   });
@@ -136,7 +157,10 @@ describe("routes/event.js tests", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(200)
-      .end(() => {
+      .end((err, res) => {
+        expect(res.body.data).toMatchObject(
+          createExpectedReturn(TestData.completeEvent)
+        );
         done();
       });
   });
@@ -147,7 +171,7 @@ describe("routes/event.js tests", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(500)
-      .end(() => {
+      .end((err, res) => {
         done();
       });
   });
@@ -155,13 +179,15 @@ describe("routes/event.js tests", () => {
   test("update event and returns successfully", (done) => {
     let updated = Object.assign({}, TestData.completeEvent);
     updated.description = "new description";
+    let expectedReturn = createExpectedReturn(updated);
     request(app)
       .put(`/events/api/${eventId}`)
       .send(updated)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(200)
-      .end(() => {
+      .end((err, res) => {
+        expect(res.body.data).toMatchObject(expectedReturn);
         done();
       });
   });
@@ -175,44 +201,202 @@ describe("routes/event.js tests", () => {
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .expect(500)
+      .end((err, res) => {
+        done();
+      });
+  });
+
+  test("get available events and return successfully", async (done) => {
+    let testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["fun"];
+    let tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    testEvent.startTime = tomorrow;
+    await testEvent.save();
+
+    testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["sports"];
+    let yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    testEvent.startTime = yesterday;
+    testEvent.attendantsList.push(userId);
+    await testEvent.save();
+
+    testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["sports"];
+    testEvent.startTime = yesterday;
+    testEvent.attendantsList.push(userId);
+    await testEvent.save();
+
+    testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["toys"];
+    testEvent.startTime = tomorrow;
+    testEvent.attendantsList.push(userId);
+    await testEvent.save();
+
+    testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["sports"];
+    testEvent.startTime = tomorrow;
+    await testEvent.save();
+    let expected = testEvent._id;
+
+    testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["fun"];
+    testEvent.startTime = tomorrow;
+    await testEvent.save();
+
+    testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["toys"];
+    testEvent.startTime = tomorrow;
+    await testEvent.save();
+
+    request(app)
+      .get(`/events/api/avail/${userId}`)
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .end((err, res) => {
+        expect(res.body.data).toHaveLength(4);
+        done();
+      });
+  });
+
+  test("throw error when getting available events for unexisting user", (done) => {
+    request(app)
+      .get(`/events/api/avail/missing`)
+      .expect("Content-Type", /json/)
+      .expect(500)
       .end(() => {
         done();
       });
   });
 
-  test("get available events and return successfully", (done) => {
-    done();
+  test("get events user is in and return successfully", async (done) => {
+    // User is not in this event
+    let testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["fun"];
+    let tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    testEvent.startTime = tomorrow;
+    await testEvent.save();
+
+    testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["sports"];
+    let yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    testEvent.startTime = yesterday;
+    testEvent.attendantsList.push(userId);
+    await testEvent.save();
+
+    testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["sports"];
+    testEvent.startTime = yesterday;
+    testEvent.attendantsList.push(userId);
+    await testEvent.save();
+
+    // Should only have one, because this is tomorrow, and user is in
+    testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["toys"];
+    testEvent.startTime = tomorrow;
+    testEvent.attendantsList.push(userId);
+    await testEvent.save();
+
+    request(app)
+      .get(`/events/api/in/${userId}`)
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .end((err, res) => {
+        expect(res.body.data).toHaveLength(1);
+        done();
+      });
   });
 
-  //   test("throw error when getting available events for unexisting user", function(done) {});
+  test("throw error when getting events user is in for unexisting user", (done) => {
+    request(app)
+      .get(`/events/api/in/missing`)
+      .expect("Content-Type", /json/)
+      .expect(500)
+      .end((err, res) => {
+        done();
+      });
+  });
 
-  //   test("get events user is in and return successfully", function(done) {});
+  test("suggest event and return successfully", async (done) => {
+    // User is not in this event
+    let testEvent = new EventModel(TestData.completeEvent);
+    testEvent.tagList = ["fun"];
+    let tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    testEvent.startTime = tomorrow;
+    await testEvent.save();
+    request(app)
+      .get(`/events/api/suggest/${userId}`)
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .end((err, res) => {
+        expect(res.body.data).toMatchObject(
+          createExpectedReturn(testEvent.toJSON())
+        );
+        done();
+      });
+  });
 
-  //   test("throw error when getting events user is in for unexisting user", function(done) {});
+  test("throw error when suggesting event for unexisting user", (done) => {
+    request(app)
+      .get(`/events/api/suggest/missing`)
+      .expect("Content-Type", /json/)
+      .expect(500)
+      .end((err, res) => {
+        done();
+      });
+  });
 
-  //   test("suggest event and return successfully", function(done) {});
+  test("throw error when no there are no events to suggest", (done) => {
+    request(app)
+      .get(`/events/api/suggest/${userId}`)
+      .expect("Content-Type", /json/)
+      .expect(500)
+      .end((err, res) => {
+        done();
+      });
+  });
 
-  //   test("throw error when suggesting event for unexisting user", function(done) {});
+  test("create event endpoint", (done) => {
+    request(app)
+      .get(`/events/create/${userId}`)
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .end((err, res) => {
+        done();
+      });
+  });
 
-  //   test("throw error when no there are no events to suggest", function(done) {});
+  test("create event endpoint, user doesn't exist", (done) => {
+    request(app)
+      .get(`/events/create/missing`)
+      .expect("Content-Type", /json/)
+      .expect(500)
+      .end((err, res) => {
+        done();
+      });
+  });
 
-  // test('get recommendations and returns successfully', function (done) {
-  //     request(app)
-  //         .get('/recommendations/testUser')
-  //         .set('Accept', 'application/json')
-  //         .expect('Content-Type', /json/)
-  //         .expect(200, done);
-  // });
+  test("notify test", (done) => {
+    request(app)
+      .get(`/events/notify/topic`)
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .end((err, res) => {
+        done();
+      });
+  });
 
-  // test('throws an error when attempting to get recommendations for non-existent user', function (done) {
-  //     request(app)
-  //         .get('/recommendations/idisnonexisting')
-  //         .set('Accept', 'application/json')
-  //         .expect('Content-Type', /json/)
-  //         .expect(500)
-  //         .end((err) => {
-  //             if (err) return done(err);
-  //             done();
-  //         });
-  // });
+  test("notify test, failure", (done) => {
+    request(app)
+      .get(`/events/notify/fail`)
+      .expect("Content-Type", /json/)
+      .expect(500)
+      .end((err, res) => {
+        done();
+      });
+  });
 });

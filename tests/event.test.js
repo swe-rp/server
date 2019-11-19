@@ -70,7 +70,7 @@ describe("events", () => {
     });
 
     test("Update unexistent event", async () => {
-      let retVal = a
+      
     });
   });
 

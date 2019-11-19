@@ -43,6 +43,9 @@ let updateEvent = async (id, body) => {
 
   let updated = await EventModel.findByIdAndUpdate(id, update);
 
+  if( !updated )
+    throw "Event does not exist";
+
   return {
     id: updated._id,
     data: updated

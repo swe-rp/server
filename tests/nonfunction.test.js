@@ -5,14 +5,6 @@ const EventModel = require("../models/event");
 const UserModel = require("../models/user");
 const {performance} = require('perf_hooks');
 
-test("mock", () => {
-  expect(3).toBe(3);
-});
-
-test("another mock", () => {
-  expect(3).toBe(3);
-});
-
 function getRandomInt(min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);

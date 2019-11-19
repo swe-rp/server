@@ -4,14 +4,6 @@ const TestData = require("./test_data");
 const EventModel = require("../models/event");
 const UserModel = require("../models/user");
 
-test("mock", () => {
-  expect(3).toBe(3);
-});
-
-test("another mock", () => {
-  expect(3).toBe(3);
-});
-
 describe("events", () => {
   let db;
 

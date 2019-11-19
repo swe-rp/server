@@ -2,6 +2,15 @@ const user = require("../common/user.js");
 const UserModel = require("../models/user.js");
 const testData = require("./test_data.js");
 const mongoose = require("mongoose");
+const utils = require("../common/utils.js");
+
+// Supress the logging
+jest.mock("../common/utils.js", () => {
+  return {
+    log: (e) => {},
+    error: (e) => {}
+  };
+});
 
 describe("user", () => {
   beforeAll(async () => {
@@ -19,7 +28,7 @@ describe("user", () => {
 
   describe("doesUserExist", () => {
     test("User exists", async () => {
-      let mockUser = new UserModel(testData.userArray[0]);
+      let mockUser = new UserModel(testData.user);
       let userData = await mockUser.save();
       let userExistence = await user.doesUserExist(userData.toJSON()._id);
       expect(userExistence).toBe(true);

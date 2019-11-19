@@ -224,9 +224,9 @@ let removeAttendant = async (id, userId) => {
 };
 
 let suggestEvent = async (userId) => {
-  let events = getAvailableEvents(userId).data;
+  let events = (await getAvailableEvents(userId)).data;
 
-  if( !events )
+  if( events.length == 0 )
     throw "No events";
 
   return {

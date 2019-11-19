@@ -12,6 +12,28 @@ let doesUserExist = async (userId) => {
   }
 };
 
+let userLogin = async (profile, registrationToken) => {
+  let existingUser = await User.findOne({ facebookId: profile.id });
+
+  if (existingUser) {
+    existingUser.registrationToken = registrationToken;
+    await User.findByIdAndUpdate(existingUser.id, existingUser);
+    return existingUser;
+  }
+
+  let newUser = new User({
+    name: profile.displayName,
+    email: profile.emails[0].value,
+    facebookId: profile.id,
+    registrationToken: registrationToken
+  });
+
+  await newUser.save();
+
+  return newUser;
+};
+
 module.exports = {
-  doesUserExist
+  doesUserExist,
+  userLogin
 };

@@ -9,28 +9,11 @@ passport.use(
     {
       clientID: process.env.FB_CLIENT_ID,
       clientSecret: process.env.FB_CLIENT_SECRET,
-      passReqToCallback: true
+      passReqToCallback: true // We need this for the registration token
     },
     async (req, accessToken, refreshToken, profile, done) => {
       try {
-        // We're in the account creation process
-        let existingUser = await User.findOne({ facebookId: profile.id });
-
-        if (existingUser) {
-          existingUser.registrationToken = req.header("registration_token");
-          await User.findByIdAndUpdate(existingUser.id, existingUser);
-          return done(null, existingUser);
-        }
-
-        let newUser = new User({
-          name: profile.displayName,
-          email: profile.emails[0].value,
-          facebookId: profile.id,
-          registrationToken: req.header("registration_token")
-        });
-
-        await newUser.save();
-        done(null, newUser);
+        done(null, profile);
       } catch (error) {
         utils.log(error);
         done(error, false, error.message);

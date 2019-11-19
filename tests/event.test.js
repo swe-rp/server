@@ -28,6 +28,10 @@ describe("events", () => {
     }
   });
 
+  beforeEach(async () => {
+    await mongoose.connection.db.dropDatabase();
+  });
+
   describe("createEvent", () => {
     test("Create a new event", async () => {
       let testEvent = Object.assign({}, TestData.completeEvent);

@@ -10,7 +10,7 @@ function getRandomInt(min, max) {
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
-jest.setTimeout(6000);
+jest.setTimeout(30000);
 
 describe("non function requirements", () => {
   let db;

@@ -136,7 +136,7 @@ describe("events", () => {
 
       let retVal = await event.addAttendant(testEvent._id, testUser._id);
 
-      expect(retVal.data.toJSON().attendantsList).toContain(testUser._id);
+      expect(retVal.data.toJSON().attendantsList).toContainEqual(testUser._id);
     });
 
     test("Add attendant for unexisting event", async () => {
@@ -162,7 +162,7 @@ describe("events", () => {
 
       let retVal = await event.removeAttendant(testEvent._id, testUser._id);
 
-      expect(retVal.data.toJSON().attendantsList).not.toContain(testUser._id);
+      expect(retVal.data.toJSON().attendantsList).not.toContainEqual(testUser._id);
     });
 
     test("Remove attendant for unexisting event", async () => {

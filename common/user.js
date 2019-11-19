@@ -13,15 +13,15 @@ let doesUserExist = async (userId) => {
 };
 
 let userLogin = async (profile, registrationToken) => {
-  let existingUser = await User.findOne({ facebookId: profile.id });
+  let existingUser = await UserModel.findOne({ facebookId: profile.id });
 
   if (existingUser) {
     existingUser.registrationToken = registrationToken;
-    await User.findByIdAndUpdate(existingUser.id, existingUser);
+    await UserModel.findByIdAndUpdate(existingUser.id, existingUser);
     return existingUser;
   }
 
-  let newUser = new User({
+  let newUser = new UserModel({
     name: profile.displayName,
     email: profile.emails[0].value,
     facebookId: profile.id,

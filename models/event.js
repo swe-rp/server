@@ -7,12 +7,13 @@ let eventSchema = new mongoose.Schema({
   // visibility: {type: Boolean, required: true},
   // host_list: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER} ],
   host: { type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER },
-  // guest_list: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER} ],
   attendantsList: [
     { type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER }
   ],
-  // location_x: {type: Number},
-  // location_y: {type: Number},
+  chatMessages: [
+    { type: mongoose.Schema.Types.ObjectId, ref: modelNames.MESSAGE }
+  ],
+  location: { type: String },
   startTime: { type: Date },
   endTime: { type: Date },
   tagList: [{ type: String }]

@@ -20,7 +20,6 @@ module.exports = (serverObject) => {
         timestamp: new Date(),
         message: data.message
       });
-
       chat.handleMessage(eventId, user._id, data.message);
     });
   });

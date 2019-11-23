@@ -13,6 +13,7 @@ app.use((req, res, next) => {
 // Route setup
 app.use("/users", require("../routes/users"));
 app.use("/events", require("../routes/events"));
+app.use("/chat", require("../routes/chat"));
 
 // Failure catch
 app.use((err, req, res, next) => {

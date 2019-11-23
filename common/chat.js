@@ -24,7 +24,7 @@ let getUser = async (userId) => {
 let writeMessage = async (event, userId, message) => {
   let user = getUser(userId);
 
-  let message = await MessageModel.create({
+  let messageObject = await MessageModel.create({
     username: user.name,
     user,
     message,
@@ -33,7 +33,7 @@ let writeMessage = async (event, userId, message) => {
 
   let updated = await EventModel.update(
     { _id: event._id },
-    { $push: { chatMessages: message } }
+    { $push: { chatMessages: messageObject } }
   );
 
   if (!updated) {

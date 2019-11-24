@@ -102,6 +102,7 @@ router.get("/create/:id", async (req, res, next) => {
   }
 });
 
+// TODO this should be removed
 router.get("/notify/:topic", async (req, res, next) => {
   try {
     utils.log(
@@ -115,130 +116,5 @@ router.get("/notify/:topic", async (req, res, next) => {
     next("Failure.");
   }
 });
-
-// router.get('/', async function (req, res) {
-//     try {
-//         var allEvents = await EventModel.find();
-//         res.status(200).json(allEvents);
-//     } catch (err) {
-//         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-//     }
-// })
-
-// // Edit event, changed public/private, changed time or location
-// router.put('/:userId', async function (req, res) {
-//     var userId = req.params.userId;
-//     try {
-//         var query = {
-//             $and: [{ _id: req.body._id }, { host_list: userId }]
-//         }
-//         var update = {
-//             name: req.body.name,
-//             description: req.body.description,
-//             visibility: req.body.visibility,
-//             // location_x: req.body.location_x,
-//             // location_y: req.body.location_y,
-//             // startTime: req.body.startTime,
-//             // endTime: req.body.endTime
-//         }
-//         await EventModel.findOneAndUpdate(query, update);
-//         var message = {
-//             data: {
-//                 content: `${update.name} event was updated`
-//             },
-//             topic: req.body._id
-//         }
-//         admin.messaging().send(message)
-//             .then((response) => {
-//                 // Response is a message ID string.
-//                 console.log(`Successfully sent message to topic: ${message.topic}`, response);
-//             })
-//             .catch((error) => {
-//                 console.log(`Error sending message to topic: ${message.topic}`, error);
-//             });
-//         res.status(200);
-//     } catch (err) {
-//         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-//     }
-// });
-
-// // // Delete event
-// router.delete('/:userId', async function (req, res) {
-//     var userId = req.params.userId;
-//     try {
-//         var query = {
-//             $and: [{ _id: req.body._id }, { host_list: userId }]
-//         }
-//         await EventModel.remove(query);
-//         //TODO notify on delete
-//         res.status(200);
-//     } catch (err) {
-//         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-//     }
-// });
-
-// // // Get suggested event for user
-// router.get('/suggest/:userId', async function (req, res) {
-//     var userId = req.params.userId;
-//     try {
-//         var user = await UserModel.findOne({ facebookId: userId }).populate(attended_events_list);
-//         var tagFreq = {};
-//         user.attended_events_list.forEach(event => {
-//             event.tagList.forEach(tag => {
-//                 if (!tagFreq[tag])
-//                     tagFreq[tag] = 0;
-//                 tagFreq[tag] = tagFreq[tag] + 1;
-//             });
-//         });
-//         var events = getVisibleEventsForUser();
-//         if (events.length == 0)
-//             res.status(409).send({ success: false, message: "no events for you" });
-//         var best_event = events[0];
-//         var best_score = getEventScoreForUser(tagFreq, user.friends_list, events[0])
-//         for (var i = 1; i < events.length; i++) {
-//             var score = getEventScoreForUser(tagFreq, user.friends_list, events[i]);
-//             if (score > best_score) {
-//                 best_score = score;
-//                 best_event = events[i];
-//             }
-//         }
-//         res.status(200).json(best_event);
-//     } catch (err) {
-//         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-//     }
-// });
-
-// // Get all events for user, used in browse events
-// router.get('/:userId', function (req, res) {
-//     var userId = req.params.userId;
-//     try {
-//         var events = getVisibleEventsForUser(userId);
-//         res.status(200).json(events);
-//     } catch (err) {
-//         res.status(err.code >= 100 && err.code < 600 ? err.code : 500).send({ success: false, message: err.message });
-//     }
-// });
-
-// async function getEventScoreForUser(tagFreq, friends_list, event) {
-//     var score = 0;
-//     friends_list.forEach(friend => {
-//         if (event.attendantsList.includes(friend))
-//             score += 30;
-//     });
-//     event.tagList.forEach(tag => {
-//         if (tagFreq[tag])
-//             score += 5 * tagFreq[tag];
-//     });
-//     return score;
-// }
-
-// async function getVisibleEventsForUser(userId) {
-//     var query = {
-//         $or: [{ visibility: true }, { guest_list: userId },
-//         { host_list: userId }
-//         ]
-//     }
-//     return await EventModel.find(query);
-// }
 
 module.exports = router;

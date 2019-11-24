@@ -1,5 +1,6 @@
 const EventModel = require("../models/event");
 const UserModel = require("../models/user");
+const notifications = require("./notification.js");
 
 const EVENT_MULTIPLIER = 5;
 
@@ -29,6 +30,10 @@ let createEvent = async (body) => {
   });
 
   await newEvent.save();
+  
+  let user = await UserModel.findById(body.host);
+
+  await notifications.subscribeToTopic(newEvent.id, user.registrationToken);
 
   return {
     id: newEvent.id,
@@ -196,6 +201,8 @@ let addAttendant = async (id, userId) => {
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
+  await notifications.subscribeToTopic(event.id, user.registrationToken);
+
   return {
     id: updated.id,
     data: updated
@@ -223,6 +230,8 @@ let removeAttendant = async (id, userId) => {
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
+
+  await notifications.unsubscribeFromTopic(event.id, user.registrationToken);
 
   return {
     id: updated.id,

@@ -11,7 +11,16 @@ let eventSchema = new mongoose.Schema({
     { type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER }
   ],
   chatMessages: [
-    { type: mongoose.Schema.Types.ObjectId, ref: modelNames.MESSAGE }
+    {
+      username: { type: String, required: true },
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: modelNames.USER,
+        required: true
+      },
+      message: { type: String, required: true },
+      timestamp: { type: Date, required: true }    
+    }
   ],
   location: { type: String },
   startTime: { type: Date },

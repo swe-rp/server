@@ -385,7 +385,7 @@ describe("routes/events.js tests", () => {
 
   test("create event endpoint", (done) => {
     request(app)
-      .get(`/events/create/${userId}`)
+      .get(`/events/create`)
       .expect("Content-Type", /json/)
       .end((err, res) => {
         expect(res.status).toBe(200);

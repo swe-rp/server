@@ -50,6 +50,8 @@
       message.appendChild(metadata);
 
       messageList.appendChild(message);
+
+      window.scrollTo(0, document.body.scrollHeight);
     }
 
     let initializeSocketIo = () => {
@@ -78,8 +80,6 @@
         });
         appendMessage(msgNode.value, new Date(), "{{ userId }}", "{{ username }}"); // TODO
         msgNode.value = "";
-        document.getElementById("text").blur();
-        document.getElementById("text").focus();
         return false;
       });
       document.getElementById("text").focus();

@@ -5,7 +5,7 @@ const chat = require("../common/chat.js");
 
 module.exports = (serverObject) => {
   let server = io(serverObject, {
-    path: "/chat"
+    path: "/chat/live"
   });
   server.on("connection", (socket) => {
     utils.log("IO connection.");

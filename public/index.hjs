@@ -58,12 +58,13 @@
     let processDate = (ISODate) => {
       let localeString = ISODate.toLocaleString();
       let parsed = localeString.split(", ");
+      let date = parsed[0].replace(/\//g, "-");
       let modifier = (parsed[1].includes("a.m.")) ? 0 : 12;
       let timeFrags = parsed[1].split(":");
       let hour = (parseInt(timeFrags[0]) + modifier).toString();
       hour = (hour.length == 1) ? "0" + hour : hour;
       let minute = timeFrags[1].toString();
-      return parsed[0] + "T" + hour + ":" + minute;
+      return date + "T" + hour + ":" + minute;
     };
 
     document.addEventListener("DOMContentLoaded", (e) => {

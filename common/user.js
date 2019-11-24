@@ -25,6 +25,7 @@ let userLogin = async (profile, registrationToken) => {
     existingUser.registrationToken = registrationToken;
     existingUser.accessToken = generateToken();
     await UserModel.findByIdAndUpdate(existingUser.id, existingUser);
+    utils.log(existingUser);
     return existingUser;
   }
 
@@ -37,6 +38,8 @@ let userLogin = async (profile, registrationToken) => {
   });
 
   await newUser.save();
+
+  utils.log(newUser);
 
   return newUser;
 };

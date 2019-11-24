@@ -1,0 +1,150 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script>
+    let getUserId = () => {
+      let urlArray = window.location.href.toString().split("/");
+
+      // If empty string, we go to next
+      if (urlArray[urlArray.length - 1]) {
+        return urlArray[urlArray.length - 1];
+      } else {
+        return urlArray[urlArray.length - 2];
+      }
+    };
+
+    let getElementValue = (elem) => {
+      return document.getElementById(elem).value;
+    };
+
+    let setMessage = (msg) => {
+      document.getElementById("msg").innerHTML = msg;
+    };
+
+    // This is jank but very temporary, I suppose
+    let getFormData = () => {
+      let form = {
+        name: getElementValue("name"),
+        description: getElementValue("description"),
+        host: getUserId(),
+        startTime: new Date(getElementValue("start-time")).toUTCString(),
+        endTime: new Date(getElementValue("end-time")).toUTCString(),
+        tags: getElementValue("tags")
+          .toLowerCase()
+          .replace(/ /g, "")
+          .split(",")
+      };
+
+      if (!form.name) {
+        setMessage("Name cannot be empty!");
+        return null;
+      } else if (!form.description) {
+        setMessage("Description cannot be empty!");
+        return null;
+      } else if (
+        form.startTime.startsWith("Invalid") ||
+        form.endTime.startsWith("Invalid") ||
+        new Date(form.startTime) > new Date(form.endTime)
+      ) {
+        setMessage("Invalid dates!");
+        return null;
+      } else {
+        setMessage("Form processed.");
+        return form;
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", (e) => {
+      let form = document.getElementById("event-form");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        let formJson = getFormData();
+        if (formJson) {
+          let req = new XMLHttpRequest();
+          req.open({{ requestType }}, "https://api.evnt.me/events/api");
+      req.setRequestHeader("Content-Type", "application/json");
+      req.setRequestHeader("accessToken", {{ accessToken }});
+      req.setRequestHeader("userId", {{ userId }});
+      req.onload = () => {
+        setMessage("Done.");
+      };
+      req.onerror = () => {
+        setMessage("Error.");
+      };
+      req.send(JSON.stringify(formJson));
+    }
+        });
+      });
+  </script>
+  <style>
+    body {
+      color: white;
+      background: #7826ff;
+      margin: 2em auto;
+      width: 80vw;
+      max-width: 600px;
+      font-family: sans-serif;
+    }
+
+    form div {
+      margin-top: 2em;
+      margin-bottom: 2em;
+    }
+
+    form div label,
+    form div input {
+      display: block;
+      margin-bottom: 0.3em;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid black;
+      background: #4c566a;
+      color: white;
+    }
+
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"] {
+      margin-top: 50px;
+      color: #4c566a;
+      background-color: #4caf50;
+    }
+  </style>
+</head>
+
+<h1>Create</h1>
+<form id="event-form" method="post" onkeydown="return event.key != 'Enter';">
+  <div>
+    <label for="name">Name of event</label>
+    <input type="text" name="name" id="name" value="{{ name }}" />
+  </div>
+  <div>
+    <label for="description">Description</label>
+    <textarea type="textarea" name="description" id="description" value="{{ description }}" rows="5"></textarea>
+  </div>
+  <div>
+    <label for="start-time">Start time</label>
+    <input type="datetime-local" name="start-time" id="start-time" value="{{ startTime }}" />
+  </div>
+  <div>
+    <label for="end-time">End time</label>
+    <input type="datetime-local" name="end-time" id="end-time" value="{{ endTime }}" />
+  </div>
+  <div>
+    <label for="tags">Tags (comma seperated)</label>
+    <input type="text" name="tags" id="tags" value="{{ tags }}" />
+  </div>
+  <div>
+    <input type="submit" />
+  </div>
+</form>
+<div id="msg"></div>
+
+</html>

@@ -106,9 +106,14 @@ router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
 /**
  * Temporarily allow us to create events through a webpage.
  */
+// TODO add auth middleware
 router.get("/create/:id", async (req, res, next) => {
   if (await User.doesUserExist(req.params.id)) {
-    res.sendFile(path.join(__dirname, "../public/index.html"));
+    res.render("index", {
+      requestType: "POST",
+      accessToken: req.header("accessToken"),
+      userId: req.header("userId")
+    });
   } else {
     res.status(500).send("No user.");
   }

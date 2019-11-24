@@ -126,7 +126,7 @@ router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
 /**
  * Temporarily allow us to create events through a webpage.
  */
-router.get("/create/:userId", auth.middleware, async (req, res, next) => {
+router.get("/create", auth.middleware, async (req, res, next) => {
   res.render("index", {
     title: "Create",
     requestType: "POST",

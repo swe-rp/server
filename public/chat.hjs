@@ -101,7 +101,6 @@
   </script>
   <style>
     body {
-      min-height: 480px;
       margin: 5px 5px 5px 5px;
       padding: 0;
       color: black;
@@ -124,6 +123,7 @@
     }
 
     #messages {
+      min-height: 80px;
       margin: 0;
       padding: 0;
     }

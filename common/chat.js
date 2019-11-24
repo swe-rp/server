@@ -2,6 +2,7 @@ const notification = require("./notification.js");
 const EventModel = require("../models/event.js");
 const MessageModel = require("../models/message.js");
 const UserModel = require("../models/user.js");
+const utils = require("./utils.js");
 
 let getEvent = async (eventId) => {
   let event = await EventModel.findById(eventId);
@@ -31,7 +32,7 @@ let writeMessage = async (event, userId, message) => {
     timestamp: new Date()
   });
 
-  let updated = await EventModel.update(
+  let updated = await EventModel.findByIdAndUpdate(
     { _id: event._id },
     { $push: { chatMessages: messageObject } }
   );
@@ -46,7 +47,7 @@ let writeMessage = async (event, userId, message) => {
 // };
 
 let notifyMessage = async (event, message) => {
-  await notification.sendNotification(event._id, {
+  await notification.sendNotification(event.id, {
     title: `New message from event ${event.name}`,
     body: message
   });
@@ -54,7 +55,7 @@ let notifyMessage = async (event, message) => {
 
 /**
  * This function handles a message by writing a message to the
- * event's DB entry, and sending a notification to everybody 
+ * event's DB entry, and sending a notification to everybody
  * subscribed to this eventId.
  * @param {*} message
  */
@@ -76,7 +77,7 @@ let getChatHistory = async (eventId) => {
   });
 
   return {
-    id: event._id,
+    id: event.id,
     data: messages
   };
 };

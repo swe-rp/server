@@ -56,7 +56,7 @@ let updateEvent = async (id, body) => {
   }
 
   return {
-    id: updated._id,
+    id: updated.id,
     data: updated
   };
 };
@@ -197,7 +197,7 @@ let addAttendant = async (id, userId) => {
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
   return {
-    id: updated._id,
+    id: updated.id,
     data: updated
   };
 };

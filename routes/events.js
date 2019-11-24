@@ -57,7 +57,7 @@ router.put("/api/remove/:id/:userId", auth.middleware, async (req, res, next) =>
 // Edit event
 router.put("/api/edit/:id", auth.middleware, async (req, res, next) => {
   try {
-    const updatedEvent = await Event.updateEvent(req.params.id, req.body);
+    const updatedEvent = await Event.updateEvent(req.params.id, req.body, req.header("userId"));
     res.status(200).json(updatedEvent);
   } catch (err) {
     next({ success: false, message: err.message });
@@ -67,7 +67,8 @@ router.put("/api/edit/:id", auth.middleware, async (req, res, next) => {
 // Delete event
 router.delete("/api/delete/:id", auth.middleware, async (req, res, next) => {
   try {
-    const updatedEvent = await Event.deleteEvent(req.params.id);
+    await Event.deleteEvent(req.params.id, req.header("userId"));
+    res.status(200).send("Success.");
   } catch (err) {
     next({ success: false, message: err.message });
   }

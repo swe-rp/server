@@ -43,17 +43,23 @@ let createEvent = async (body) => {
   };
 };
 
-let updateEvent = async (id, body) => {
+let updateEvent = async (id, body, userId) => {
   if (wrongParams(body)) {
     throw "Wrong params";
   }
 
+  let event = await EventModel.findById(id);
+
+  if (JSON.stringify(event.host) !== JSON.stringify(userId)) {
+    throw new Error("You aren't the host!");
+  }
+
   let update = {
-    name: body.name,
-    description: body.description,
-    host: body.host,
-    startTime: body.startTime,
-    endTime: body.endTime
+    name: body.name || event.name,
+    description: body.description || event.description,
+    host: body.host || event.host,
+    startTime: body.startTime || event.startTime,
+    endTime: body.endTime || event.endTime
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
@@ -257,6 +263,29 @@ let suggestEvent = async (userId) => {
   };
 };
 
+let deleteEvent = async (id, userId) => {
+  if (wrongParams(body)) {
+    throw new Error("Wrong params");
+  }
+
+  let event = await EventModel.findById(id);
+
+  if (!event) {
+    throw new Error("Event doesnt exist");
+  }
+
+  let user = await UserModel.findById(userId);
+  if (!user) {
+    throw new Error("User doesnt exist");
+  }
+
+  if (JSON.stringify(event.host) !== JSON.stringify(userId)) {
+    throw new Error("You're not the host!");
+  }
+
+  await EventModel.findByIdAndDelete(event.id);
+};
+
 module.exports = {
   createEvent,
   updateEvent,
@@ -264,5 +293,6 @@ module.exports = {
   getUserEvents,
   addAttendant,
   removeAttendant,
-  suggestEvent
+  suggestEvent,
+  deleteEvent
 };

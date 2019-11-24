@@ -264,10 +264,6 @@ let suggestEvent = async (userId) => {
 };
 
 let deleteEvent = async (id, userId) => {
-  if (wrongParams(body)) {
-    throw new Error("Wrong params");
-  }
-
   let event = await EventModel.findById(id);
 
   if (!event) {

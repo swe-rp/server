@@ -49,6 +49,16 @@ jest.mock("firebase-admin", () => {
   };
 });
 
+const auth = require("../../common/auth.js");
+
+jest.mock("../../common/auth.js", () => {
+  return {
+    middleware: (req, res, next) => {
+      next();
+    }
+  };
+});
+
 // Supress the logging
 jest.mock("../../common/utils.js", () => {
   return {

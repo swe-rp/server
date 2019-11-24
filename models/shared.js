@@ -3,5 +3,5 @@ module.exports = Object.freeze({
   PLAN: "plans",
   EVENT: "events",
   TAG: "tags",
-  MESSAGE: "messages"
+  MESSAGE: "message"
 });

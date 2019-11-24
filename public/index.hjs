@@ -1,0 +1,176 @@
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment-with-locales.min.js"></script>
+  <script
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7h7ZM2wXgYdNYHkui7J2K9Z9gU63XNkc&libraries=places"></script>
+  <script>
+    let autocomplete;
+
+    let getUserId = () => {
+      let urlArray = window.location.href.toString().split("/");
+
+      // If empty string, we go to next
+      if (urlArray[urlArray.length - 1]) {
+        return urlArray[urlArray.length - 1];
+      } else {
+        return urlArray[urlArray.length - 2];
+      }
+    };
+
+    let getElementValue = (elem) => {
+      return document.getElementById(elem).value;
+    };
+
+    let setMessage = (msg) => {
+      document.getElementById("msg").innerHTML = msg;
+    };
+
+    // This is jank but very temporary, I suppose
+    let getFormData = () => {
+      let form = {
+        name: getElementValue("name"),
+        description: getElementValue("description"),
+        host: getUserId(),
+        startTime: new Date(getElementValue("start-time")).toUTCString(),
+        endTime: new Date(getElementValue("end-time")).toUTCString(),
+        tags: getElementValue("tags")
+          .toLowerCase()
+          .replace(/ /g, "")
+          .split(",")
+      };
+
+      let place = autocomplete.getPlace();
+
+      if (place) {
+        form.location = `${place.geometry.location.lat()},${place.geometry.location.lng()}`;
+      }
+
+      setMessage("Loading...");
+      return form;
+    };
+
+    let initializeLocation = () => {
+      let input = document.getElementById("location-search");
+      input.addEventListener("keydown", () => {
+        let place = autocomplete.getPlace();
+        console.log(place.geometry.location.lat(), place.geometry.location.lng());
+      })
+      autocomplete = new google.maps.places.Autocomplete(input);
+    };
+
+    document.addEventListener("DOMContentLoaded", (e) => {
+      let form = document.getElementById("event-form");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        let formJson = getFormData();
+        if (formJson) {
+          let req = new XMLHttpRequest();
+          req.open("{{ requestType }}", "{{ requestUrl }}");
+          req.setRequestHeader("Content-Type", "application/json");
+          req.setRequestHeader("accessToken", "{{ accessToken }}");
+          req.setRequestHeader("userId", "{{ userId }}");
+          req.onload = () => {
+            try {
+              setMessage(JSON.parse(req.response).message);
+            } catch (e) {
+              setMessage(req.response);
+            }
+          };
+          req.onerror = () => {
+            try {
+              setMessage(JSON.parse(req.response).message);
+            } catch (e) {
+              setMessage(req.response);
+            }
+          };
+          req.send(JSON.stringify(formJson));
+        }
+      });
+
+      // Set the values for the startTime and endTime
+      document.getElementById("start-time").value = (("{{ startTime }}") ?
+        moment.utc("{{ startTime }}") : moment.utc()).local().format("YYYY-MM-DDTHH:mm");
+
+      document.getElementById("end-time").value = (("{{ endTime }}") ?
+        moment.utc("{{ endTime }}") : moment.utc()).local().format("YYYY-MM-DDTHH:mm");
+
+      initializeLocation();
+    });
+  </script>
+  <style>
+    body {
+      color: white;
+      background: #7826ff;
+      margin: 2em auto;
+      width: 80vw;
+      max-width: 600px;
+      font-family: sans-serif;
+    }
+
+    form div {
+      margin-top: 2em;
+      margin-bottom: 2em;
+    }
+
+    form div label,
+    form div input {
+      display: block;
+      margin-bottom: 0.3em;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 12px 20px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid black;
+      background: #4c566a;
+      color: white;
+    }
+
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"] {
+      margin-top: 50px;
+      color: #4c566a;
+      background-color: #4caf50;
+    }
+  </style>
+</head>
+
+<h1>{{ title }}</h1>
+<form id="event-form" method="post" onkeydown="return event.key != 'Enter';">
+  <div>
+    <label for="name">Name of event</label>
+    <input type="text" name="name" id="name" value="{{ name }}" />
+  </div>
+  <div>
+    <label for="description">Description</label>
+    <textarea type="textarea" name="description" id="description" rows="5">{{ description }}</textarea>
+  </div>
+  <div>
+    <label for="location">Location</label>
+    <input id="location-search" type="text" placeholder="{{ locationText }}">
+  </div>
+  <div>
+    <label for="start-time">Start time</label>
+    <input type="datetime-local" name="start-time" id="start-time" />
+  </div>
+  <div>
+    <label for="end-time">End time</label>
+    <input type="datetime-local" name="end-time" id="end-time" />
+  </div>
+  <div>
+    <label for="tags">Tags (comma seperated)</label>
+    <input type="text" name="tags" id="tags" value="{{ tags }}" />
+  </div>
+  <div>
+    <input type="submit" />
+  </div>
+</form>
+<div id="msg"></div>
+
+</html>

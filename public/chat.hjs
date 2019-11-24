@@ -3,54 +3,6 @@
 
 <head>
   <title>Event Chat</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font: 13px Helvetica, Arial;
-    }
-
-    form {
-      background: #000;
-      padding: 3px;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-    }
-
-    form input {
-      border: 0;
-      padding: 10px;
-      width: 90%;
-      margin-right: .5%;
-    }
-
-    form button {
-      width: 9%;
-      background: rgb(130, 224, 255);
-      border: none;
-      padding: 10px;
-    }
-
-    #messages {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    #messages li {
-      padding: 5px 10px;
-    }
-
-
-    #messages li:nth-child(odd) {
-      background: #eee;
-    }
-  </style>
   <script src="https://api.evnt.me/chat/live/socket.io.js"></script>
   <script>
     let socket;
@@ -72,12 +24,28 @@
       });
     };
 
-    let appendMessage = (payload) => {
-        let messageList = document.getElementById("messages");
-        let message = document.createElement("LI");
-        let text = document.createTextNode(payload);
-        message.appendChild(text);
-        messageList.appendChild(message);
+    let appendMessage = (payload, timestamp, userId, username) => {
+      let messageList = document.getElementById("messages");
+      let message = document.createElement("DIV");
+      message.setAttribute("class", "message");
+
+      if (userId === "{{ userId }}") {
+        message.setAttribute("class", "message mine");
+      }
+      
+      let text = document.createElement("P");
+      text.innerHTML = payload;
+
+      let time = document.createElement("SPAN");
+      time.setAttribute("class", "time");
+      
+      let name = document.createElement("SPAN");
+      name.setAttribute("class", "name");
+      message.appendChild(text);
+      message.appendChild(time);
+      message.appendChild(name);
+
+      messageList.appendChild(message);
     }
 
     let initializeSocketIo = () => {
@@ -90,7 +58,7 @@
     let initializeMessageListener = () => {
       let messageList = document.getElementById("messages");
       socket.on("message", (data) => {
-        appendMessage(data.message);
+        appendMessage(data.message, data.timestamp, data.userId, data.user);
       });
     };
 
@@ -106,18 +74,17 @@
         });
         appendMessage(msgNode.value);
         msgNode.value = "";
+        document.getElementById("text").focus();
         return false;
       });
+      document.getElementById("text").focus();
     }
 
     document.addEventListener("DOMContentLoaded", (e) => {
       let messageList = document.getElementById("messages");
       getMessages().then((messages) => {
         messages.map((e) => {
-          let message = document.createElement("LI");
-          let text = document.createTextNode(e.message);
-          message.appendChild(text);
-          messageList.appendChild(message);
+          appendMessage(e.message, e.timestamp, e.userId, e.username);
         });
         initializeSocketIo();
         initializeMessageListener();
@@ -127,10 +94,68 @@
       });
     });
   </script>
+  <style>
+    body {
+      margin: 0 50px 0 50px;
+      padding: 0;
+      color: black;
+      background: #7826ff;
+      font-family: sans-serif;
+      font: 20px Helvetica, Arial;
+    }
+
+    form button {
+      width: 9%;
+      background: rgb(130, 224, 255);
+      border: none;
+      border-radius: 30px;
+      padding: 10px;
+    }
+
+    #messages {
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages .message {
+      min-height: 100px;
+      border: 2px solid #dedede;
+      background-color: white;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    #messages .mine {
+      background-color: grey;
+    }
+
+    #messages .time {
+      float: left;
+    }
+
+    #message .name {
+      float: left;
+    }
+
+    form div label,
+    form div input {
+      display: block;
+      margin-bottom: 0.3em;
+    }
+
+    input[type="button"],
+    input[type="submit"],
+    input[type="reset"] {
+      margin-top: 50px;
+      color: #4c566a;
+      background-color: #4caf50;
+    }
+  </style>
 </head>
 
 <body>
-  <ul id="messages"></ul>
+  <div id="messages"></div>
   <form id="input" action="">
     <input id="text" autocomplete="off" /><button>Send</button>
   </form>

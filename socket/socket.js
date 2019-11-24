@@ -16,7 +16,8 @@ module.exports = (serverObject) => {
       let eventId = data.eventId;
       let user = await UserModel.findById(data.userId);
       socket.to(eventId).emit("message", {
-        user: user.name,
+        username: user.name,
+        userId: user.id,
         timestamp: new Date(),
         message: data.message
       });

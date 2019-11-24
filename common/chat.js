@@ -51,6 +51,7 @@ let getChatHistory = async (eventId) => {
   let messages = event.chatMessages.map((e) => {
     return {
       username: e.username,
+      userId: e.user.id,
       message: e.message,
       timestamp: e.timestamp
     };

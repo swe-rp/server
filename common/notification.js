@@ -43,7 +43,22 @@ let subscribeToTopic = (topic, token) => {
   });
 };
 
+let unsubscribeFromTopic = (topic, token) => {
+  return new Promise((resolve, reject) => {
+    admin
+      .messaging()
+      .unsubscribeFromTopic([token], topic)
+      .then((response) => {
+        resolve("Unsubscribed from topic: " + response);
+      })
+      .catch((err) => {
+        reject("Error: " + err);
+      });
+  });
+};
+
 module.exports = {
   sendNotification,
-  subscribeToTopic
+  subscribeToTopic,
+  unsubscribeFromTopic
 };

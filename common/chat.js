@@ -22,15 +22,8 @@ let getUser = async (userId) => {
   }
 };
 
-let writeMessage = async (event, userId, message) => {
+let writeMessage = async (event, userId, message, timestamp) => {
   let user = await getUser(userId);
-
-  // let messageObject = await MessageModel.create({
-  //   username: user.name,
-  //   user,
-  //   message,
-  //   timestamp: new Date()
-  // });
 
   let updated = await EventModel.findByIdAndUpdate(
     { _id: event._id },
@@ -40,7 +33,7 @@ let writeMessage = async (event, userId, message) => {
           username: user.name,
           user,
           message,
-          timestamp: new Date()
+          timestamp
         }
       }
     }
@@ -68,15 +61,14 @@ let notifyMessage = async (event, message) => {
  * subscribed to this eventId.
  * @param {*} message
  */
-let handleMessage = async (eventId, userId, message) => {
+let handleMessage = async (eventId, userId, message, timestamp) => {
   let event = await getEvent(eventId);
-  await writeMessage(event, userId, message);
+  await writeMessage(event, userId, message, timestamp);
   await notifyMessage(event, message);
 };
 
 let getChatHistory = async (eventId) => {
   let event = await getEvent(eventId);
-  console.log(event);
 
   let messages = event.chatMessages.map((e) => {
     return {

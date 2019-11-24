@@ -11,7 +11,8 @@ router.get("/send/:eventId/:userId/:message", async (req, res, next) => {
     await chat.handleMessage(
       req.params.eventId,
       req.params.userId,
-      req.params.message
+      req.params.message,
+      new Date()
     );
     res.status(200).send("Success");
   } catch (err) {

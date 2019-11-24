@@ -4,6 +4,41 @@ const TestData = require("../test_data");
 const EventModel = require("../../models/event");
 const UserModel = require("../../models/user");
 
+const admin = require("firebase-admin");
+
+jest.mock("firebase-admin", () => {
+  return {
+    messaging: jest.fn().mockReturnValue({
+      send: (e) => {
+        if (e.topic) {
+          if (e.topic === "fail") {
+            return Promise.reject("fail");
+          } else {
+            return Promise.resolve(e.topic);
+          }
+        } else {
+          return Promise.reject("no topic");
+        }
+      },
+      subscribeToTopic: (token, topic) => {
+        if (topic) {
+          return Promise.resolve(topic);
+        } else {
+          return Promise.reject("no topic");
+        }
+      },
+      unsubscribeFromTopic: (token, topic) => {
+        if (topic) {
+          return Promise.resolve(topic);
+        } else {
+          return Promise.reject("no topic");
+        }
+      }
+    })
+  };
+});
+
+
 describe("events", () => {
   let db;
 

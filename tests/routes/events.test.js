@@ -46,6 +46,13 @@ jest.mock("firebase-admin", () => {
         } else {
           return Promise.reject("no topic");
         }
+      },
+      unsubscribeFromTopic: (token, topic) => {
+        if (topic) {
+          return Promise.resolve(topic);
+        } else {
+          return Promise.reject("no topic");
+        }
       }
     })
   };

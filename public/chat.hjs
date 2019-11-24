@@ -72,6 +72,14 @@
       });
     };
 
+    let appendMessage = (payload) => {
+        let messageList = document.getElementById("messages");
+        let message = document.createElement("LI");
+        let text = document.createTextNode(payload);
+        message.appendChild(text);
+        messageList.appendChild(message);
+    }
+
     let initializeSocketIo = () => {
       socket = io("https://api.evnt.me/", { path: "/chat/live" });
       socket.emit("join", {
@@ -82,10 +90,7 @@
     let initializeMessageListener = () => {
       let messageList = document.getElementById("messages");
       socket.on("message", (data) => {
-        let message = document.createElement("LI");
-        let text = document.createTextNode(data.message);
-        message.appendChild(text);
-        messageList.appendChild(message);
+        appendMessage(data.message);
       });
     };
 
@@ -99,6 +104,7 @@
           eventId: "{{ eventId }}",
           message: msgNode.value
         });
+        appendMessage(msgNode.value);
         msgNode.value = "";
         return false;
       });

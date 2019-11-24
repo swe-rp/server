@@ -21,7 +21,7 @@
       let form = {
         name: getElementValue("name"),
         description: getElementValue("description"),
-        host: {{ userId }},
+        host: "{{ userId }}",
         startTime: new Date(getElementValue("start-time")).toUTCString(),
         endTime: new Date(getElementValue("end-time")).toUTCString(),
         tags: getElementValue("tags")

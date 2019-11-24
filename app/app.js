@@ -18,6 +18,7 @@ app.use("/chat", require("../routes/chat"));
 // Failure catch
 app.use((err, req, res, next) => {
   utils.error("Cannot", req.method, req.originalUrl);
+  utils.error(err);
   res.status(500).send(err);
 });
 

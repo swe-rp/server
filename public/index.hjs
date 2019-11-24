@@ -3,6 +3,7 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment-with-locales.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7h7ZM2wXgYdNYHkui7J2K9Z9gU63XNkc&libraries=places"></script>
   <script>
     let getUserId = () => {
       let urlArray = window.location.href.toString().split("/");
@@ -56,6 +57,11 @@
       }
     };
 
+    let initializeLocation = () => {
+      let input = document.getElementById("location-search");
+      new google.maps.places.Autocomplete(input);
+    };
+
     document.addEventListener("DOMContentLoaded", (e) => {
       let form = document.getElementById("event-form");
       form.addEventListener("submit", (e) => {
@@ -83,6 +89,8 @@
 
       document.getElementById("end-time").value = (("{{ endTime }}") ?
         moment.utc("{{ endTime }}") : moment.utc()).local().format('YYYY-MM-DDTHH:mm:ss');
+
+      initializeLocation();
     });
   </script>
   <style>
@@ -136,6 +144,10 @@
   <div>
     <label for="description">Description</label>
     <textarea type="textarea" name="description" id="description" rows="5">{{ description }}</textarea>
+  </div>
+  <div>
+    <label for="location">Location</label>
+    <input id="location-search" type="text">
   </div>
   <div>
     <label for="start-time">Start time</label>

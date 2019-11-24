@@ -41,23 +41,36 @@ router.put("/api/add/:id/:userId", auth.middleware, async (req, res, next) => {
 });
 
 // Remove an attendant
-router.put("/api/remove/:id/:userId", auth.middleware, async (req, res, next) => {
-  try {
-    const updatedEvent = await Event.removeAttendant(
-      req.params.id,
-      req.params.userId
-    );
-    utils.log("Sucessfully removed", req.params.userId, "from", req.params.id);
-    res.status(200).json(updatedEvent);
-  } catch (err) {
-    next({ success: false, message: err.message });
+router.put(
+  "/api/remove/:id/:userId",
+  auth.middleware,
+  async (req, res, next) => {
+    try {
+      const updatedEvent = await Event.removeAttendant(
+        req.params.id,
+        req.params.userId
+      );
+      utils.log(
+        "Sucessfully removed",
+        req.params.userId,
+        "from",
+        req.params.id
+      );
+      res.status(200).json(updatedEvent);
+    } catch (err) {
+      next({ success: false, message: err.message });
+    }
   }
-});
+);
 
 // Edit event
 router.put("/api/edit/:id", auth.middleware, async (req, res, next) => {
   try {
-    const updatedEvent = await Event.updateEvent(req.params.id, req.body, req.header("userId"));
+    const updatedEvent = await Event.updateEvent(
+      req.params.id,
+      req.body,
+      req.header("userId")
+    );
     res.status(200).json(updatedEvent);
   } catch (err) {
     next({ success: false, message: err.message });
@@ -126,14 +139,16 @@ router.get("/edit/:eventId", async (req, res, next) => {
   let obj = {
     title: "Edit",
     requestType: "PUT",
-    requestUrl: "https://api.evnt.me/events/delete/" + req.params.eventId,
+    requestUrl: "https://api.evnt.me/events/api/delete/" + req.params.eventId,
     accessToken: req.header("accessToken"),
     userId: req.header("userId"),
     name: event.name,
     description: event.description,
     startTime: event.startTime,
     endTime: event.endTime,
-    tags: event.tagList
+    tags: event.tagList.reduce((prev, curr) => {
+      prev + "," + curr;
+    }, "")
   };
   console.log(obj);
   res.render("index", obj);

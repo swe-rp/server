@@ -24,7 +24,7 @@
         host: "{{ userId }}",
         startTime: new Date(getElementValue("start-time")).toUTCString(),
         endTime: new Date(getElementValue("end-time")).toUTCString(),
-        tags: getElementValue("tags")
+        tagList: getElementValue("tags")
           .toLowerCase()
           .replace(/ /g, "")
           .split(",")

@@ -72,7 +72,8 @@ let updateEvent = async (id, body, userId) => {
     host: body.host || event.host,
     location: body.location || event.location,
     startTime: body.startTime || event.startTime,
-    endTime: body.endTime || event.endTime
+    endTime: body.endTime || event.endTime,
+    tagList: body.tagList || event.tagList
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });

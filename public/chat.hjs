@@ -78,8 +78,9 @@
           eventId: "{{ eventId }}",
           message: msgNode.value
         });
-        appendMessage(msgNode.value, new Date(), "{{ userId }}", "{{ username }}"); // TODO
+        appendMessage(msgNode.value, new Date(), "{{ userId }}", "{{ username }}");
         msgNode.value = "";
+        document.getElementById("text").focus();
         return false;
       });
       document.getElementById("text").focus();

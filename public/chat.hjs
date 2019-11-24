@@ -101,7 +101,8 @@
   </script>
   <style>
     body {
-      margin: 0 50px 0 50px;
+      min-height: 480px;
+      margin: 5px 5px 5px 5px;
       padding: 0;
       color: black;
       background: #7826ff;
@@ -114,7 +115,7 @@
     }
 
     button {
-      width: 10%;
+      width: 15%;
       margin: 0;
       background: rgb(130, 224, 255);
       border: none;
@@ -128,11 +129,11 @@
     }
 
     #messages .message {
-      min-height: 70px;
+      min-height: 40px;
       border: 2px solid #ECEFF4;
       background-color: #ECEFF4;
+      padding: 0 10px 0 15px;
       border-radius: 5px;
-      padding: 10px;
       margin: 10px 0;
       overflow: auto;
     }
@@ -154,7 +155,7 @@
     }
 
     input {
-      width: 90%;
+      width: 85%;
       padding: 12px 20px;
       margin: 0;
       box-sizing: border-box;

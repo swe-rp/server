@@ -15,7 +15,7 @@ let verifyUserCredentials = async (userId, token) => {
 };
 
 let middleware = async (req, res, next) => {
-  if (req.header("accessToken") || req.header("userId")) {
+  if (!req.header("accessToken") || !req.header("userId")) {
     throw new Error("Missing authorization headers.");
   }
   await verifyUserCredentials(req.header("userId"), req.header("accessToken"));

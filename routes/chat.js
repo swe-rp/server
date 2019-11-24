@@ -29,9 +29,11 @@ router.get("/messages/:eventId", async (req, res, next) => {
   }
 });
 
-router.get("/init/:eventId", async (req, res, next) => {
+router.get("/init/:eventId/:userId", async (req, res, next) => {
   res.render("chat", {
-    eventId: req.params.eventId
+    eventId: req.params.eventId,
+    userId: req.params.userId, // TODO
+    accessToken: req.header("accessToken")
   });
 });
 

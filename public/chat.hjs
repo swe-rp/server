@@ -94,13 +94,18 @@
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         let msgNode = document.getElementById("text");
-        socket.emit("message", msgNode.value);
+        socket.emit("message", {
+          userId: "{{ userId }}",
+          eventId: "{{ eventId }}",
+          message: msgNode.value
+        });
         msgNode.value = "";
         return false;
       });
     }
 
     document.addEventListener("DOMContentLoaded", (e) => {
+      let messageList = document.getElementById("messages");
       getMessages().then((messages) => {
         messages.map((e) => {
           let message = document.createElement("LI");
@@ -110,6 +115,7 @@
         });
         initializeSocketIo();
         initializeMessageListener();
+        initializeForm();
       }).catch((err) => {
         console.log(err);
       });

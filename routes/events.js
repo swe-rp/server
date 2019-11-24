@@ -110,6 +110,7 @@ router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
 router.get("/create/:userId", async (req, res, next) => {
   if (await User.doesUserExist(req.params.userId)) {
     res.render("index", {
+      title: "Create",
       requestType: "POST",
       requestUrl: "https://api.evnt.me/events/api",
       accessToken: req.header("accessToken"),
@@ -123,6 +124,7 @@ router.get("/create/:userId", async (req, res, next) => {
 router.get("/edit/:eventId", async (req, res, next) => {
   let event = await Event.getEvent(req.params.eventId);
   let obj = {
+    title: "Edit",
     requestType: "PUT",
     requestUrl: "https://api.evnt.me/events/delete/" + req.params.eventId,
     accessToken: req.header("accessToken"),

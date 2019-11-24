@@ -55,6 +55,17 @@
       }
     };
 
+    let processDate = (ISODate) => {
+      let localeString = ISODate.toLocaleString();
+      let parsed = localeString.split(", ");
+      let modifier = (parsed[1].includes("a.m.")) ? 0 : 12;
+      let timeFrags = parsed[1].split(":");
+      let hour = (parseInt(timeFrags[0]) + modifier).toString();
+      hour = (hour.length == 1) ? "0" + hour : hour;
+      let minute = timeFrags[1].toString();
+      return parsed[0] + "T" + hour + ":" + minute;
+    };
+
     document.addEventListener("DOMContentLoaded", (e) => {
       let form = document.getElementById("event-form");
       form.addEventListener("submit", (e) => {
@@ -69,13 +80,18 @@
           req.onload = () => {
             setMessage("Done.");
           };
-          req.onerror = ()
-           => {
+          req.onerror = () => {
             setMessage("Error.");
           };
           req.send(JSON.stringify(formJson));
         }
       });
+
+      // Set the values for the startTime and endTime
+      document.getElementById("start-time").value =
+        processDate(("{{ startTime }}") ? new Date() : new Date("{{ startTime }}"));
+      document.getElementById("end-time").value = 
+        processDate(("{{ endTime }}") ? new Date() : new Date("{{ endTime }}"));
     });
   </script>
   <style>
@@ -120,7 +136,7 @@
   </style>
 </head>
 
-<h1>Create</h1>
+<h1>{{ title }}</h1>
 <form id="event-form" method="post" onkeydown="return event.key != 'Enter';">
   <div>
     <label for="name">Name of event</label>
@@ -128,7 +144,7 @@
   </div>
   <div>
     <label for="description">Description</label>
-    <textarea type="textarea" name="description" id="description" value="{{ description }}" rows="5"></textarea>
+    <textarea type="textarea" name="description" id="description" rows="5">{{ description }}</textarea>
   </div>
   <div>
     <label for="start-time">Start time</label>

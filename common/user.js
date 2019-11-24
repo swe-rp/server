@@ -3,6 +3,17 @@ const utils = require("./utils");
 
 const TOKEN_SIZE = 30;
 
+let generateToken = () => {
+  let id = "";
+  let characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (let i = 0; i < TOKEN_SIZE; i++) {
+    id += characters[Math.floor(Math.random() * characters.length)];
+  }
+  return id;
+};
+
 let getUser = async (userId) => {
   let user = await UserModel.findById(userId);
   if (!user) {
@@ -51,17 +62,6 @@ let userLogin = async (profile, registrationToken) => {
   utils.log(newUser);
 
   return newUser;
-};
-
-let generateToken = () => {
-  id = "";
-  let characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
-  for (let i = 0; i < TOKEN_SIZE; i++) {
-    id += characters[Math.floor(Math.random() * characters.length)];
-  }
-  return id;
 };
 
 module.exports = {

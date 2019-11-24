@@ -107,16 +107,34 @@ router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
  * Temporarily allow us to create events through a webpage.
  */
 // TODO add auth middleware
-router.get("/create/:id", async (req, res, next) => {
-  if (await User.doesUserExist(req.params.id)) {
+router.get("/create/:userId", async (req, res, next) => {
+  if (await User.doesUserExist(req.params.userId)) {
     res.render("index", {
       requestType: "POST",
+      requestUrl: "https://api.evnt.me/events/api",
       accessToken: req.header("accessToken"),
       userId: req.header("userId")
     });
   } else {
     res.status(500).send("No user.");
   }
+});
+
+router.get("/edit/:eventId", async (req, res, next) => {
+  let event = await Event.getEvent(req.params.eventId);
+  let obj = {
+    requestType: "PUT",
+    requestUrl: "https://api.evnt.me/events/delete/" + req.params.eventId,
+    accessToken: req.header("accessToken"),
+    userId: req.header("userId"),
+    name: event.name,
+    description: event.description,
+    startTime: event.startTime,
+    endTime: event.endTime,
+    tags: event.tagList
+  };
+  console.log(obj);
+  res.render("index", obj);
 });
 
 // TODO this should be removed

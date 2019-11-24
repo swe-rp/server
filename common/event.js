@@ -4,6 +4,16 @@ const notifications = require("./notification.js");
 
 const EVENT_MULTIPLIER = 5;
 
+let getEvent = async (eventId) => {
+  let event = await EventModel.findById(eventId);
+  
+  if (!event) {
+    throw new Error("Event not found.");
+  }
+
+  return event;
+}
+
 let wrongParams = (body) => {
   return (
     !body.name ||
@@ -290,5 +300,6 @@ module.exports = {
   addAttendant,
   removeAttendant,
   suggestEvent,
-  deleteEvent
+  deleteEvent,
+  getEvent
 };

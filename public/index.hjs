@@ -62,20 +62,21 @@
         let formJson = getFormData();
         if (formJson) {
           let req = new XMLHttpRequest();
-          req.open({{ requestType }}, "https://api.evnt.me/events/api");
-      req.setRequestHeader("Content-Type", "application/json");
-      req.setRequestHeader("accessToken", {{ accessToken }});
-      req.setRequestHeader("userId", {{ userId }});
-      req.onload = () => {
-        setMessage("Done.");
-      };
-      req.onerror = () => {
-        setMessage("Error.");
-      };
-      req.send(JSON.stringify(formJson));
-    }
-        });
+          req.open("{{ requestType }}", "{{ requestUrl }}");
+          req.setRequestHeader("Content-Type", "application/json");
+          req.setRequestHeader("accessToken", "{{ accessToken }}");
+          req.setRequestHeader("userId", "{{ userId }}");
+          req.onload = () => {
+            setMessage("Done.");
+          };
+          req.onerror = ()
+           => {
+            setMessage("Error.");
+          };
+          req.send(JSON.stringify(formJson));
+        }
       });
+    });
   </script>
   <style>
     body {
@@ -131,11 +132,11 @@
   </div>
   <div>
     <label for="start-time">Start time</label>
-    <input type="datetime-local" name="start-time" id="start-time" value="{{ startTime }}" />
+    <input type="datetime-local" name="start-time" id="start-time" />
   </div>
   <div>
     <label for="end-time">End time</label>
-    <input type="datetime-local" name="end-time" id="end-time" value="{{ endTime }}" />
+    <input type="datetime-local" name="end-time" id="end-time" />
   </div>
   <div>
     <label for="tags">Tags (comma seperated)</label>

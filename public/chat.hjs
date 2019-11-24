@@ -1,0 +1,127 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Event Chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font: 13px Helvetica, Arial;
+    }
+
+    form {
+      background: #000;
+      padding: 3px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    form input {
+      border: 0;
+      padding: 10px;
+      width: 90%;
+      margin-right: .5%;
+    }
+
+    form button {
+      width: 9%;
+      background: rgb(130, 224, 255);
+      border: none;
+      padding: 10px;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages li {
+      padding: 5px 10px;
+    }
+
+
+    #messages li:nth-child(odd) {
+      background: #eee;
+    }
+  </style>
+  <script src="https://api.evnt.me/chat/live/socket.io.js"></script>
+  <script>
+    let socket;
+
+    let getMessages = () => {
+      return new Promise((resolve, reject) => {
+        let req = new XMLHttpRequest();
+        req.open("GET", "https://api.evnt.me/chat/messages/" + "{{ eventId }}");
+        req.setRequestHeader("Content-Type", "application/json");
+        req.setRequestHeader("accessToken", "{{ accessToken }}");
+        req.setRequestHeader("userId", "{{ userId }}");
+        req.onload = () => {
+          resolve(JSON.parse(req.response).data);
+        };
+        req.onerror = () => {
+          reject("Error");
+        };
+        req.send();
+      });
+    };
+
+    let initializeSocketIo = () => {
+      socket = io("https://api.evnt.me/", { path: "/chat/live" });
+      socket.emit("join", {
+        eventId: "{{ eventId }}"
+      });
+    };
+
+    let initializeMessageListener = () => {
+      let messageList = document.getElementById("messages");
+      socket.on("message", (data) => {
+        let message = document.createElement("LI");
+        let text = document.createTextNode(data.message);
+        message.appendChild(text);
+        messageList.appendChild(message);
+      });
+    };
+
+    let initializeForm = () => {
+      let form = document.getElementById("input");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        let msgNode = document.getElementById("text");
+        socket.emit("message", msgNode.value);
+        msgNode.value = "";
+        return false;
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", (e) => {
+      getMessages().then((messages) => {
+        messages.map((e) => {
+          let message = document.createElement("LI");
+          let text = document.createTextNode(e.message);
+          message.appendChild(text);
+          messageList.appendChild(message);
+        });
+        initializeSocketIo();
+        initializeMessageListener();
+      }).catch((err) => {
+        console.log(err);
+      });
+    });
+  </script>
+</head>
+
+<body>
+  <ul id="messages"></ul>
+  <form id="input" action="">
+    <input id="text" autocomplete="off" /><button>Send</button>
+  </form>
+</body>
+
+</html>

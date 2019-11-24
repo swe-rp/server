@@ -20,7 +20,7 @@ module.exports = (serverObject) => {
         timestamp: new Date(),
         message: data.message
       });
-      await chat.handleMessage(eventId, user._id, data.message, new Date());
+      await chat.handleMessage(eventId, user.id, data.message, new Date());
     });
   });
 };

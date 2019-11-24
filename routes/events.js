@@ -12,6 +12,7 @@ const auth = require("../common/auth.js");
 router.post("/api", auth.middleware, async (req, res, next) => {
   try {
     const newEvent = await Event.createEvent(req.body);
+    newEvent.message = "Success!";
     res.status(200).json(newEvent);
     utils.log(
       await notifications.sendNotification("event", {
@@ -34,6 +35,7 @@ router.put("/api/add/:id/:userId", auth.middleware, async (req, res, next) => {
       req.params.userId
     );
     utils.log("Sucessfully added", req.params.userId, "from", req.params.id);
+    updatedEvent.message = "Success!";
     res.status(200).json(updatedEvent);
   } catch (err) {
     next({ success: false, message: err.message });
@@ -56,6 +58,7 @@ router.put(
         "from",
         req.params.id
       );
+      updatedEvent.message = "Success!";
       res.status(200).json(updatedEvent);
     } catch (err) {
       next({ success: false, message: err.message });
@@ -71,6 +74,7 @@ router.put("/api/edit/:id", auth.middleware, async (req, res, next) => {
       req.body,
       req.header("userId")
     );
+    updatedEvent.message = "Success!";
     res.status(200).json(updatedEvent);
   } catch (err) {
     next({ success: false, message: err.message });
@@ -81,7 +85,7 @@ router.put("/api/edit/:id", auth.middleware, async (req, res, next) => {
 router.delete("/api/delete/:id", auth.middleware, async (req, res, next) => {
   try {
     await Event.deleteEvent(req.params.id, req.header("userId"));
-    res.status(200).send("Success.");
+    res.status(200).send({message: "Success!"});
   } catch (err) {
     next({ success: false, message: err.message });
   }
@@ -90,6 +94,7 @@ router.delete("/api/delete/:id", auth.middleware, async (req, res, next) => {
 router.get("/api/avail/:userId", auth.middleware, async (req, res, next) => {
   try {
     const events = await Event.getAvailableEvents(req.params.userId);
+    events.message = "Sucess!";
     res.status(200).json(events);
   } catch (err) {
     next({ success: false, message: err.message });
@@ -100,6 +105,7 @@ router.get("/api/avail/:userId", auth.middleware, async (req, res, next) => {
 router.get("/api/in/:userId", auth.middleware, async (req, res, next) => {
   try {
     const events = await Event.getUserEvents(req.params.userId);
+    events.message = "Success!";
     res.status(200).json(events);
   } catch (err) {
     next({ success: false, message: err.message });
@@ -110,6 +116,7 @@ router.get("/api/in/:userId", auth.middleware, async (req, res, next) => {
 router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
   try {
     const event = await Event.suggestEvent(req.params.userId);
+    event.message = "Success!";
     res.status(200).json(event);
   } catch (err) {
     next({ success: false, message: err.message });
@@ -119,7 +126,6 @@ router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
 /**
  * Temporarily allow us to create events through a webpage.
  */
-// TODO add auth middleware
 router.get("/create/:userId", auth.middleware, async (req, res, next) => {
   res.render("index", {
     title: "Create",

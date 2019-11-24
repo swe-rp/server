@@ -2,6 +2,7 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment-with-locales.min.js"></script>
   <script>
     let getUserId = () => {
       let urlArray = window.location.href.toString().split("/");
@@ -55,18 +56,6 @@
       }
     };
 
-    let processDate = (ISODate) => {
-      let localeString = ISODate.toLocaleString();
-      let parsed = localeString.split(", ");
-      let date = parsed[0].replace(/\//g, "-");
-      let modifier = (parsed[1].includes("a.m.")) ? 0 : 12;
-      let timeFrags = parsed[1].split(":");
-      let hour = (parseInt(timeFrags[0]) + modifier).toString();
-      hour = (hour.length == 1) ? "0" + hour : hour;
-      let minute = timeFrags[1].toString();
-      return date + "T" + hour + ":" + minute;
-    };
-
     document.addEventListener("DOMContentLoaded", (e) => {
       let form = document.getElementById("event-form");
       form.addEventListener("submit", (e) => {
@@ -89,10 +78,11 @@
       });
 
       // Set the values for the startTime and endTime
-      document.getElementById("start-time").value =
-        processDate(("{{ startTime }}") ? new Date() : new Date("{{ startTime }}"));
-      document.getElementById("end-time").value = 
-        processDate(("{{ endTime }}") ? new Date() : new Date("{{ endTime }}"));
+      document.getElementById("start-time").value = (("{{ startTime }}") ?
+        moment.utc("{{ startTime }}") : moment.utc()).local().format('YYYY-MM-DDTHH:mm:ss');
+
+      document.getElementById("end-time").value = (("{{ endTime }}") ?
+        moment.utc("{{ endTime }}") : moment.utc()).local().format('YYYY-MM-DDTHH:mm:ss');
     });
   </script>
   <style>

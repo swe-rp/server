@@ -1,6 +1,5 @@
 const notification = require("./notification.js");
 const EventModel = require("../models/event.js");
-const MessageModel = require("../models/message.js");
 const UserModel = require("../models/user.js");
 const utils = require("./utils.js");
 

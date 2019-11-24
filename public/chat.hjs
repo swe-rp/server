@@ -38,9 +38,12 @@
 
       let time = document.createElement("SPAN");
       time.setAttribute("class", "time");
+      time.innerHTML = timestamp;
       
       let name = document.createElement("SPAN");
       name.setAttribute("class", "name");
+      name.innerHTML = username;
+
       message.appendChild(text);
       message.appendChild(time);
       message.appendChild(name);
@@ -72,8 +75,9 @@
           eventId: "{{ eventId }}",
           message: msgNode.value
         });
-        appendMessage(msgNode.value);
+        appendMessage(msgNode.value, new Date(), "{{ userId }}", "{{ username }}"); // TODO
         msgNode.value = "";
+        document.getElementById("text").blur();
         document.getElementById("text").focus();
         return false;
       });
@@ -84,6 +88,7 @@
       let messageList = document.getElementById("messages");
       getMessages().then((messages) => {
         messages.map((e) => {
+          console.log(e);
           appendMessage(e.message, e.timestamp, e.userId, e.username);
         });
         initializeSocketIo();
@@ -101,15 +106,20 @@
       color: black;
       background: #7826ff;
       font-family: sans-serif;
-      font: 20px Helvetica, Arial;
+      font: 13px Helvetica, Arial;
     }
 
-    form button {
-      width: 9%;
+    form {
+      margin: 0;
+    }
+
+    button {
+      width: 10%;
+      margin: 0;
       background: rgb(130, 224, 255);
       border: none;
-      border-radius: 30px;
       padding: 10px;
+      border: 1px solid black;
     }
 
     #messages {
@@ -118,7 +128,7 @@
     }
 
     #messages .message {
-      min-height: 100px;
+      min-height: 70px;
       border: 2px solid #dedede;
       background-color: white;
       border-radius: 5px;
@@ -138,9 +148,14 @@
       float: left;
     }
 
-    form div label,
-    form div input {
-      display: block;
+    input {
+      width: 90%;
+      padding: 12px 20px;
+      margin: 0;
+      box-sizing: border-box;
+      border: 1px solid black;
+      background: #4c566a;
+      color: white;
       margin-bottom: 0.3em;
     }
 

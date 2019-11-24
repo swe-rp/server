@@ -2,6 +2,7 @@ const chat = require("../common/chat.js");
 const express = require("express");
 const router = new express.Router();
 const utils = require("../common/utils");
+const User = require("../common/user.js");
 
 router.get("/send/:eventId/:userId/:message", async (req, res, next) => {
   try {
@@ -30,9 +31,11 @@ router.get("/messages/:eventId", async (req, res, next) => {
 });
 
 router.get("/init/:eventId/:userId", async (req, res, next) => {
+  let user = await User.getUser(req.params.userId); // TODO
   res.render("chat", {
     eventId: req.params.eventId,
-    userId: req.params.userId, // TODO
+    userId: user.id,
+    username: user.name,
     accessToken: req.header("accessToken")
   });
 });

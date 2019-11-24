@@ -3,6 +3,15 @@ const utils = require("./utils");
 
 const TOKEN_SIZE = 30;
 
+let getUser = async (userId) => {
+  let user = await UserModel.findById(userId);
+  if (!user) {
+    throw new Error("User doesn't exist.");
+  } else {
+    return user;
+  }
+};
+
 let doesUserExist = async (userId) => {
   try {
     let user = await UserModel.findById(userId);
@@ -56,6 +65,7 @@ let generateToken = () => {
 };
 
 module.exports = {
+  getUser,
   doesUserExist,
   userLogin
 };

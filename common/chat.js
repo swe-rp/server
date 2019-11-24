@@ -1,28 +1,11 @@
 const notification = require("./notification.js");
 const EventModel = require("../models/event.js");
-const UserModel = require("../models/user.js");
+const Event = require("./event.js");
+const User = require("./user.js");
 const utils = require("./utils.js");
 
-let getEvent = async (eventId) => {
-  let event = await EventModel.findById(eventId);
-  if (!event) {
-    throw new Error("Event doesn't exist.");
-  } else {
-    return event;
-  }
-};
-
-let getUser = async (userId) => {
-  let user = await UserModel.findById(userId);
-  if (!user) {
-    throw new Error("User doesn't exist.");
-  } else {
-    return user;
-  }
-};
-
 let writeMessage = async (event, userId, message, timestamp) => {
-  let user = await getUser(userId);
+  let user = await User.getUser(userId);
 
   let updated = await EventModel.findByIdAndUpdate(
     { _id: event._id },
@@ -43,10 +26,6 @@ let writeMessage = async (event, userId, message, timestamp) => {
   }
 };
 
-// let ioHandler = async (data) => {
-//   await handleMessage(data.eventId, data.userId, data.message);
-// };
-
 let notifyMessage = async (event, message) => {
   await notification.sendNotification(event.id, {
     title: `New message from event ${event.name}`,
@@ -61,13 +40,13 @@ let notifyMessage = async (event, message) => {
  * @param {*} message
  */
 let handleMessage = async (eventId, userId, message, timestamp) => {
-  let event = await getEvent(eventId);
+  let event = await Event.getEvent(eventId);
   await writeMessage(event, userId, message, timestamp);
   await notifyMessage(event, message);
 };
 
 let getChatHistory = async (eventId) => {
-  let event = await getEvent(eventId);
+  let event = await Event.getEvent(eventId);
 
   let messages = event.chatMessages.map((e) => {
     return {

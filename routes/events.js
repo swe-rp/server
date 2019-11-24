@@ -26,8 +26,8 @@ router.post("/api", auth.middleware, async (req, res, next) => {
   }
 });
 
-//Add attendant
-router.put("/api/add/:id/:userId", async (req, res, next) => {
+// Add attendant
+router.put("/api/add/:id/:userId", auth.middleware, async (req, res, next) => {
   try {
     const updatedEvent = await Event.addAttendant(
       req.params.id,
@@ -40,7 +40,8 @@ router.put("/api/add/:id/:userId", async (req, res, next) => {
   }
 });
 
-router.put("/api/remove/:id/:userId", async (req, res, next) => {
+// Remove an attendant
+router.put("/api/remove/:id/:userId", auth.middleware, async (req, res, next) => {
   try {
     const updatedEvent = await Event.removeAttendant(
       req.params.id,
@@ -53,8 +54,8 @@ router.put("/api/remove/:id/:userId", async (req, res, next) => {
   }
 });
 
-//Edit event
-router.put("/api/edit/:id/:userId", async (req, res, next) => {
+// Edit event
+router.put("/api/edit/:id", auth.middleware, async (req, res, next) => {
   try {
     const updatedEvent = await Event.updateEvent(req.params.id, req.body);
     res.status(200).json(updatedEvent);
@@ -64,7 +65,7 @@ router.put("/api/edit/:id/:userId", async (req, res, next) => {
 });
 
 // Delete event
-router.delete("/api/delete/:id/:userId", async (req, res, next) => {
+router.delete("/api/delete/:id", auth.middleware, async (req, res, next) => {
   try {
     const updatedEvent = await Event.deleteEvent(req.params.id);
   } catch (err) {
@@ -72,7 +73,7 @@ router.delete("/api/delete/:id/:userId", async (req, res, next) => {
   }
 });
 
-router.get("/api/avail/:userId", async (req, res, next) => {
+router.get("/api/avail/:userId", auth.middleware, async (req, res, next) => {
   try {
     const events = await Event.getAvailableEvents(req.params.userId);
     res.status(200).json(events);
@@ -82,7 +83,7 @@ router.get("/api/avail/:userId", async (req, res, next) => {
 });
 
 // Get events
-router.get("/api/in/:userId", async (req, res, next) => {
+router.get("/api/in/:userId", auth.middleware, async (req, res, next) => {
   try {
     const events = await Event.getUserEvents(req.params.userId);
     res.status(200).json(events);
@@ -92,7 +93,7 @@ router.get("/api/in/:userId", async (req, res, next) => {
 });
 
 // Suggest event
-router.get("/api/suggest/:userId", async (req, res, next) => {
+router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
   try {
     const event = await Event.suggestEvent(req.params.userId);
     res.status(200).json(event);

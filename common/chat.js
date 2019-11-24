@@ -22,7 +22,7 @@ let getUser = async (userId) => {
 };
 
 let writeMessage = async (event, userId, message) => {
-  let user = getUser(userId);
+  let user = await getUser(userId);
 
   let messageObject = await MessageModel.create({
     username: user.name,
@@ -59,13 +59,13 @@ let notifyMessage = async (event, message) => {
  * @param {*} message
  */
 let handleMessage = async (eventId, userId, message) => {
-  let event = getEvent(eventId);
+  let event = await getEvent(eventId);
   await writeMessage(event, userId, message);
   await notifyMessage(event, message);
 };
 
 let getChatHistory = async (eventId) => {
-  let event = getEvent(eventId);
+  let event = await getEvent(eventId);
 
   let messages = event.chatMessages.map((e) => {
     return {

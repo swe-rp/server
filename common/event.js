@@ -11,7 +11,7 @@ const { performance } = require("perf_hooks");
 const TAG_MULTIPLIER = 10;
 const KEY_MULTIPLIER = 1;
 const TIME_MULTIPLIER = 5;
-const LOCATION_MULTIPLIER = 5;
+const LOCATION_MULTIPLIER = 5.0;
 
 let getEvent = async (eventId) => {
   let event = await EventModel.findById(eventId);
@@ -129,21 +129,28 @@ let getScore = (tagFreq, keyFreq, userLocation, event) => {
   let eventDescription = event.description.toLowerCase();
 
   keyFreq.forEach((e, key) => {
-    let occurences = (eventDescription.match(new RegExp(key, "g")) || []).length;
+    let occurences = (eventDescription.match(new RegExp(key, "g")) || [])
+      .length;
     score += KEY_MULTIPLIER * (keyFreq.get(key) + occurences);
   });
 
   // time
   let timeDiff = event.startTime.getTime() - performance.now();
 
-  score += TIME_MULTIPLIER * Math.exp( -timeDiff );
+  if (!isNaN(timeDiff)) {
+    score += TIME_MULTIPLIER * Math.exp(-timeDiff);
+  }
 
   // location
-  let userLocationArr = userLocation.split(',');
-  let eventLocationArr = event.location.split(',');
-  let locationDiff = Math.pow(userLocationArr[0] - eventLocationArr[0], 2) + Math.pow(userLocationArr[1] - eventLocationArr[1], 2)
+  let userLocationArr = userLocation.split(",").map(e => parseFloat(e));
+  let eventLocationArr = event.location.split(",").map(e => parseFloat(e));
+  let locationDiff =
+    Math.pow(userLocationArr[0] - eventLocationArr[0], 2) +
+    Math.pow(userLocationArr[1] - eventLocationArr[1], 2);
 
-  score += LOCATION_MULTIPLIER * Math.exp( -locationDiff );
+  if (!isNaN(locationDiff)) {
+    score += LOCATION_MULTIPLIER * Math.exp(-locationDiff);
+  }
 
   utils.debug("Score", score);
 
@@ -156,7 +163,9 @@ let tagAnalysis = (description) => {
       .use(pos)
       .use(keywords)
       .process(description, (err, done) => {
-        if (err) reject(err);
+        if (err) {
+          reject(err);
+        }
         resolve(done);
       });
   });
@@ -181,22 +190,18 @@ let mapSortEventByScore = async (attendedEvents, events, userLocation) => {
   for (let event of attendedEvents.data) {
     let data = await tagAnalysis(event.description);
 
-    utils.log(`Keywords for ${event.name}`);
-
-    let eventDescription = event.description.toLowerCase();
+    utils.debug(`Keywords for ${event.name}`);
 
     data.data.keywords.forEach((kw) => {
       let keyword = toString(kw.matches[0].node);
-      let keyCount = (eventDescription.match(new RegExp(keyword, "g")) || [])
-        .length;
 
-      utils.log(keyword, keyCount);
+      utils.debug(keyword);
 
       if (!keyFreq.has(keyword)) {
-        keyFreq.set(keyword, keyCount);
+        keyFreq.set(keyword, 0);
       }
 
-      let count = keyFreq.get(keyword) + keyCount;
+      let count = keyFreq.get(keyword) + 1;
       keyFreq.set(keyword, count);
     });
   }
@@ -231,20 +236,20 @@ let getAvailableEvents = async (userId, userLocation) => {
   }
 
   let today = new Date();
-  //   let tomorrow = new Date();
-
-  //   tomorrow.setDate(today.getDate() + 1);
 
   let query = EventModel.find();
 
   query.where("startTime").gte(today);
-  // .lt(tomorrow);
   query.where("attendantsList").nin(userId);
 
   let allEvents = await query.exec();
   let attendedEvents = await getAttendedEvents(userId);
 
-  let events = await mapSortEventByScore(attendedEvents, allEvents, userLocation);
+  let events = await mapSortEventByScore(
+    attendedEvents,
+    allEvents,
+    userLocation
+  );
 
   return {
     data: events

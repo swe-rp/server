@@ -23,14 +23,14 @@ const auth = require("../common/auth.js");
 //   }
 // });
 
-// router.get("/messages/:eventId", auth.middleware, async (req, res, next) => {
-//   try {
-//     let history = await chat.getChatHistory(req.params.eventId);
-//     res.status(200).json(history);
-//   } catch (err) {
-//     next({ success: false, message: err.message });
-//   }
-// });
+router.get("/messages/:eventId", auth.middleware, async (req, res, next) => {
+  try {
+    let history = await chat.getChatHistory(req.params.eventId);
+    res.status(200).json(history);
+  } catch (err) {
+    next({ success: false, message: err.message });
+  }
+});
 
 router.get("/init/:eventId", auth.middleware, async (req, res, next) => {
   let user = await User.getUser(req.header("userId"));

@@ -23,17 +23,19 @@ let createEvent = async (body) => {
     name: body.name,
     description: body.description,
     host: body.host,
-    attendantsList: body.attendantsList,
+    attendantsList: body.attendantsList || [body.host],
     startTime: body.startTime,
     endTime: body.endTime,
     tagList: body.tagList
   });
 
   await newEvent.save();
-  
+
   let user = await UserModel.findById(body.host);
 
-  await notifications.subscribeToTopic(newEvent.id, user.registrationToken);
+  if (user && user.registrationToken) {
+    await notifications.subscribeToTopic(newEvent.id, user.registrationToken);
+  }
 
   return {
     id: newEvent.id,
@@ -201,7 +203,9 @@ let addAttendant = async (id, userId) => {
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
-  await notifications.subscribeToTopic(event.id, user.registrationToken);
+  if (user && user.registrationToken) {
+    await notifications.subscribeToTopic(event.id, user.registrationToken);
+  }
 
   return {
     id: updated.id,
@@ -231,7 +235,9 @@ let removeAttendant = async (id, userId) => {
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
-  await notifications.unsubscribeFromTopic(event.id, user.registrationToken);
+  if (user && user.registrationToken) {
+    await notifications.unsubscribeFromTopic(event.id, user.registrationToken);
+  }
 
   return {
     id: updated.id,

@@ -6,33 +6,35 @@ const EVENT_MULTIPLIER = 5;
 
 let getEvent = async (eventId) => {
   let event = await EventModel.findById(eventId);
-  
+
   if (!event) {
     throw new Error("Event not found.");
   }
 
   return event;
-}
+};
 
-let wrongParams = (body) => {
-  return (
+let verifyParams = (body) => {
+  if (
     !body.name ||
     !body.description ||
     !body.host ||
     !body.startTime ||
-    !body.endTime
-  );
+    !body.endTime ||
+    !body.location
+  ) {
+    throw new Error("Some parameters are missing.");
+  }
 };
 
 let createEvent = async (body) => {
-  if (wrongParams(body)) {
-    throw "Wrong params";
-  }
+  verifyParams(body);
 
   let newEvent = new EventModel({
     name: body.name,
     description: body.description,
     host: body.host,
+    location: body.location,
     attendantsList: body.attendantsList || [body.host],
     startTime: body.startTime,
     endTime: body.endTime,
@@ -54,10 +56,6 @@ let createEvent = async (body) => {
 };
 
 let updateEvent = async (id, body, userId) => {
-  if (wrongParams(body)) {
-    throw "Wrong params";
-  }
-
   let event = await EventModel.findById(id);
 
   if (JSON.stringify(event.host) !== JSON.stringify(userId)) {
@@ -68,6 +66,7 @@ let updateEvent = async (id, body, userId) => {
     name: body.name || event.name,
     description: body.description || event.description,
     host: body.host || event.host,
+    location: body.location || event.location,
     startTime: body.startTime || event.startTime,
     endTime: body.endTime || event.endTime
   };
@@ -75,7 +74,7 @@ let updateEvent = async (id, body, userId) => {
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
   if (!updated) {
-    throw "Event does not exist";
+    throw new Error("Event does not exist");
   }
 
   return {
@@ -152,7 +151,7 @@ let mapSortEventByScore = (attendedEvents, events) => {
 let getAvailableEvents = async (userId) => {
   let user = await UserModel.findById(userId);
   if (!user) {
-    throw "User doesnt exist";
+    throw new Error("User doesnt exist");
   }
 
   let today = new Date();
@@ -179,7 +178,7 @@ let getAvailableEvents = async (userId) => {
 let getUserEvents = async (userId) => {
   let user = await UserModel.findById(userId);
   if (!user) {
-    throw "User doesnt exist";
+    throw new Error("User doesnt exist");
   }
 
   let today = new Date();
@@ -203,12 +202,12 @@ let getUserEvents = async (userId) => {
 let addAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
   if (!event) {
-    throw "Event doesnt exist";
+    throw new Error("Event doesnt exist");
   }
 
   let user = await UserModel.findById(userId);
   if (!user) {
-    throw "User doesnt exist";
+    throw new Error("User doesnt exist");
   }
 
   event.attendantsList.push(userId);
@@ -232,12 +231,12 @@ let addAttendant = async (id, userId) => {
 let removeAttendant = async (id, userId) => {
   let event = await EventModel.findById(id);
   if (!event) {
-    throw "Event doesnt exist";
+    throw new Error("Event doesnt exist");
   }
 
   let user = await UserModel.findById(userId);
   if (!user) {
-    throw "User doesnt exist";
+    throw new Error("User doesnt exist");
   }
 
   let newList = event.attendantsList.filter((e) => {
@@ -265,7 +264,7 @@ let suggestEvent = async (userId) => {
   let events = (await getAvailableEvents(userId)).data;
 
   if (events.length === 0) {
-    throw "No events";
+    throw new Error("No events");
   }
 
   return {

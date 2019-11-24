@@ -62,7 +62,7 @@ describe("non function requirements", () => {
       let testUser = new UserModel(TestData.user);
       await testUser.save();
 
-      await event.suggestEvent(testUser._id);
+      await event.suggestEvent(testUser._id, "1,1");
 
       let end = performance.now();
 

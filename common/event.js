@@ -6,9 +6,12 @@ const pos = require("retext-pos");
 const keywords = require("retext-keywords");
 const toString = require("nlcst-to-string");
 const utils = require("../common/utils.js");
+const { performance } = require("perf_hooks");
 
 const TAG_MULTIPLIER = 10;
 const KEY_MULTIPLIER = 1;
+const TIME_MULTIPLIER = 5;
+const LOCATION_MULTIPLIER = 5;
 
 let getEvent = async (eventId) => {
   let event = await EventModel.findById(eventId);
@@ -112,21 +115,35 @@ let getAttendedEvents = async (userId) => {
  * @param {Map} keyFreq
  * @param {*} event
  */
-let getScore = (tagFreq, keyFreq, event) => {
+let getScore = (tagFreq, keyFreq, userLocation, event) => {
   let score = 0;
 
+  // tags
   event.tagList.forEach((tag) => {
     if (tagFreq.has(tag)) {
       score += TAG_MULTIPLIER * tagFreq.get(tag);
     }
   });
 
+  // keywords
   let eventDescription = event.description.toLowerCase();
 
   keyFreq.forEach((e, key) => {
     let occurences = (eventDescription.match(new RegExp(key, "g")) || []).length;
     score += KEY_MULTIPLIER * (keyFreq.get(key) + occurences);
   });
+
+  // time
+  let timeDiff = event.startTime.getTime() - performance.now();
+
+  score += TIME_MULTIPLIER * Math.exp( -timeDiff );
+
+  // location
+  let userLocationArr = userLocation.split(',');
+  let eventLocationArr = event.location.split(',');
+  let locationDiff = Math.pow(userLocationArr[0] - eventLocationArr[0], 2) + Math.pow(userLocationArr[1] - eventLocationArr[1], 2)
+
+  score += LOCATION_MULTIPLIER * Math.exp( -locationDiff );
 
   utils.debug("Score", score);
 
@@ -145,7 +162,7 @@ let tagAnalysis = (description) => {
   });
 };
 
-let mapSortEventByScore = async (attendedEvents, events) => {
+let mapSortEventByScore = async (attendedEvents, events, userLocation) => {
   let tagFreq = new Map();
   let keyFreq = new Map();
 
@@ -185,7 +202,7 @@ let mapSortEventByScore = async (attendedEvents, events) => {
   }
 
   events.map((el) => {
-    el.score = getScore(tagFreq, keyFreq, el);
+    el.score = getScore(tagFreq, keyFreq, userLocation, el);
     return el;
   });
 
@@ -207,7 +224,7 @@ let mapSortEventByScore = async (attendedEvents, events) => {
   return events;
 };
 
-let getAvailableEvents = async (userId) => {
+let getAvailableEvents = async (userId, userLocation) => {
   let user = await UserModel.findById(userId);
   if (!user) {
     throw new Error("User doesnt exist");
@@ -227,7 +244,7 @@ let getAvailableEvents = async (userId) => {
   let allEvents = await query.exec();
   let attendedEvents = await getAttendedEvents(userId);
 
-  let events = await mapSortEventByScore(attendedEvents, allEvents);
+  let events = await mapSortEventByScore(attendedEvents, allEvents, userLocation);
 
   return {
     data: events
@@ -319,8 +336,8 @@ let removeAttendant = async (id, userId) => {
   };
 };
 
-let suggestEvent = async (userId) => {
-  let events = (await getAvailableEvents(userId)).data;
+let suggestEvent = async (userId, userLocation) => {
+  let events = (await getAvailableEvents(userId, userLocation)).data;
 
   if (events.length === 0) {
     throw new Error("No events");

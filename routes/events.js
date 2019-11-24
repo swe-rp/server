@@ -93,7 +93,7 @@ router.delete("/api/delete/:id", auth.middleware, async (req, res, next) => {
 
 router.get("/api/avail/:userId", auth.middleware, async (req, res, next) => {
   try {
-    const events = await Event.getAvailableEvents(req.params.userId);
+    const events = await Event.getAvailableEvents(req.params.userId, req.body.userLocation);
     events.message = "Sucess!";
     res.status(200).json(events);
   } catch (err) {
@@ -115,7 +115,7 @@ router.get("/api/in/:userId", auth.middleware, async (req, res, next) => {
 // Suggest event
 router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
   try {
-    const event = await Event.suggestEvent(req.params.userId);
+    const event = await Event.suggestEvent(req.params.userId, req.body.userLocation);
     event.message = "Success!";
     res.status(200).json(event);
   } catch (err) {

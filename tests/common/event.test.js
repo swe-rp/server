@@ -38,6 +38,16 @@ jest.mock("firebase-admin", () => {
   };
 });
 
+// const utils = require("../../common/utils.js");
+// // Supress the logging
+// jest.mock("../../common/utils.js", () => {
+//   return {
+//     log: (e) => {},
+//     error: (e) => {},
+//     debug: (e) => {}
+//   };
+// });
+
 describe("events", () => {
   let db;
 

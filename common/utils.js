@@ -13,7 +13,14 @@ let error = (...args) => {
   console.log(timestamp, ...args);
 };
 
+let debug = (...args) => {
+  let timestamp = "\x1b[33m[" + new Date().toUTCString() + "]\x1b[0m";
+  // eslint-disable-next-line no-console
+  console.log(timestamp, ...args);
+};
+
 module.exports = {
   log,
-  error
+  error,
+  debug
 };

@@ -1,8 +1,14 @@
 const EventModel = require("../models/event");
 const UserModel = require("../models/user");
 const notifications = require("./notification.js");
+const retext = require("retext");
+const pos = require("retext-pos");
+const keywords = require("retext-keywords");
+const toString = require("nlcst-to-string");
+const utils = require("../common/utils.js");
 
-const EVENT_MULTIPLIER = 5;
+const TAG_MULTIPLIER = 10;
+const KEY_MULTIPLIER = 1;
 
 let getEvent = async (eventId) => {
   let event = await EventModel.findById(eventId);
@@ -103,23 +109,47 @@ let getAttendedEvents = async (userId) => {
 /**
  * Just a placeholder to specify type.
  * @param {Map} tagFreq
+ * @param {Map} keyFreq
  * @param {*} event
  */
-let getScore = (tagFreq, event) => {
+let getScore = (tagFreq, keyFreq, event) => {
   let score = 0;
 
   event.tagList.forEach((tag) => {
     if (tagFreq.has(tag)) {
-      score += EVENT_MULTIPLIER * tagFreq.get(tag);
+      score += TAG_MULTIPLIER * tagFreq.get(tag);
     }
   });
+
+  let eventDescription = event.description.toLowerCase();
+
+  keyFreq.forEach((e, key) => {
+    let occurences = (eventDescription.match(new RegExp(key, "g")) || []).length;
+    score += KEY_MULTIPLIER * (keyFreq.get(key) + occurences);
+  });
+
+  utils.debug("Score", score);
 
   return score;
 };
 
-let mapSortEventByScore = (attendedEvents, events) => {
-  let tagFreq = new Map();
+let tagAnalysis = (description) => {
+  return new Promise((resolve, reject) => {
+    retext()
+      .use(pos)
+      .use(keywords)
+      .process(description, (err, done) => {
+        if (err) reject(err);
+        resolve(done);
+      });
+  });
+};
 
+let mapSortEventByScore = async (attendedEvents, events) => {
+  let tagFreq = new Map();
+  let keyFreq = new Map();
+
+  // Consider the tags first
   attendedEvents.data.forEach((event) => {
     event.tagList.forEach((tag) => {
       if (!tagFreq.has(tag)) {
@@ -130,8 +160,32 @@ let mapSortEventByScore = (attendedEvents, events) => {
     });
   });
 
+  // Consider the keywords next
+  for (let event of attendedEvents.data) {
+    let data = await tagAnalysis(event.description);
+
+    utils.log(`Keywords for ${event.name}`);
+
+    let eventDescription = event.description.toLowerCase();
+
+    data.data.keywords.forEach((kw) => {
+      let keyword = toString(kw.matches[0].node);
+      let keyCount = (eventDescription.match(new RegExp(keyword, "g")) || [])
+        .length;
+
+      utils.log(keyword, keyCount);
+
+      if (!keyFreq.has(keyword)) {
+        keyFreq.set(keyword, keyCount);
+      }
+
+      let count = keyFreq.get(keyword) + keyCount;
+      keyFreq.set(keyword, count);
+    });
+  }
+
   events.map((el) => {
-    el.score = getScore(tagFreq, el);
+    el.score = getScore(tagFreq, keyFreq, el);
     return el;
   });
 
@@ -173,7 +227,7 @@ let getAvailableEvents = async (userId) => {
   let allEvents = await query.exec();
   let attendedEvents = await getAttendedEvents(userId);
 
-  let events = mapSortEventByScore(attendedEvents, allEvents);
+  let events = await mapSortEventByScore(attendedEvents, allEvents);
 
   return {
     data: events

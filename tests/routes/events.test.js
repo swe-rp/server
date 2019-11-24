@@ -22,7 +22,6 @@ const db = require("../../db/mongoose.js");
 const mongoose = require("mongoose");
 const EventModel = require("../../models/event");
 const UserModel = require("../../models/user");
-const utils = require("../../common/utils.js");
 
 const admin = require("firebase-admin");
 
@@ -72,7 +71,8 @@ jest.mock("../../common/auth.js", () => {
 jest.mock("../../common/utils.js", () => {
   return {
     log: (e) => {},
-    error: (e) => {}
+    error: (e) => {},
+    debug: (e) => {}
   };
 });
 

@@ -12,6 +12,16 @@ function getRandomInt(min, max) {
 }
 jest.setTimeout(30000);
 
+const utils = require("../common/utils.js");
+// Supress the logging
+jest.mock("../common/utils.js", () => {
+  return {
+    log: (e) => {},
+    error: (e) => {},
+    debug: (e) => {}
+  };
+});
+
 describe("non function requirements", () => {
   let db;
 

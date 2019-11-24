@@ -5,10 +5,11 @@ const Event = require("../common/event");
 const User = require("../common/user");
 const utils = require("../common/utils");
 const notifications = require("../common/notification");
+const auth = require("../common/auth.js");
 
 // Event api
 // Create event
-router.post("/api", async (req, res, next) => {
+router.post("/api", auth.middleware, async (req, res, next) => {
   try {
     const newEvent = await Event.createEvent(req.body);
     res.status(200).json(newEvent);
@@ -53,10 +54,19 @@ router.put("/api/remove/:id/:userId", async (req, res, next) => {
 });
 
 //Edit event
-router.put("/api/:id", async (req, res, next) => {
+router.put("/api/edit/:id/:userId", async (req, res, next) => {
   try {
     const updatedEvent = await Event.updateEvent(req.params.id, req.body);
     res.status(200).json(updatedEvent);
+  } catch (err) {
+    next({ success: false, message: err.message });
+  }
+});
+
+// Delete event
+router.delete("/api/delete/:id/:userId", async (req, res, next) => {
+  try {
+    const updatedEvent = await Event.deleteEvent(req.params.id);
   } catch (err) {
     next({ success: false, message: err.message });
   }

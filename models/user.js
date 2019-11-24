@@ -9,11 +9,8 @@ let userSchema = new mongoose.Schema({
   // going_events_list: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.EVENT} ],
   // plans_list: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.PLAN} ],
   facebookId: { type: String, required: true, unique: true },
-  registrationToken: { type: String, required: true }
+  registrationToken: { type: String, required: true },
+  accessToken: { type: String, required: true, unique: true }
 });
 
 module.exports = mongoose.model(modelNames.USER, userSchema);
-
-// async function getUser(id){
-//     return await UserModel.findById(id);
-// }

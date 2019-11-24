@@ -27,7 +27,8 @@ router
         );
         res.status(200).json({
           success: true,
-          userId: userValue.id
+          userId: userValue.id,
+          accessToken: userValue.accessToken
         });
       } catch (e) {
         next(e);

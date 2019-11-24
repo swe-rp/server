@@ -23,7 +23,7 @@ let verifyParams = (body) => {
     !body.endTime ||
     !body.location
   ) {
-    throw new Error("Some parameters are missing.");
+    throw new Error("Wrong params");
   }
 };
 
@@ -57,6 +57,10 @@ let createEvent = async (body) => {
 
 let updateEvent = async (id, body, userId) => {
   let event = await EventModel.findById(id);
+
+  if (!event) {
+    throw new Error("Event does not exist");
+  }
 
   if (JSON.stringify(event.host) !== JSON.stringify(userId)) {
     throw new Error("You aren't the host!");

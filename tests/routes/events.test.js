@@ -58,6 +58,16 @@ jest.mock("firebase-admin", () => {
   };
 });
 
+const auth = require("../../common/auth.js");
+
+jest.mock("../../common/auth.js", () => {
+  return {
+    middleware: (req, res, next) => {
+      next();
+    }
+  };
+});
+
 // Supress the logging
 jest.mock("../../common/utils.js", () => {
   return {
@@ -193,9 +203,10 @@ describe("routes/events.js tests", () => {
     updated.description = "new description";
     let expectedReturn = createExpectedReturn(updated);
     request(app)
-      .put(`/events/api/${eventId}`)
+      .put(`/events/api/edit/${eventId}`)
       .send(updated)
       .set("Accept", "application/json")
+      .set("userId", TestData.completeEvent.host)
       .expect("Content-Type", /json/)
       .end((err, res) => {
         expect(res.status).toBe(200);
@@ -208,7 +219,7 @@ describe("routes/events.js tests", () => {
     let updated = Object.assign({}, TestData.completeEvent);
     updated.description = null;
     request(app)
-      .put(`/events/api/${eventId}`)
+      .put(`/events/api/edit/${eventId}`)
       .send(updated)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
@@ -378,16 +389,6 @@ describe("routes/events.js tests", () => {
       .expect("Content-Type", /json/)
       .end((err, res) => {
         expect(res.status).toBe(200);
-        done();
-      });
-  });
-
-  test("create event endpoint, user doesn't exist", (done) => {
-    request(app)
-      .get(`/events/create/missing`)
-      .expect("Content-Type", /json/)
-      .end((err, res) => {
-        expect(res.status).toBe(500);
         done();
       });
   });

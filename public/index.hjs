@@ -91,10 +91,10 @@
 
       // Set the values for the startTime and endTime
       document.getElementById("start-time").value = (("{{ startTime }}") ?
-        moment.utc("{{ startTime }}") : moment.utc()).local().format('YYYY-MM-DDTHH:mm');
+        moment.utc("{{ startTime }}") : moment.utc()).local().format("YYYY-MM-DDTHH:mm");
 
       document.getElementById("end-time").value = (("{{ endTime }}") ?
-        moment.utc("{{ endTime }}") : moment.utc()).local().format('YYYY-MM-DDTHH:mm');
+        moment.utc("{{ endTime }}") : moment.utc()).local().format("YYYY-MM-DDTHH:mm");
 
       initializeLocation();
     });

@@ -19,7 +19,7 @@ let eventSchema = new mongoose.Schema({
         required: true
       },
       message: { type: String, required: true },
-      timestamp: { type: Date, required: true }    
+      timestamp: { type: Date, required: true }
     }
   ],
   location: { type: String },

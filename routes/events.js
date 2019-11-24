@@ -85,7 +85,7 @@ router.put("/api/edit/:id", auth.middleware, async (req, res, next) => {
 router.delete("/api/delete/:id", auth.middleware, async (req, res, next) => {
   try {
     await Event.deleteEvent(req.params.id, req.header("userId"));
-    res.status(200).send({message: "Success!"});
+    res.status(200).send({ message: "Success!" });
   } catch (err) {
     next({ success: false, message: err.message });
   }

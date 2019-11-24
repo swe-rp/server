@@ -6,6 +6,7 @@ let completeEvent = {
   name: "event",
   description: "event description",
   host: GLOBAL_USER_ID,
+  location: "loc",
   attendantsList: [GLOBAL_USER_ID],
   startTime: 12323232,
   endTime: 12323232,
@@ -24,7 +25,8 @@ let incompleteEvent = {
 let user = {
   name: "Sam",
   facebookId: "1",
-  registrationToken: "randomToken"
+  registrationToken: "randomToken",
+  accessToken: "access"
 };
 
 let eventArray = [

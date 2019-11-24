@@ -38,7 +38,6 @@ jest.mock("firebase-admin", () => {
   };
 });
 
-
 describe("events", () => {
   let db;
 
@@ -75,7 +74,7 @@ describe("events", () => {
       let testEvent = Object.assign({}, TestData.incompleteEvent);
 
       await expect(event.createEvent(testEvent)).rejects.toEqual(
-        "Wrong params"
+        new Error("Wrong params")
       );
     });
   });
@@ -91,17 +90,13 @@ describe("events", () => {
       expectedEvent.endTime = new Date(expectedEvent.endTime);
       expectedEvent.description = "new desc";
 
-      let retVal = await event.updateEvent(testEvent._id, testEvent);
+      let retVal = await event.updateEvent(
+        testEvent._id,
+        testEvent,
+        testEvent.host
+      );
 
       expect(retVal.data.toJSON()).toMatchObject(expectedEvent);
-    });
-
-    test("Update incomplete event", async () => {
-      let testEvent = Object.assign({}, TestData.incompleteEvent);
-
-      await expect(event.updateEvent(testEvent._id, testEvent)).rejects.toEqual(
-        "Wrong params"
-      );
     });
 
     test("Update unexistent event", async () => {
@@ -109,7 +104,7 @@ describe("events", () => {
 
       await expect(
         event.updateEvent(mongoose.Types.ObjectId(), testEvent)
-      ).rejects.toEqual("Event does not exist");
+      ).rejects.toEqual(new Error("Event does not exist"));
     });
   });
 
@@ -133,7 +128,7 @@ describe("events", () => {
     test("Get available events for unexisting user", async () => {
       await expect(
         event.getAvailableEvents(mongoose.Types.ObjectId())
-      ).rejects.toEqual("User doesnt exist");
+      ).rejects.toEqual(new Error("User doesnt exist"));
     });
   });
 
@@ -158,7 +153,7 @@ describe("events", () => {
     test("Get user events for unexisting user", async () => {
       await expect(
         event.getUserEvents(mongoose.Types.ObjectId())
-      ).rejects.toEqual("User doesnt exist");
+      ).rejects.toEqual(new Error("User doesnt exist"));
     });
   });
 
@@ -178,7 +173,7 @@ describe("events", () => {
     test("Add attendant for unexisting event", async () => {
       await expect(
         event.addAttendant(mongoose.Types.ObjectId(), mongoose.Types.ObjectId())
-      ).rejects.toEqual("Event doesnt exist");
+      ).rejects.toEqual(new Error("Event doesnt exist"));
     });
 
     test("Add attendant for unexisting user", async () => {
@@ -187,7 +182,7 @@ describe("events", () => {
 
       await expect(
         event.addAttendant(testEvent._id, mongoose.Types.ObjectId())
-      ).rejects.toEqual("User doesnt exist");
+      ).rejects.toEqual(new Error("User doesnt exist"));
     });
   });
 
@@ -213,7 +208,7 @@ describe("events", () => {
           mongoose.Types.ObjectId(),
           mongoose.Types.ObjectId()
         )
-      ).rejects.toEqual("Event doesnt exist");
+      ).rejects.toEqual(new Error("Event doesnt exist"));
     });
 
     test("Remove attendant for unexisting user", async () => {
@@ -222,7 +217,7 @@ describe("events", () => {
 
       await expect(
         event.removeAttendant(testEvent._id, mongoose.Types.ObjectId())
-      ).rejects.toEqual("User doesnt exist");
+      ).rejects.toEqual(new Error("User doesnt exist"));
     });
   });
 
@@ -232,7 +227,7 @@ describe("events", () => {
       await testUser.save();
 
       await expect(event.suggestEvent(testUser._id)).rejects.toEqual(
-        "No events"
+        new Error("No events")
       );
     });
 
@@ -291,7 +286,7 @@ describe("events", () => {
     test("Get suggested events for unexisting user", async () => {
       await expect(
         event.suggestEvent(mongoose.Types.ObjectId())
-      ).rejects.toEqual("User doesnt exist");
+      ).rejects.toEqual(new Error("User doesnt exist"));
     });
   });
 

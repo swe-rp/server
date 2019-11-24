@@ -8,17 +8,6 @@
   <script>
     let autocomplete;
 
-    let getUserId = () => {
-      let urlArray = window.location.href.toString().split("/");
-
-      // If empty string, we go to next
-      if (urlArray[urlArray.length - 1]) {
-        return urlArray[urlArray.length - 1];
-      } else {
-        return urlArray[urlArray.length - 2];
-      }
-    };
-
     let getElementValue = (elem) => {
       return document.getElementById(elem).value;
     };
@@ -32,7 +21,7 @@
       let form = {
         name: getElementValue("name"),
         description: getElementValue("description"),
-        host: getUserId(),
+        host: {{ userId }},
         startTime: new Date(getElementValue("start-time")).toUTCString(),
         endTime: new Date(getElementValue("end-time")).toUTCString(),
         tags: getElementValue("tags")
@@ -53,10 +42,6 @@
 
     let initializeLocation = () => {
       let input = document.getElementById("location-search");
-      input.addEventListener("keydown", () => {
-        let place = autocomplete.getPlace();
-        console.log(place.geometry.location.lat(), place.geometry.location.lng());
-      })
       autocomplete = new google.maps.places.Autocomplete(input);
     };
 

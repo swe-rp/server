@@ -89,7 +89,6 @@
       let messageList = document.getElementById("messages");
       getMessages().then((messages) => {
         messages.map((e) => {
-          console.log(e);
           appendMessage(e.message, e.timestamp, e.userId, e.username);
         });
         initializeSocketIo();

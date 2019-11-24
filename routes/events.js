@@ -120,38 +120,39 @@ router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
  * Temporarily allow us to create events through a webpage.
  */
 // TODO add auth middleware
-router.get("/create/:userId", async (req, res, next) => {
-  if (await User.doesUserExist(req.params.userId)) {
-    res.render("index", {
-      title: "Create",
-      requestType: "POST",
-      requestUrl: "https://api.evnt.me/events/api",
-      accessToken: req.header("accessToken"),
-      userId: req.header("userId")
-    });
-  } else {
-    res.status(500).send("No user.");
-  }
+router.get("/create/:userId", auth.middleware, async (req, res, next) => {
+  res.render("index", {
+    title: "Create",
+    requestType: "POST",
+    requestUrl: "https://api.evnt.me/events/api",
+    accessToken: req.header("accessToken"),
+    userId: req.header("userId"),
+    locationText: "Set value.."
+  });
 });
 
-router.get("/edit/:eventId", async (req, res, next) => {
-  let event = await Event.getEvent(req.params.eventId);
-  let obj = {
+router.get("/edit/:eventId", auth.middleware, async (req, res, next) => {
+  let event = {};
+  try {
+    event = await Event.getEvent(req.params.eventId);
+  } catch (err) {
+    next({ success: false, message: "Event not found." });
+  }
+  res.render("index", {
     title: "Edit",
     requestType: "PUT",
-    requestUrl: "https://api.evnt.me/events/api/delete/" + req.params.eventId,
+    requestUrl: "https://api.evnt.me/events/api/edit/" + req.params.eventId,
     accessToken: req.header("accessToken"),
     userId: req.header("userId"),
     name: event.name,
     description: event.description,
+    locationText: "Edit value..",
     startTime: event.startTime,
     endTime: event.endTime,
     tags: event.tagList.reduce((prev, curr) => {
       prev + "," + curr;
     }, "")
-  };
-  console.log(obj);
-  res.render("index", obj);
+  });
 });
 
 // TODO this should be removed

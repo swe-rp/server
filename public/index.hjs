@@ -5,6 +5,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.3/moment-with-locales.min.js"></script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC7h7ZM2wXgYdNYHkui7J2K9Z9gU63XNkc&libraries=places"></script>
   <script>
+    let autocomplete;
+
     let getUserId = () => {
       let urlArray = window.location.href.toString().split("/");
 
@@ -38,11 +40,16 @@
           .split(",")
       };
 
+      let place = autocomplete.getPlace();
+
       if (!form.name) {
         setMessage("Name cannot be empty!");
         return null;
       } else if (!form.description) {
         setMessage("Description cannot be empty!");
+        return null;
+      } else if (!place) {
+        setMessage("Invalid location!");
         return null;
       } else if (
         form.startTime.startsWith("Invalid") ||
@@ -52,6 +59,7 @@
         setMessage("Invalid dates!");
         return null;
       } else {
+        form.location = `${place.geometry.location.lat()},${place.geometry.location.lng()}`;
         setMessage("Form processed.");
         return form;
       }
@@ -59,7 +67,11 @@
 
     let initializeLocation = () => {
       let input = document.getElementById("location-search");
-      new google.maps.places.Autocomplete(input);
+      input.addEventListener("keydown", () => {
+        let place = autocomplete.getPlace();
+        console.log(place.geometry.location.lat(), place.geometry.location.lng());
+      })
+      autocomplete = new google.maps.places.Autocomplete(input);
     };
 
     document.addEventListener("DOMContentLoaded", (e) => {
@@ -147,7 +159,7 @@
   </div>
   <div>
     <label for="location">Location</label>
-    <input id="location-search" type="text">
+    <input id="location-search" type="text" placeholder="{{ locationText }}" >
   </div>
   <div>
     <label for="start-time">Start time</label>

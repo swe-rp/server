@@ -288,7 +288,10 @@ describe("events", () => {
       testEvent.startTime = tomorrow;
       await testEvent.save();
 
-      let retVal = await event.suggestEvent(testUser._id, TestData.completeEvent.location);
+      let retVal = await event.suggestEvent(
+        testUser._id,
+        TestData.completeEvent.location
+      );
 
       expect(retVal.data._id).toEqual(expected);
     });

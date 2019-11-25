@@ -42,7 +42,7 @@ let mapEventToUserId = async (events) => {
 
   for (let event of events) {
     let eventJSON = event.toJSON();
-    let user = {name: "Anonymous"};
+    let user = { name: "Anonymous" };
     try {
       user = await User.getUser(event.host);
     } catch (e) {
@@ -53,7 +53,7 @@ let mapEventToUserId = async (events) => {
   }
 
   return readableEvents;
-}
+};
 
 let createEvent = async (body) => {
   verifyParams(body);
@@ -162,12 +162,12 @@ let getScore = (tagFreq, keyFreq, userLocation, event) => {
 
   // location
   try {
-    let userLocationArr = userLocation.split(",").map(e => parseFloat(e));
-    let eventLocationArr = event.location.split(",").map(e => parseFloat(e));
+    let userLocationArr = userLocation.split(",").map((e) => parseFloat(e));
+    let eventLocationArr = event.location.split(",").map((e) => parseFloat(e));
     let locationDiff =
       Math.pow(userLocationArr[0] - eventLocationArr[0], 2) +
       Math.pow(userLocationArr[1] - eventLocationArr[1], 2);
-  
+
     if (!isNaN(locationDiff)) {
       score += LOCATION_MULTIPLIER * Math.exp(-locationDiff);
     }

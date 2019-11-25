@@ -1,8 +1,6 @@
 const express = require("express");
-const path = require("path");
 const router = new express.Router();
 const Event = require("../common/event");
-const User = require("../common/user");
 const utils = require("../common/utils");
 const notifications = require("../common/notification");
 const auth = require("../common/auth.js");
@@ -93,7 +91,10 @@ router.delete("/api/delete/:id", auth.middleware, async (req, res, next) => {
 
 router.get("/api/avail/:userId", auth.middleware, async (req, res, next) => {
   try {
-    const events = await Event.getAvailableEvents(req.params.userId, req.body.userLocation);
+    const events = await Event.getAvailableEvents(
+      req.params.userId,
+      req.body.userLocation
+    );
     events.message = "Sucess!";
     res.status(200).json(events);
   } catch (err) {
@@ -115,7 +116,10 @@ router.get("/api/in/:userId", auth.middleware, async (req, res, next) => {
 // Suggest event
 router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
   try {
-    const event = await Event.suggestEvent(req.params.userId, req.body.userLocation);
+    const event = await Event.suggestEvent(
+      req.params.userId,
+      req.body.userLocation
+    );
     event.message = "Success!";
     res.status(200).json(event);
   } catch (err) {
@@ -156,7 +160,7 @@ router.get("/edit/:eventId", auth.middleware, async (req, res, next) => {
     startTime: event.startTime,
     endTime: event.endTime,
     tags: event.tagList.reduce((prev, curr) => {
-      return (prev) ? prev + "," + curr : curr;
+      return prev ? prev + "," + curr : curr;
     }, "")
   });
 });

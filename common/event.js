@@ -10,9 +10,9 @@ const utils = require("../common/utils.js");
 
 const TAG_MULTIPLIER = 10;
 const KEY_MULTIPLIER = 2;
-const TIME_MULTIPLIER = 20;
-const TIME_FACTOR = 1000 * 3600 * 72;
-const LOCATION_MULTIPLIER = 5.0;
+const TIME_MULTIPLIER = 30;
+const TIME_FACTOR = 1000 * 3600 * 144;
+const LOCATION_MULTIPLIER = 20;
 
 let getEvent = async (eventId) => {
   let event = await EventModel.findById(eventId);
@@ -112,7 +112,6 @@ let updateEvent = async (id, body, userId) => {
     utils.debug("Event tag list didn't come as a JSON.");
   }
 
-
   let update = {
     name: body.name || event.name,
     description: body.description || event.description,
@@ -159,12 +158,15 @@ let getAttendedEvents = async (userId) => {
  * @param {*} event
  */
 let getScore = (tagFreq, keyFreq, userLocation, event) => {
-  let score = 0;
+  let tagScore = 0;
+  let keyScore = 0;
+  let timeScore = 0;
+  let locationScore = 0;
 
   // tags
   event.tagList.forEach((tag) => {
     if (tagFreq.has(tag)) {
-      score += TAG_MULTIPLIER * tagFreq.get(tag);
+      tagScore += TAG_MULTIPLIER * tagFreq.get(tag);
     }
   });
 
@@ -174,14 +176,14 @@ let getScore = (tagFreq, keyFreq, userLocation, event) => {
   keyFreq.forEach((e, key) => {
     let occurences = (eventDescription.match(new RegExp(key, "g")) || [])
       .length;
-    score += KEY_MULTIPLIER * (keyFreq.get(key) + occurences);
+    keyScore += KEY_MULTIPLIER * (keyFreq.get(key) + occurences);
   });
 
   // time
   let timeDiff = event.startTime.getTime() - Date.now();
 
   if (!isNaN(timeDiff)) {
-    score += TIME_MULTIPLIER * Math.exp(-timeDiff / TIME_FACTOR);
+    timeScore += TIME_MULTIPLIER * Math.exp(-timeDiff / TIME_FACTOR);
   }
 
   // location
@@ -193,18 +195,29 @@ let getScore = (tagFreq, keyFreq, userLocation, event) => {
       Math.pow(userLocationArr[1] - eventLocationArr[1], 2);
 
     if (!isNaN(locationDiff)) {
-      score += LOCATION_MULTIPLIER * Math.exp(-locationDiff);
+      locationScore += LOCATION_MULTIPLIER * Math.exp(-locationDiff);
     }
   } catch (err) {
-    utils.error("Error with locations", err);
+    utils.error("Error with location, skipping.");
   }
 
-  utils.debug("Score", score);
+  let score = tagScore + keyScore + timeScore + locationScore;
+
+  utils.debug("For event:", event.name);
+  utils.debug("Tags:", event.tagList);
+  utils.debug("Description:", event.description);
+  utils.debug("Total Score:", score);
+  utils.debug({
+    tag: tagScore,
+    key: keyScore,
+    time: timeScore,
+    location: locationScore
+  });
 
   return score;
 };
 
-let tagAnalysis = (description) => {
+let keywordAnalysis = (description) => {
   return new Promise((resolve, reject) => {
     retext()
       .use(pos)
@@ -235,7 +248,7 @@ let mapSortEventByScore = async (attendedEvents, events, userLocation) => {
 
   // Consider the keywords next
   for (let event of attendedEvents.data) {
-    let data = await tagAnalysis(event.description);
+    let data = await keywordAnalysis(event.description);
 
     utils.debug(`Keywords for ${event.name}`);
 

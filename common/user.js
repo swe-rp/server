@@ -5,6 +5,7 @@ const notification = require("./notification.js");
 
 const TOKEN_SIZE = 30;
 const NULL_TOKEN = "NULL";
+const EVENT_TOPIC = "event";
 
 let generateToken = () => {
   let id = "";
@@ -46,6 +47,10 @@ let userLogin = async (profile, registrationToken) => {
     registrationToken
   });
 
+  let existingUser = await UserModel.findOne({ facebookId: profile.id });
+
+  notification.subscribeToTopic(EVENT_TOPIC, registrationToken);
+
   if (userToRegistrationToken) {
     utils.debug("Unsubscribing old user.");
     let oldUserEvents = await event.getAttendedEvents(
@@ -59,8 +64,6 @@ let userLogin = async (profile, registrationToken) => {
       notification.unsubscribeFromTopic(event.id, registrationToken);
     }
   }
-
-  let existingUser = await UserModel.findOne({ facebookId: profile.id });
 
   if (existingUser) {
     utils.debug("Existing user, subscribing to events.");

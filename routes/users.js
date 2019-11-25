@@ -19,12 +19,6 @@ router
         );
         utils.log("User authenticated", req.user);
         utils.log("Reg token:", req.header("registration_token"));
-        utils.log(
-          await notifications.subscribeToTopic(
-            "event",
-            req.header("registration_token")
-          )
-        );
         res.status(200).json({
           success: true,
           userId: userValue.id,

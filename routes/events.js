@@ -156,7 +156,7 @@ router.get("/edit/:eventId", auth.middleware, async (req, res, next) => {
     startTime: event.startTime,
     endTime: event.endTime,
     tags: event.tagList.reduce((prev, curr) => {
-      prev + "," + curr;
+      return (prev) ? prev + "," + curr : curr;
     }, "")
   });
 });

@@ -28,6 +28,9 @@
           .toLowerCase()
           .replace(/ /g, "")
           .split(",")
+          .filter((e) => {
+            return e;
+          })
       };
 
       let place = autocomplete.getPlace();

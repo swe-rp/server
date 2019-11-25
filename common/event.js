@@ -1,6 +1,5 @@
 const EventModel = require("../models/event");
 const UserModel = require("../models/user");
-const User = require("./user.js");
 const notifications = require("./notification.js");
 const retext = require("retext");
 const pos = require("retext-pos");
@@ -42,9 +41,13 @@ let mapEventToUserId = async (events) => {
 
   for (let event of events) {
     let eventJSON = event.toJSON();
-    let user = { name: "Anonymous" };
+    let user;
     try {
-      user = await User.getUser(event.host);
+      user = await UserModel.findById(event.host);
+      if (!user) {
+        user = { name: "Anonymous" };
+        throw new Error("User doesn't exist.");
+      }
     } catch (e) {
       utils.debug(e);
     }

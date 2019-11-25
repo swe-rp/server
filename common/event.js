@@ -103,6 +103,16 @@ let updateEvent = async (id, body, userId) => {
     throw new Error("You aren't the host!");
   }
 
+  let tagList = body.tagList || event.tagList;
+
+  try {
+    tagList = JSON.parse(body.tagList);
+    utils.debug("Event tag list came as JSON.");
+  } catch (e) {
+    utils.debug("Event tag list didn't come as a JSON.");
+  }
+
+
   let update = {
     name: body.name || event.name,
     description: body.description || event.description,
@@ -110,7 +120,7 @@ let updateEvent = async (id, body, userId) => {
     location: body.location || event.location,
     startTime: body.startTime || event.startTime,
     endTime: body.endTime || event.endTime,
-    tagList: body.tagList || event.tagList
+    tagList: tagList
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
@@ -118,6 +128,11 @@ let updateEvent = async (id, body, userId) => {
   if (!updated) {
     throw new Error("Event does not exist");
   }
+
+  await notifications.sendNotification(newEvent.id, {
+    title: `${event.name} updated!`,
+    body: "Check it out in the app."
+  });
 
   return {
     id: updated.id,
@@ -405,7 +420,17 @@ let deleteEvent = async (id, userId) => {
     throw new Error("You're not the host!");
   }
 
+  let deletedEvent = {
+    id: event.id,
+    name: event.name
+  };
+
   await EventModel.findByIdAndDelete(event.id);
+
+  await notifications.sendNotification(id, {
+    title: `${deletedEvent.name} deleted!`,
+    body: "Sorry about that."
+  });
 };
 
 module.exports = {

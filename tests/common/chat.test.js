@@ -150,9 +150,9 @@ describe("chat", () => {
     });
 
     test("Get chat history for unexisting event", async () => {
-      await expect(chat.getChatHistory(mongoose.Types.ObjectId())).rejects.toEqual(
-        new Error("Event not found.")
-      );
+      await expect(
+        chat.getChatHistory(mongoose.Types.ObjectId())
+      ).rejects.toEqual(new Error("Event not found."));
     });
   });
 

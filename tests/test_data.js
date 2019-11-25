@@ -6,7 +6,7 @@ let completeEvent = {
   name: "event",
   description: "event description",
   host: GLOBAL_USER_ID,
-  location: "loc",
+  location: "1,1",
   attendantsList: [GLOBAL_USER_ID],
   startTime: 12323232,
   endTime: 12323232,
@@ -29,39 +29,16 @@ let user = {
   accessToken: "access"
 };
 
-let eventArray = [
-  {
-    _id: mongoose.Types.ObjectId(),
-    name: "event1",
-    description: "event description",
-    host: GLOBAL_USER_ID,
-    attendantsList: [GLOBAL_USER_ID],
-    startTime: "12323232",
-    endTime: "12323232",
-    tagList: ["fun", "social"]
-  }
-];
-
-let userArray = [
-  {
-    name: "Sam",
-    facebookId: "1",
-    registrationToken: "randomToken"
-  },
-  {
-    name: "Dry",
-    facebookId: "2",
-    registrationToken: "anotherRandomToken"
-  },
-  {
-    name: "Test",
-    facebookId: "3",
-    registrationToken: "yetAnotherToken"
-  }
-];
+let user2 = {
+  name: "Darth",
+  facebookId: "2",
+  registrationToken: "fff",
+  accessToken: "access2"
+};
 
 module.exports = {
-  completeEvent: completeEvent,
-  incompleteEvent: incompleteEvent,
-  user: user
+  completeEvent,
+  incompleteEvent,
+  user,
+  user2
 };

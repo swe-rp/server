@@ -142,27 +142,26 @@ router.get("/create", auth.middleware, async (req, res, next) => {
 });
 
 router.get("/edit/:eventId", auth.middleware, async (req, res, next) => {
-  let event = {};
   try {
-    event = await Event.getEvent(req.params.eventId);
+    let event = await Event.getEvent(req.params.eventId);
+    res.render("index", {
+      title: "Edit",
+      requestType: "PUT",
+      requestUrl: "https://api.evnt.me/events/api/edit/" + req.params.eventId,
+      accessToken: req.header("accessToken"),
+      userId: req.header("userId"),
+      name: event.name,
+      description: event.description,
+      locationText: "Edit value..",
+      startTime: event.startTime,
+      endTime: event.endTime,
+      tags: event.tagList.reduce((prev, curr) => {
+        return prev ? prev + "," + curr : curr;
+      }, "")
+    });
   } catch (err) {
     next({ success: false, message: "Event not found." });
   }
-  res.render("index", {
-    title: "Edit",
-    requestType: "PUT",
-    requestUrl: "https://api.evnt.me/events/api/edit/" + req.params.eventId,
-    accessToken: req.header("accessToken"),
-    userId: req.header("userId"),
-    name: event.name,
-    description: event.description,
-    locationText: "Edit value..",
-    startTime: event.startTime,
-    endTime: event.endTime,
-    tags: event.tagList.reduce((prev, curr) => {
-      return prev ? prev + "," + curr : curr;
-    }, "")
-  });
 });
 
 module.exports = router;

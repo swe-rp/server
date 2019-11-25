@@ -80,7 +80,7 @@ let createExpectedReturn = (event) => {
   let expectedEvent = Object.assign({}, event);
   expectedEvent.startTime = new Date(event.startTime).toISOString();
   expectedEvent.endTime = new Date(event.endTime).toISOString();
-  expectedEvent.host = event.host.toString();
+  delete expectedEvent.host;
   expectedEvent.attendantsList = event.attendantsList.map((e) => e.toString());
   delete expectedEvent._id;
   return expectedEvent;
@@ -88,6 +88,7 @@ let createExpectedReturn = (event) => {
 
 describe("routes/events.js tests", () => {
   let userId;
+  let eventUserId;
   let eventId;
 
   beforeAll(async () => {
@@ -104,7 +105,12 @@ describe("routes/events.js tests", () => {
     testUser = await testUser.save();
     userId = testUser._id;
 
+    let testEventUser = new UserModel(TestData.user2);
+    testEventUser = await testEventUser.save();
+    eventUserId = testEventUser._id;
+
     let testEvent = new EventModel(TestData.completeEvent);
+    testEvent.host = eventUserId;
     testEvent = await testEvent.save();
     eventId = testEvent._id;
   });
@@ -205,7 +211,7 @@ describe("routes/events.js tests", () => {
       .put(`/events/api/edit/${eventId}`)
       .send(updated)
       .set("Accept", "application/json")
-      .set("userId", TestData.completeEvent.host)
+      .set("userId", eventUserId)
       .expect("Content-Type", /json/)
       .end((err, res) => {
         expect(res.status).toBe(200);
@@ -220,6 +226,29 @@ describe("routes/events.js tests", () => {
     request(app)
       .put(`/events/api/edit/${eventId}`)
       .send(updated)
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .end((err, res) => {
+        expect(res.status).toBe(500);
+        done();
+      });
+  });
+
+  test("delete an event", (done) => {
+    request(app)
+      .delete(`/events/api/delete/${eventId}`)
+      .set("userId", eventUserId)
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .end((err, res) => {
+        expect(res.status).toBe(200);
+        done();
+      });
+  });
+
+  test("throw an error when deleting an event because not host", (done) => {
+    request(app)
+      .delete(`/events/api/delete/${eventId}`)
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .end((err, res) => {
@@ -274,7 +303,7 @@ describe("routes/events.js tests", () => {
 
     request(app)
       .get(`/events/api/avail/${userId}`)
-      .send({ userLocation: "1,1" })
+      .set("userLocation", "1,1")
       .expect("Content-Type", /json/)
       .end((err, res) => {
         expect(res.status).toBe(200);
@@ -391,6 +420,26 @@ describe("routes/events.js tests", () => {
       .expect("Content-Type", /json/)
       .end((err, res) => {
         expect(res.status).toBe(200);
+        done();
+      });
+  });
+
+  test("edit event endpoint, existing event", (done) => {
+    request(app)
+      .get(`/events/edit/${eventId}`)
+      .expect("Content-Type", /json/)
+      .end((err, res) => {
+        expect(res.status).toBe(200);
+        done();
+      });
+  });
+
+  test("edit event endpoint, non-existent event", (done) => {
+    request(app)
+      .get(`/events/edit/${mongoose.Types.ObjectId()}`)
+      .expect("Content-Type", /json/)
+      .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });

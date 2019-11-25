@@ -80,6 +80,37 @@ describe("events", () => {
       expect(retVal.data.toJSON()).toMatchObject(expectedEvent);
     });
 
+    test("Create a new event, with JSON", async () => {
+      let testEvent = Object.assign({}, TestData.completeEvent);
+      testEvent.tagList = JSON.stringify(testEvent.tagList);
+
+      let expectedEvent = Object.assign({}, TestData.completeEvent);
+      expectedEvent.startTime = new Date(expectedEvent.startTime);
+      expectedEvent.endTime = new Date(expectedEvent.endTime);
+
+      let retVal = await event.createEvent(testEvent);
+
+      expect(retVal.data.toJSON()).toMatchObject(expectedEvent);
+    });
+
+    test("Create a new event, with an existing user", async () => {
+      let testUser = new UserModel(TestData.user);
+      await testUser.save();
+      let testEvent = Object.assign({}, TestData.completeEvent);
+      testEvent.host = testUser.id;
+      delete testEvent.attendantsList;
+
+      let expectedEvent = Object.assign({}, TestData.completeEvent);
+      delete expectedEvent.host;
+      delete expectedEvent.attendantsList;
+      expectedEvent.startTime = new Date(expectedEvent.startTime);
+      expectedEvent.endTime = new Date(expectedEvent.endTime);
+
+      let retVal = await event.createEvent(testEvent);
+
+      expect(retVal.data.toJSON()).toMatchObject(expectedEvent);
+    });
+
     test("Try to create new event missing field", async () => {
       let testEvent = Object.assign({}, TestData.incompleteEvent);
 
@@ -94,6 +125,26 @@ describe("events", () => {
       let testEvent = new EventModel(TestData.completeEvent);
       await testEvent.save();
       testEvent.description = "new desc";
+
+      let expectedEvent = Object.assign({}, TestData.completeEvent);
+      expectedEvent.startTime = new Date(expectedEvent.startTime);
+      expectedEvent.endTime = new Date(expectedEvent.endTime);
+      expectedEvent.description = "new desc";
+
+      let retVal = await event.updateEvent(
+        testEvent._id,
+        testEvent,
+        testEvent.host
+      );
+
+      expect(retVal.data.toJSON()).toMatchObject(expectedEvent);
+    });
+
+    test("Update an event, with JSON", async () => {
+      let testEvent = new EventModel(TestData.completeEvent);
+      await testEvent.save();
+      testEvent.description = "new desc";
+      testEvent.tagList = JSON.stringify(testEvent.tagList);
 
       let expectedEvent = Object.assign({}, TestData.completeEvent);
       expectedEvent.startTime = new Date(expectedEvent.startTime);
@@ -300,6 +351,48 @@ describe("events", () => {
       await expect(
         event.suggestEvent(mongoose.Types.ObjectId(), "1,1")
       ).rejects.toEqual(new Error("User doesnt exist"));
+    });
+  });
+
+  describe("deleteEvent", () => {
+    test("Delete an existing event", async () => {
+      let testUser = new UserModel(TestData.user);
+      await testUser.save();
+      let testEvent = new EventModel(TestData.completeEvent);
+      testEvent.host = testUser.id;
+      await testEvent.save();
+      try {
+        await event.deleteEvent(testEvent.id, testEvent.host);
+      } catch (e) {
+        console.log(e);
+        expect(true).toBe(false);
+      }
+    });
+
+    test("Delete a non-existent event", async () => {
+      await expect(
+        event.deleteEvent(mongoose.Types.ObjectId(), mongoose.Types.ObjectId())
+      ).rejects.toEqual(new Error("Event doesnt exist"));
+    });
+
+    test("Delete an event, non-existent user", async () => {
+      let testEvent = new EventModel(TestData.completeEvent);
+      await testEvent.save();
+
+      await expect(
+        event.deleteEvent(testEvent.id, mongoose.Types.ObjectId())
+      ).rejects.toEqual(new Error("User doesnt exist"));
+    });
+
+    test("Delete an event, not the host", async () => {
+      let testEvent = new EventModel(TestData.completeEvent);
+      await testEvent.save();
+      let testUser = new UserModel(TestData.user);
+      await testUser.save();
+
+      await expect(
+        event.deleteEvent(testEvent.id, testUser.id)
+      ).rejects.toEqual(new Error("You're not the host!"));
     });
   });
 

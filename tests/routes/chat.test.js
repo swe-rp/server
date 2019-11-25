@@ -57,18 +57,7 @@ jest.mock("../../common/utils.js", () => {
   };
 });
 
-// Sanitize our events to a string
-let createExpectedReturn = (event) => {
-  let expectedEvent = Object.assign({}, event);
-  expectedEvent.startTime = new Date(event.startTime).toISOString();
-  expectedEvent.endTime = new Date(event.endTime).toISOString();
-  expectedEvent.host = event.host.toString();
-  expectedEvent.attendantsList = event.attendantsList.map((e) => e.toString());
-  delete expectedEvent._id;
-  return expectedEvent;
-};
-
-describe("misc tests", () => {
+describe("chat", () => {
   let userId;
   let eventId;
 

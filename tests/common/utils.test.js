@@ -23,4 +23,13 @@ describe("utils", () => {
       );
     });
   });
+  describe("debug", () => {
+    test("debug a value", () => {
+      utils.debug("test");
+      expect(global.console.log).toHaveBeenCalledWith(
+        expect.any(String),
+        "test"
+      );
+    });
+  });
 });

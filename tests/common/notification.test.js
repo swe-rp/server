@@ -17,6 +17,13 @@ jest.mock("firebase-admin", () => {
         } else {
           return Promise.reject("no topic");
         }
+      },
+      unsubscribeFromTopic: (token, topic) => {
+        if (topic) {
+          return Promise.resolve(topic);
+        } else {
+          return Promise.reject("no topic");
+        }
       }
     })
   };
@@ -63,6 +70,23 @@ describe("notification", () => {
     test("subscribe to topic without a proper topic", async () => {
       try {
         await notification.subscribeToTopic("", "");
+      } catch (e) {
+        expect(e).toEqual(expect.stringContaining("Error: no topic"));
+      }
+    });
+  });
+
+  describe("unsubscribeToTopic", () => {
+    test("unsubscribe from a topic: topic", async () => {
+      let retVal = await notification.unsubscribeFromTopic("topic", "token");
+      expect(retVal).toEqual(
+        expect.stringContaining("Unsubscribed from topic: topic")
+      );
+    });
+
+    test("unsubscribe to topic without a proper topic", async () => {
+      try {
+        await notification.unsubscribeFromTopic("", "");
       } catch (e) {
         expect(e).toEqual(expect.stringContaining("Error: no topic"));
       }

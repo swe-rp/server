@@ -124,7 +124,7 @@
     }
 
     #messages {
-      min-height: 80px;
+      min-height: 240px;
       margin: 0;
       padding: 0;
     }

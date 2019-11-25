@@ -22,7 +22,7 @@ router.get("/init/:eventId", auth.middleware, async (req, res, next) => {
       userId: user.id,
       username: user.name,
       accessToken: req.header("accessToken")
-    });  
+    });
   } catch (err) {
     next({ success: false, message: "User not found." });
   }

@@ -138,7 +138,6 @@ describe("routes/users.js tests", () => {
       });
   });
 
-
   test("Authenticate new user", (done) => {
     request(app)
       .post("/users/oauth")

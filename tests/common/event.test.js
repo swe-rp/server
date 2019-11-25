@@ -290,7 +290,7 @@ describe("events", () => {
 
       let retVal = await event.suggestEvent(testUser._id, TestData.completeEvent.location);
 
-      expect(retVal.data.toJSON()._id).toEqual(expected);
+      expect(retVal.data._id).toEqual(expected);
     });
 
     test("Get suggested events for unexisting user", async () => {

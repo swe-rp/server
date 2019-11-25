@@ -1,5 +1,6 @@
 const EventModel = require("../models/event");
 const UserModel = require("../models/user");
+const User = require("./user.js");
 const notifications = require("./notification.js");
 const retext = require("retext");
 const pos = require("retext-pos");
@@ -35,6 +36,23 @@ let verifyParams = (body) => {
     throw new Error("Wrong params");
   }
 };
+
+let mapEventToUserId = async (events) => {
+  let readableEvents = [];
+
+  for (let event of events) {
+    let eventJSON = event.toJSON();
+    let user = {name: "Anonymous"};
+    try {
+      user = await User.getUser(event.host);
+    } catch (e) {
+      utils.debug(e);
+    }
+    eventJSON.host = user.name;
+    readableEvents.push(eventJSON);
+  }
+  return readableEvents;
+}
 
 let createEvent = async (body) => {
   verifyParams(body);
@@ -142,14 +160,18 @@ let getScore = (tagFreq, keyFreq, userLocation, event) => {
   }
 
   // location
-  let userLocationArr = userLocation.split(",").map(e => parseFloat(e));
-  let eventLocationArr = event.location.split(",").map(e => parseFloat(e));
-  let locationDiff =
-    Math.pow(userLocationArr[0] - eventLocationArr[0], 2) +
-    Math.pow(userLocationArr[1] - eventLocationArr[1], 2);
-
-  if (!isNaN(locationDiff)) {
-    score += LOCATION_MULTIPLIER * Math.exp(-locationDiff);
+  try {
+    let userLocationArr = userLocation.split(",").map(e => parseFloat(e));
+    let eventLocationArr = event.location.split(",").map(e => parseFloat(e));
+    let locationDiff =
+      Math.pow(userLocationArr[0] - eventLocationArr[0], 2) +
+      Math.pow(userLocationArr[1] - eventLocationArr[1], 2);
+  
+    if (!isNaN(locationDiff)) {
+      score += LOCATION_MULTIPLIER * Math.exp(-locationDiff);
+    }
+  } catch (err) {
+    utils.error("Error with locations", err);
   }
 
   utils.debug("Score", score);
@@ -245,11 +267,13 @@ let getAvailableEvents = async (userId, userLocation) => {
   let allEvents = await query.exec();
   let attendedEvents = await getAttendedEvents(userId);
 
-  let events = await mapSortEventByScore(
+  let scoredEvents = await mapSortEventByScore(
     attendedEvents,
     allEvents,
     userLocation
   );
+
+  let events = await mapEventToUserId(scoredEvents);
 
   return {
     data: events
@@ -273,7 +297,10 @@ let getUserEvents = async (userId) => {
   // .lt(tomorrow);
   query.where("attendantsList").in(userId);
 
-  let events = await query.exec();
+  let userEvents = await query.exec();
+
+  let events = await mapEventToUserId(userEvents);
+
 
   return {
     data: events

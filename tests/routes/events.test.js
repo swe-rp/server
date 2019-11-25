@@ -353,6 +353,8 @@ describe("routes/events.js tests", () => {
     tomorrow.setDate(tomorrow.getDate() + 1);
     testEvent.startTime = tomorrow;
     await testEvent.save();
+    let retVal = testEvent.toJSON();
+    retVal.host = "Anonymous";
     request(app)
       .get(`/events/api/suggest/${userId}`)
       .expect("Content-Type", /json/)
@@ -360,7 +362,7 @@ describe("routes/events.js tests", () => {
       .end((err, res) => {
         expect(res.status).toBe(200);
         expect(res.body.data).toMatchObject(
-          createExpectedReturn(testEvent.toJSON())
+          createExpectedReturn(retVal)
         );
         done();
       });

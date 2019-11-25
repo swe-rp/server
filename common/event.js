@@ -15,13 +15,17 @@ const LOCATION_MULTIPLIER = 30;
 
 let verifyParams = (body) => {
   if (
-    !body.name ||
-    !body.description ||
-    !body.host ||
-    !body.startTime ||
-    !body.endTime ||
-    !body.location
+    body.name &&
+    body.description &&
+    body.host &&
+    body.startTime &&
+    body.endTime &&
+    body.location
   ) {
+    if (new Date(body.endTime) - new Date(body.startTime) < 0) {
+      throw new Error("Parameters are malformed!");
+    }
+  } else {
     throw new Error("Parameters are malformed!");
   }
 };

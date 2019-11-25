@@ -80,6 +80,17 @@ describe("events", () => {
       expect(retVal.data.toJSON()).toMatchObject(expectedEvent);
     });
 
+    test("Create a new event, start is after end", async () => {
+      let testEvent = Object.assign({}, TestData.completeEvent);
+
+      testEvent.startTime = new Date(testEvent.startTime + 10);
+      testEvent.endTime = new Date(testEvent.endTime);
+
+      await expect(event.createEvent(testEvent)).rejects.toEqual(
+        new Error("Parameters are malformed!")
+      );
+    });
+
     test("Create a new event, with JSON", async () => {
       let testEvent = Object.assign({}, TestData.completeEvent);
       testEvent.tagList = JSON.stringify(testEvent.tagList);

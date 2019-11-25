@@ -86,7 +86,7 @@ let createEvent = async (body) => {
   let user = await UserModel.findById(body.host);
 
   if (user && user.registrationToken) {
-    await notifications.subscribeToTopic(newEvent.id, user.registrationToken);
+    notifications.subscribeToTopic(newEvent.id, user.registrationToken);
   }
 
   return {
@@ -127,7 +127,7 @@ let updateEvent = async (id, body, userId) => {
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
-  await notifications.sendNotification(updated.id, {
+  notifications.sendNotification(updated.id, {
     title: `${event.name} updated!`,
     body: "Check it out in the app."
   });
@@ -324,14 +324,10 @@ let getUserEvents = async (userId) => {
   }
 
   let today = new Date();
-  //   let tomorrow = new Date();
-
-  //   tomorrow.setDate(today.getDate() + 1);
 
   let query = EventModel.find();
 
   query.where("startTime").gte(today);
-  // .lt(tomorrow);
   query.where("attendantsList").in(userId);
 
   let userEvents = await query.exec();
@@ -363,7 +359,7 @@ let addAttendant = async (id, userId) => {
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
   if (user && user.registrationToken) {
-    await notifications.subscribeToTopic(event.id, user.registrationToken);
+    notifications.subscribeToTopic(event.id, user.registrationToken);
   }
 
   return {
@@ -395,7 +391,7 @@ let removeAttendant = async (id, userId) => {
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
   if (user && user.registrationToken) {
-    await notifications.unsubscribeFromTopic(event.id, user.registrationToken);
+    notifications.unsubscribeFromTopic(event.id, user.registrationToken);
   }
 
   return {
@@ -439,7 +435,7 @@ let deleteEvent = async (id, userId) => {
 
   await EventModel.findByIdAndDelete(event.id);
 
-  await notifications.sendNotification(id, {
+  notifications.sendNotification(id, {
     title: `${deletedEvent.name} deleted!`,
     body: "Sorry about that."
   });

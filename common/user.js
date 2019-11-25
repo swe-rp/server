@@ -42,8 +42,6 @@ let userLogin = async (profile, registrationToken) => {
     throw "Wrong params";
   }
 
-  let fcmCalls = [];
-
   let userToRegistrationToken = await UserModel.findOne({
     registrationToken
   });
@@ -58,9 +56,7 @@ let userLogin = async (profile, registrationToken) => {
     await userToRegistrationToken.save();
 
     for (let event of oldUserEvents.data) {
-      fcmCalls.push(
-        notification.unsubscribeFromTopic(event.id, registrationToken)
-      );
+      notification.unsubscribeFromTopic(event.id, registrationToken);
     }
   }
 
@@ -71,17 +67,13 @@ let userLogin = async (profile, registrationToken) => {
     let newUserEvents = await event.getAttendedEvents(existingUser.id);
     for (let event of newUserEvents.data) {
       if (existingUser.registrationToken !== registrationToken) {
-        fcmCalls.push(
-          notification.unsubscribeFromTopic(
-            event.id,
-            existingUser.registrationToken
-          )
+        notification.unsubscribeFromTopic(
+          event.id,
+          existingUser.registrationToken
         );
       }
-      fcmCalls.push(notification.subscribeToTopic(event.id, registrationToken));
+      notification.subscribeToTopic(event.id, registrationToken);
     }
-
-    await Promise.all(fcmCalls);
 
     existingUser.registrationToken = registrationToken;
     existingUser.accessToken = generateToken();
@@ -89,8 +81,6 @@ let userLogin = async (profile, registrationToken) => {
     utils.log(existingUser);
     return existingUser;
   }
-
-  await Promise.all(fcmCalls);
 
   let newUser = new UserModel({
     name: profile.displayName,

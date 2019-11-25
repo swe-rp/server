@@ -129,7 +129,7 @@ let updateEvent = async (id, body, userId) => {
     throw new Error("Event does not exist");
   }
 
-  await notifications.sendNotification(newEvent.id, {
+  await notifications.sendNotification(updated.id, {
     title: `${event.name} updated!`,
     body: "Check it out in the app."
   });

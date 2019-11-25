@@ -1,27 +1,17 @@
 const EventModel = require("../models/event");
-const UserModel = require("../models/user");
 const notifications = require("./notification.js");
 const retext = require("retext");
 const pos = require("retext-pos");
 const keywords = require("retext-keywords");
 const toString = require("nlcst-to-string");
 const utils = require("../common/utils.js");
+const getters = require("./getters.js");
 
 const TAG_MULTIPLIER = 8;
 const KEY_MULTIPLIER = 4;
 const TIME_MULTIPLIER = 40;
 const TIME_FACTOR = 1000 * 3600 * 144;
 const LOCATION_MULTIPLIER = 30;
-
-let getEvent = async (eventId) => {
-  let event = await EventModel.findById(eventId);
-
-  if (!event) {
-    throw new Error("Event not found.");
-  }
-
-  return event;
-};
 
 let verifyParams = (body) => {
   if (
@@ -32,7 +22,7 @@ let verifyParams = (body) => {
     !body.endTime ||
     !body.location
   ) {
-    throw new Error("Wrong params");
+    throw new Error("Parameters are malformed!");
   }
 };
 
@@ -41,13 +31,9 @@ let mapEventToUserId = async (events) => {
 
   for (let event of events) {
     let eventJSON = event.toJSON();
-    let user;
+    let user = { name: "Anonymous" };
     try {
-      user = await UserModel.findById(event.host);
-      if (!user) {
-        user = { name: "Anonymous" };
-        throw new Error("User doesn't exist.");
-      }
+      user = await getters.getUser(event.host);
     } catch (e) {
       utils.debug(e);
     }
@@ -83,10 +69,13 @@ let createEvent = async (body) => {
 
   await newEvent.save();
 
-  let user = await UserModel.findById(body.host);
-
-  if (user && user.registrationToken) {
-    notifications.subscribeToTopic(newEvent.id, user.registrationToken);
+  try {
+    let user = await getters.getUser(body.host);
+    if (user.registrationToken) {
+      notifications.subscribeToTopic(newEvent.id, user.registrationToken);
+    }
+  } catch (err) {
+    utils.error("The host wasn't valid, but event created.");
   }
 
   return {
@@ -96,11 +85,7 @@ let createEvent = async (body) => {
 };
 
 let updateEvent = async (id, body, userId) => {
-  let event = await EventModel.findById(id);
-
-  if (!event) {
-    throw new Error("Event does not exist");
-  }
+  let event = await getters.getEvent(id);
 
   if (JSON.stringify(event.host) !== JSON.stringify(userId)) {
     throw new Error("You aren't the host!");
@@ -289,10 +274,7 @@ let mapSortEventByScore = async (attendedEvents, events, userLocation) => {
 };
 
 let getAvailableEvents = async (userId, userLocation) => {
-  let user = await UserModel.findById(userId);
-  if (!user) {
-    throw new Error("User doesnt exist");
-  }
+  let user = await getters.getUser(userId);
 
   let today = new Date();
 
@@ -318,10 +300,7 @@ let getAvailableEvents = async (userId, userLocation) => {
 };
 
 let getUserEvents = async (userId) => {
-  let user = await UserModel.findById(userId);
-  if (!user) {
-    throw new Error("User doesnt exist");
-  }
+  let user = await getters.getUser(userId);
 
   let today = new Date();
 
@@ -340,15 +319,9 @@ let getUserEvents = async (userId) => {
 };
 
 let addAttendant = async (id, userId) => {
-  let event = await EventModel.findById(id);
-  if (!event) {
-    throw new Error("Event doesnt exist");
-  }
+  let event = await getters.getEvent(id);
 
-  let user = await UserModel.findById(userId);
-  if (!user) {
-    throw new Error("User doesnt exist");
-  }
+  let user = await getters.getUser(userId);
 
   event.attendantsList.push(userId);
 
@@ -358,7 +331,7 @@ let addAttendant = async (id, userId) => {
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
-  if (user && user.registrationToken) {
+  if (user.registrationToken) {
     notifications.subscribeToTopic(event.id, user.registrationToken);
   }
 
@@ -369,15 +342,9 @@ let addAttendant = async (id, userId) => {
 };
 
 let removeAttendant = async (id, userId) => {
-  let event = await EventModel.findById(id);
-  if (!event) {
-    throw new Error("Event doesnt exist");
-  }
+  let event = await getters.getEvent(id);
 
-  let user = await UserModel.findById(userId);
-  if (!user) {
-    throw new Error("User doesnt exist");
-  }
+  let user = await getters.getUser(userId);
 
   let newList = event.attendantsList.filter((e) => {
     // This is required since we have different escape characters
@@ -390,7 +357,7 @@ let removeAttendant = async (id, userId) => {
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
-  if (user && user.registrationToken) {
+  if (user.registrationToken) {
     notifications.unsubscribeFromTopic(event.id, user.registrationToken);
   }
 
@@ -413,16 +380,9 @@ let suggestEvent = async (userId, userLocation) => {
 };
 
 let deleteEvent = async (id, userId) => {
-  let event = await EventModel.findById(id);
+  let event = await getters.getEvent(id);
 
-  if (!event) {
-    throw new Error("Event doesnt exist");
-  }
-
-  let user = await UserModel.findById(userId);
-  if (!user) {
-    throw new Error("User doesnt exist");
-  }
+  await getters.getUser(userId);
 
   if (JSON.stringify(event.host) !== JSON.stringify(userId)) {
     throw new Error("You're not the host!");
@@ -450,6 +410,5 @@ module.exports = {
   addAttendant,
   removeAttendant,
   suggestEvent,
-  deleteEvent,
-  getEvent
+  deleteEvent
 };

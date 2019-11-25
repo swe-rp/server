@@ -18,15 +18,6 @@ let generateToken = () => {
   return id;
 };
 
-let getUser = async (userId) => {
-  let user = await UserModel.findById(userId);
-  if (!user) {
-    throw new Error("User doesn't exist.");
-  } else {
-    return user;
-  }
-};
-
 let doesUserExist = async (userId) => {
   try {
     let user = await UserModel.findById(userId);
@@ -40,7 +31,7 @@ let doesUserExist = async (userId) => {
 
 let userLogin = async (profile, registrationToken) => {
   if (!profile || !registrationToken) {
-    throw "Wrong params";
+    throw new Error("Parameters are malformed!");
   }
 
   let userToRegistrationToken = await UserModel.findOne({
@@ -101,7 +92,6 @@ let userLogin = async (profile, registrationToken) => {
 };
 
 module.exports = {
-  getUser,
   doesUserExist,
   userLogin
 };

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = new express.Router();
 const Event = require("../common/event");
+const getters = require("../common/getters.js");
 const utils = require("../common/utils");
 const notifications = require("../common/notification");
 const auth = require("../common/auth.js");
@@ -143,7 +144,7 @@ router.get("/create", auth.middleware, async (req, res, next) => {
 
 router.get("/edit/:eventId", auth.middleware, async (req, res, next) => {
   try {
-    let event = await Event.getEvent(req.params.eventId);
+    let event = await getters.getEvent(req.params.eventId);
     res.render("index", {
       title: "Edit",
       requestType: "PUT",

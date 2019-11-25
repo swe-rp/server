@@ -1,8 +1,7 @@
 const chat = require("../common/chat.js");
 const express = require("express");
 const router = new express.Router();
-const utils = require("../common/utils");
-const User = require("../common/user.js");
+const getters = require("../common/getters.js");
 const auth = require("../common/auth.js");
 
 router.get("/messages/:eventId", auth.middleware, async (req, res, next) => {
@@ -16,7 +15,7 @@ router.get("/messages/:eventId", auth.middleware, async (req, res, next) => {
 
 router.get("/init/:eventId", auth.middleware, async (req, res, next) => {
   try {
-    let user = await User.getUser(req.header("userId"));
+    let user = await getters.getUser(req.header("userId"));
     res.render("chat", {
       eventId: req.params.eventId,
       userId: user.id,

@@ -124,11 +124,9 @@ describe("user", () => {
     });
 
     test("User login, bad params", async () => {
-      try {
-        await user.userLogin();
-      } catch (e) {
-        expect(e).toBe("Wrong params");
-      }
+      await expect(user.userLogin()).rejects.toEqual(
+        new Error("Parameters are malformed!")
+      );
     });
   });
 

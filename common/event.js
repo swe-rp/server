@@ -75,7 +75,7 @@ let createEvent = async (body) => {
     attendantsList: body.attendantsList || [body.host],
     startTime: body.startTime,
     endTime: body.endTime,
-    tagList: tagList
+    tagList
   });
 
   await newEvent.save();
@@ -119,7 +119,7 @@ let updateEvent = async (id, body, userId) => {
     location: body.location || event.location,
     startTime: body.startTime || event.startTime,
     endTime: body.endTime || event.endTime,
-    tagList: tagList
+    tagList
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });

@@ -124,10 +124,6 @@ let updateEvent = async (id, body, userId) => {
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
 
-  if (!updated) {
-    throw new Error("Event does not exist");
-  }
-
   await notifications.sendNotification(updated.id, {
     title: `${event.name} updated!`,
     body: "Check it out in the app."

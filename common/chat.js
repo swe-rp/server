@@ -7,7 +7,7 @@ const utils = require("./utils.js");
 let writeMessage = async (event, userId, message, timestamp) => {
   let user = await User.getUser(userId);
 
-  let updated = await EventModel.findByIdAndUpdate(
+  await EventModel.findByIdAndUpdate(
     { _id: event._id },
     {
       $push: {
@@ -20,10 +20,6 @@ let writeMessage = async (event, userId, message, timestamp) => {
       }
     }
   );
-
-  if (!updated) {
-    throw new Error("Event couldn't be updated.");
-  }
 };
 
 let notifyMessage = async (event, message) => {

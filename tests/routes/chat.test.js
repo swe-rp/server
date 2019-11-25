@@ -11,6 +11,7 @@ const mongoose = require("mongoose");
 const EventModel = require("../../models/event");
 const UserModel = require("../../models/user");
 const utils = require("../../common/utils.js");
+const chat = require("../../common/chat.js");
 
 const admin = require("firebase-admin");
 
@@ -80,14 +81,44 @@ describe("chat", () => {
     eventId = testEvent._id;
   });
 
-  test("Check heartbeat", (done) => {
+  test("chat init, existing user", (done) => {
     request(app)
-      .get("/")
-      .send(TestData.completeEvent)
-      .set("Accept", "application/json")
+      .get(`/chat/init/${eventId}`)
+      .set("userId", userId)
       .expect("Content-Type", /json/)
       .end((err, res) => {
         expect(res.status).toBe(200);
+        done();
+      });
+  });
+
+  test("chat init, non-existent user", (done) => {
+    request(app)
+      .get(`/chat/init/${eventId}`)
+      .expect("Content-Type", /json/)
+      .end((err, res) => {
+        expect(res.status).toBe(500);
+        done();
+      });
+  });
+
+  test("get existing messages, existing event", async () => {
+    await chat.handleMessage(eventId, userId, "test", new Date());
+    let req = await request(app)
+      .get(`/chat/messages/${eventId}`)
+      .set("userId", userId);
+    expect(req.status).toBe(200);
+    let response = JSON.parse(req.text);
+    expect(response.data.length).toBe(1);
+    expect(response.data[0].message).toBe("test");
+  });
+
+  test("get existing messages, non-existent event", (done) => {
+    request(app)
+      .get(`/chat/messages/${mongoose.Types.ObjectId()}`)
+      .expect("Content-Type", /json/)
+      .end((err, res) => {
+        expect(res.status).toBe(500);
         done();
       });
   });

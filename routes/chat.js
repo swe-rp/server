@@ -15,13 +15,17 @@ router.get("/messages/:eventId", auth.middleware, async (req, res, next) => {
 });
 
 router.get("/init/:eventId", auth.middleware, async (req, res, next) => {
-  let user = await User.getUser(req.header("userId"));
-  res.render("chat", {
-    eventId: req.params.eventId,
-    userId: user.id,
-    username: user.name,
-    accessToken: req.header("accessToken")
-  });
+  try {
+    let user = await User.getUser(req.header("userId"));
+    res.render("chat", {
+      eventId: req.params.eventId,
+      userId: user.id,
+      username: user.name,
+      accessToken: req.header("accessToken")
+    });  
+  } catch (err) {
+    next({ success: false, message: "User not found." });
+  }
 });
 
 module.exports = router;

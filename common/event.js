@@ -249,7 +249,7 @@ let mapSortEventByScore = async (attendedEvents, events, userLocation) => {
     utils.debug(`Keywords for ${event.name}`);
 
     data.data.keywords.forEach((kw) => {
-      let keyword = toString(kw.matches[0].node);
+      let keyword = toString(kw.matches[0].node).toLowerCase();
 
       utils.debug(keyword);
 

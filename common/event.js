@@ -8,8 +8,8 @@ const keywords = require("retext-keywords");
 const toString = require("nlcst-to-string");
 const utils = require("../common/utils.js");
 
-const TAG_MULTIPLIER = 15;
-const KEY_MULTIPLIER = 12;
+const TAG_MULTIPLIER = 8;
+const KEY_MULTIPLIER = 4;
 const TIME_MULTIPLIER = 40;
 const TIME_FACTOR = 1000 * 3600 * 144;
 const LOCATION_MULTIPLIER = 30;

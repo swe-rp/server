@@ -24,10 +24,13 @@
         host: "{{ userId }}",
         startTime: new Date(getElementValue("start-time")).toUTCString(),
         endTime: new Date(getElementValue("end-time")).toUTCString(),
-        tagList: getElementValue("tags")
+        tagList: JSON.stringify(getElementValue("tags")
           .toLowerCase()
           .replace(/ /g, "")
           .split(",")
+          .filter((e) => {
+            return e;
+          }))
       };
 
       let place = autocomplete.getPlace();

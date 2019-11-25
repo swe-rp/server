@@ -8,7 +8,6 @@
 //     - GET /api/avail/:userId
 //     - GET /api/in/:userId
 //     - GET /api/suggest/:userId
-//     - GET /notify/:topic
 
 process.env = Object.assign(process.env, {
   FB_CLIENT_ID: "test",

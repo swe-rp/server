@@ -7,11 +7,11 @@ const pos = require("retext-pos");
 const keywords = require("retext-keywords");
 const toString = require("nlcst-to-string");
 const utils = require("../common/utils.js");
-const { performance } = require("perf_hooks");
 
 const TAG_MULTIPLIER = 10;
-const KEY_MULTIPLIER = 1;
-const TIME_MULTIPLIER = 5;
+const KEY_MULTIPLIER = 2;
+const TIME_MULTIPLIER = 20;
+const TIME_FACTOR = 1000 * 3600 * 72;
 const LOCATION_MULTIPLIER = 5.0;
 
 let getEvent = async (eventId) => {
@@ -42,7 +42,7 @@ let mapEventToUserId = async (events) => {
 
   for (let event of events) {
     let eventJSON = event.toJSON();
-    let user = {name: "Anonymous"};
+    let user = { name: "Anonymous" };
     try {
       user = await User.getUser(event.host);
     } catch (e) {
@@ -53,10 +53,19 @@ let mapEventToUserId = async (events) => {
   }
 
   return readableEvents;
-}
+};
 
 let createEvent = async (body) => {
   verifyParams(body);
+
+  let tagList = body.tagList;
+
+  try {
+    tagList = JSON.parse(body.tagList);
+    utils.debug("Event tag list came as JSON.");
+  } catch (e) {
+    utils.debug("Event tag list didn't come as a JSON.");
+  }
 
   let newEvent = new EventModel({
     name: body.name,
@@ -66,7 +75,7 @@ let createEvent = async (body) => {
     attendantsList: body.attendantsList || [body.host],
     startTime: body.startTime,
     endTime: body.endTime,
-    tagList: body.tagList
+    tagList: tagList
   });
 
   await newEvent.save();
@@ -94,6 +103,16 @@ let updateEvent = async (id, body, userId) => {
     throw new Error("You aren't the host!");
   }
 
+  let tagList = body.tagList || event.tagList;
+
+  try {
+    tagList = JSON.parse(body.tagList);
+    utils.debug("Event tag list came as JSON.");
+  } catch (e) {
+    utils.debug("Event tag list didn't come as a JSON.");
+  }
+
+
   let update = {
     name: body.name || event.name,
     description: body.description || event.description,
@@ -101,7 +120,7 @@ let updateEvent = async (id, body, userId) => {
     location: body.location || event.location,
     startTime: body.startTime || event.startTime,
     endTime: body.endTime || event.endTime,
-    tagList: body.tagList || event.tagList
+    tagList: tagList
   };
 
   let updated = await EventModel.findByIdAndUpdate(id, update, { new: true });
@@ -109,6 +128,11 @@ let updateEvent = async (id, body, userId) => {
   if (!updated) {
     throw new Error("Event does not exist");
   }
+
+  await notifications.sendNotification(updated.id, {
+    title: `${event.name} updated!`,
+    body: "Check it out in the app."
+  });
 
   return {
     id: updated.id,
@@ -154,20 +178,20 @@ let getScore = (tagFreq, keyFreq, userLocation, event) => {
   });
 
   // time
-  let timeDiff = event.startTime.getTime() - performance.now();
+  let timeDiff = event.startTime.getTime() - Date.now();
 
   if (!isNaN(timeDiff)) {
-    score += TIME_MULTIPLIER * Math.exp(-timeDiff);
+    score += TIME_MULTIPLIER * Math.exp(-timeDiff / TIME_FACTOR);
   }
 
   // location
   try {
-    let userLocationArr = userLocation.split(",").map(e => parseFloat(e));
-    let eventLocationArr = event.location.split(",").map(e => parseFloat(e));
+    let userLocationArr = userLocation.split(",").map((e) => parseFloat(e));
+    let eventLocationArr = event.location.split(",").map((e) => parseFloat(e));
     let locationDiff =
       Math.pow(userLocationArr[0] - eventLocationArr[0], 2) +
       Math.pow(userLocationArr[1] - eventLocationArr[1], 2);
-  
+
     if (!isNaN(locationDiff)) {
       score += LOCATION_MULTIPLIER * Math.exp(-locationDiff);
     }
@@ -396,7 +420,17 @@ let deleteEvent = async (id, userId) => {
     throw new Error("You're not the host!");
   }
 
+  let deletedEvent = {
+    id: event.id,
+    name: event.name
+  };
+
   await EventModel.findByIdAndDelete(event.id);
+
+  await notifications.sendNotification(id, {
+    title: `${deletedEvent.name} deleted!`,
+    body: "Sorry about that."
+  });
 };
 
 module.exports = {

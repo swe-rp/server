@@ -8,7 +8,6 @@
 //     - GET /api/avail/:userId
 //     - GET /api/in/:userId
 //     - GET /api/suggest/:userId
-//     - GET /notify/:topic
 
 process.env = Object.assign(process.env, {
   FB_CLIENT_ID: "test",
@@ -275,7 +274,7 @@ describe("routes/events.js tests", () => {
 
     request(app)
       .get(`/events/api/avail/${userId}`)
-      .send({userLocation: "1,1"})
+      .send({ userLocation: "1,1" })
       .expect("Content-Type", /json/)
       .end((err, res) => {
         expect(res.status).toBe(200);
@@ -358,12 +357,10 @@ describe("routes/events.js tests", () => {
     request(app)
       .get(`/events/api/suggest/${userId}`)
       .expect("Content-Type", /json/)
-      .send({userLocation: "1,1"})
+      .send({ userLocation: "1,1" })
       .end((err, res) => {
         expect(res.status).toBe(200);
-        expect(res.body.data).toMatchObject(
-          createExpectedReturn(retVal)
-        );
+        expect(res.body.data).toMatchObject(createExpectedReturn(retVal));
         done();
       });
   });
@@ -394,26 +391,6 @@ describe("routes/events.js tests", () => {
       .expect("Content-Type", /json/)
       .end((err, res) => {
         expect(res.status).toBe(200);
-        done();
-      });
-  });
-
-  test("notify test", (done) => {
-    request(app)
-      .get(`/events/notify/topic`)
-      .expect("Content-Type", /json/)
-      .end((err, res) => {
-        expect(res.status).toBe(200);
-        done();
-      });
-  });
-
-  test("notify test, failure", (done) => {
-    request(app)
-      .get(`/events/notify/fail`)
-      .expect("Content-Type", /json/)
-      .end((err, res) => {
-        expect(res.status).toBe(500);
         done();
       });
   });

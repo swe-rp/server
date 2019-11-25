@@ -165,19 +165,4 @@ router.get("/edit/:eventId", auth.middleware, async (req, res, next) => {
   });
 });
 
-// TODO this should be removed
-router.get("/notify/:topic", async (req, res, next) => {
-  try {
-    utils.log(
-      await notifications.sendNotification(req.params.topic, {
-        title: `Test for topic ${req.params.topic}`,
-        body: "..from the GET endpoint."
-      })
-    );
-    res.status(200).send("Success.");
-  } catch (e) {
-    next("Failure.");
-  }
-});
-
 module.exports = router;

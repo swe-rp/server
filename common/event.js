@@ -7,11 +7,11 @@ const pos = require("retext-pos");
 const keywords = require("retext-keywords");
 const toString = require("nlcst-to-string");
 const utils = require("../common/utils.js");
-const { performance } = require("perf_hooks");
 
 const TAG_MULTIPLIER = 10;
-const KEY_MULTIPLIER = 1;
-const TIME_MULTIPLIER = 5;
+const KEY_MULTIPLIER = 2;
+const TIME_MULTIPLIER = 20;
+const TIME_FACTOR = 1000 * 3600 * 72;
 const LOCATION_MULTIPLIER = 5.0;
 
 let getEvent = async (eventId) => {
@@ -163,10 +163,10 @@ let getScore = (tagFreq, keyFreq, userLocation, event) => {
   });
 
   // time
-  let timeDiff = event.startTime.getTime() - performance.now();
+  let timeDiff = event.startTime.getTime() - Date.now();
 
   if (!isNaN(timeDiff)) {
-    score += TIME_MULTIPLIER * Math.exp(-timeDiff);
+    score += TIME_MULTIPLIER * Math.exp(-timeDiff / TIME_FACTOR);
   }
 
   // location

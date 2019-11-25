@@ -58,6 +58,15 @@ let mapEventToUserId = async (events) => {
 let createEvent = async (body) => {
   verifyParams(body);
 
+  let tagList = body.tagList;
+
+  try {
+    tagList = JSON.parse(body.tagList);
+    utils.debug("Event tag list came as JSON.");
+  } catch (e) {
+    utils.debug("Event tag list didn't come as a JSON.");
+  }
+
   let newEvent = new EventModel({
     name: body.name,
     description: body.description,
@@ -66,7 +75,7 @@ let createEvent = async (body) => {
     attendantsList: body.attendantsList || [body.host],
     startTime: body.startTime,
     endTime: body.endTime,
-    tagList: body.tagList
+    tagList: tagList
   });
 
   await newEvent.save();

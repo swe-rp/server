@@ -118,7 +118,7 @@ router.get("/api/suggest/:userId", auth.middleware, async (req, res, next) => {
   try {
     const event = await Event.suggestEvent(
       req.params.userId,
-      req.body.userLocation
+      req.header("userLocation")
     );
     event.message = "Success!";
     res.status(200).json(event);

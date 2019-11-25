@@ -4,6 +4,7 @@ const event = require("./event.js");
 const notification = require("./notification.js");
 
 const TOKEN_SIZE = 30;
+const NULL_TOKEN = "NULL";
 
 let generateToken = () => {
   let id = "";
@@ -52,8 +53,14 @@ let userLogin = async (profile, registrationToken) => {
     let oldUserEvents = await event.getAttendedEvents(
       userToRegistrationToken.id
     );
+
+    userToRegistrationToken.registrationToken = NULL_TOKEN;
+    await userToRegistrationToken.save();
+
     for (let event of oldUserEvents.data) {
-      fcmCalls.push(notification.unsubscribeFromTopic(event.id, registrationToken));
+      fcmCalls.push(
+        notification.unsubscribeFromTopic(event.id, registrationToken)
+      );
     }
   }
 
@@ -64,10 +71,12 @@ let userLogin = async (profile, registrationToken) => {
     let newUserEvents = await event.getAttendedEvents(existingUser.id);
     for (let event of newUserEvents.data) {
       if (existingUser.registrationToken !== registrationToken) {
-        fcmCalls.push(notification.unsubscribeFromTopic(
-          event.id,
-          existingUser.registrationToken
-        ));
+        fcmCalls.push(
+          notification.unsubscribeFromTopic(
+            event.id,
+            existingUser.registrationToken
+          )
+        );
       }
       fcmCalls.push(notification.subscribeToTopic(event.id, registrationToken));
     }
@@ -76,7 +85,7 @@ let userLogin = async (profile, registrationToken) => {
 
     existingUser.registrationToken = registrationToken;
     existingUser.accessToken = generateToken();
-    await UserModel.findByIdAndUpdate(existingUser.id, existingUser);
+    await existingUser.save();
     utils.log(existingUser);
     return existingUser;
   }

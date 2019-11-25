@@ -48,9 +48,10 @@ let mapEventToUserId = async (events) => {
     } catch (e) {
       utils.debug(e);
     }
-    eventJSON.host = user.name;
+    eventJSON.hostname = user.name;
     readableEvents.push(eventJSON);
   }
+
   return readableEvents;
 }
 
@@ -300,7 +301,6 @@ let getUserEvents = async (userId) => {
   let userEvents = await query.exec();
 
   let events = await mapEventToUserId(userEvents);
-
 
   return {
     data: events

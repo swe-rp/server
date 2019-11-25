@@ -354,7 +354,7 @@ describe("routes/events.js tests", () => {
     testEvent.startTime = tomorrow;
     await testEvent.save();
     let retVal = testEvent.toJSON();
-    retVal.host = "Anonymous";
+    retVal.hostname = "Anonymous";
     request(app)
       .get(`/events/api/suggest/${userId}`)
       .expect("Content-Type", /json/)

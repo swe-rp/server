@@ -447,6 +447,7 @@ module.exports = {
   updateEvent,
   getAvailableEvents,
   getUserEvents,
+  getAttendedEvents,
   addAttendant,
   removeAttendant,
   suggestEvent,

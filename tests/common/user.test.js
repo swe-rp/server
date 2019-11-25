@@ -8,7 +8,38 @@ const utils = require("../../common/utils.js");
 jest.mock("../../common/utils.js", () => {
   return {
     log: (e) => {},
-    error: (e) => {}
+    error: (e) => {},
+    debug: (e) => {}
+  };
+});
+
+const admin = require("firebase-admin");
+
+jest.mock("firebase-admin", () => {
+  return {
+    messaging: jest.fn().mockReturnValue({
+      send: (e) => {
+        if (e.topic) {
+          return Promise.resolve(e.topic);
+        } else {
+          return Promise.reject("no topic");
+        }
+      },
+      subscribeToTopic: (token, topic) => {
+        if (topic) {
+          return Promise.resolve(topic);
+        } else {
+          return Promise.reject("no topic");
+        }
+      },
+      unsubscribeFromTopic: (token, topic) => {
+        if (topic) {
+          return Promise.resolve(topic);
+        } else {
+          return Promise.reject("no topic");
+        }
+      }
+    })
   };
 });
 

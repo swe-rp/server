@@ -1,5 +1,7 @@
 const UserModel = require("../models/user");
-const utils = require("./utils");
+const utils = require("./utils.js");
+const event = require("./event.js");
+const notification = require("./notification.js");
 
 const TOKEN_SIZE = 30;
 
@@ -39,9 +41,35 @@ let userLogin = async (profile, registrationToken) => {
     throw "Wrong params";
   }
 
+  let userToRegistrationToken = await UserModel.findOne({
+    registrationToken
+  });
+
+  if (userToRegistrationToken) {
+    utils.debug("Unsubscribing old user.");
+    let oldUserEvents = await event.getAttendedEvents(
+      userToRegistrationToken.id
+    );
+    for (let event of oldUserEvents.data) {
+      await notification.unsubscribeFromTopic(event.id, registrationToken);
+    }
+  }
+
   let existingUser = await UserModel.findOne({ facebookId: profile.id });
 
   if (existingUser) {
+    utils.debug("Existing user, subscribing to events.");
+    let newUserEvents = await event.getAttendedEvents(existingUser.id);
+    for (let event of newUserEvents.data) {
+      if (existingUser.registrationToken !== registrationToken) {
+        await notification.unsubscribeFromTopic(
+          event.id,
+          existingUser.registrationToken
+        );
+      }
+      await notification.subscribeToTopic(event.id, registrationToken);
+    }
+
     existingUser.registrationToken = registrationToken;
     existingUser.accessToken = generateToken();
     await UserModel.findByIdAndUpdate(existingUser.id, existingUser);

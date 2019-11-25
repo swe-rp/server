@@ -44,6 +44,13 @@ jest.mock("firebase-admin", () => {
         } else {
           return Promise.reject("no topic");
         }
+      },
+      unsubscribeFromTopic: (token, topic) => {
+        if (topic) {
+          return Promise.resolve(topic);
+        } else {
+          return Promise.reject("no topic");
+        }
       }
     })
   };
@@ -63,7 +70,8 @@ jest.mock("../../common/auth.js", () => {
 jest.mock("../../common/utils.js", () => {
   return {
     log: (e) => {},
-    error: (e) => {}
+    error: (e) => {},
+    debug: (e) => {}
   };
 });
 
@@ -82,10 +90,13 @@ describe("routes/users.js tests", () => {
     await mongoose.connection.db.dropDatabase();
     let testUser = new UserModel(TestData.user);
     testUser = await testUser.save();
+    let testEvent = new EventModel(TestData.completeEvent);
+    testEvent.attendantsList.push(testUser.id);
+    await testEvent.save();
     userId = testUser._id;
   });
 
-  test("Authenticate existing user", (done) => {
+  test("Authenticate existing user, old token", (done) => {
     request(app)
       .post("/users/oauth")
       .send({
@@ -96,7 +107,7 @@ describe("routes/users.js tests", () => {
           emails: ["sam@sam.com"]
         }
       })
-      .set("registration_token", "token")
+      .set("registration_token", "randomToken")
       .set("Accept", "application/json")
       .expect("Content-Type", /json/)
       .end((err, res) => {
@@ -105,6 +116,28 @@ describe("routes/users.js tests", () => {
         done();
       });
   });
+
+  test("Authenticate existing user, new token", (done) => {
+    request(app)
+      .post("/users/oauth")
+      .send({
+        access_token: "something",
+        user: {
+          id: "1",
+          displayName: "Sam",
+          emails: ["sam@sam.com"]
+        }
+      })
+      .set("registration_token", "newToken")
+      .set("Accept", "application/json")
+      .expect("Content-Type", /json/)
+      .end((err, res) => {
+        expect(res.status).toBe(200);
+        expect(JSON.stringify(res.body.userId)).toBe(JSON.stringify(userId));
+        done();
+      });
+  });
+
 
   test("Authenticate new user", (done) => {
     request(app)

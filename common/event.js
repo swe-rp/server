@@ -8,11 +8,11 @@ const keywords = require("retext-keywords");
 const toString = require("nlcst-to-string");
 const utils = require("../common/utils.js");
 
-const TAG_MULTIPLIER = 10;
-const KEY_MULTIPLIER = 2;
-const TIME_MULTIPLIER = 30;
+const TAG_MULTIPLIER = 15;
+const KEY_MULTIPLIER = 12;
+const TIME_MULTIPLIER = 40;
 const TIME_FACTOR = 1000 * 3600 * 144;
-const LOCATION_MULTIPLIER = 20;
+const LOCATION_MULTIPLIER = 30;
 
 let getEvent = async (eventId) => {
   let event = await EventModel.findById(eventId);
@@ -174,9 +174,9 @@ let getScore = (tagFreq, keyFreq, userLocation, event) => {
   let eventDescription = event.description.toLowerCase();
 
   keyFreq.forEach((e, key) => {
-    let occurences = (eventDescription.match(new RegExp(key, "g")) || [])
-      .length;
-    keyScore += KEY_MULTIPLIER * (keyFreq.get(key) + occurences);
+    if (eventDescription.includes(key)) {
+      keyScore += KEY_MULTIPLIER * keyFreq.get(key);
+    }
   });
 
   // time

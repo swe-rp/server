@@ -35,7 +35,11 @@
       let place = autocomplete.getPlace();
 
       if (place) {
-        form.location = `${place.geometry.location.lat()},${place.geometry.location.lng()}`;
+        try {
+          form.location = `${place.geometry.location.lat()},${place.geometry.location.lng()}`;
+        } catch (err) {
+          setMessage("Location wasn't properly formed.");
+        }
       }
 
       setMessage("Loading...");

@@ -4,8 +4,6 @@ const mongoose = require("mongoose");
 let eventSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
-  // visibility: {type: Boolean, required: true},
-  // host_list: [{ type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER} ],
   host: { type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER },
   attendantsList: [
     { type: mongoose.Schema.Types.ObjectId, ref: modelNames.USER }

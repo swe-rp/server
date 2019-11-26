@@ -16,7 +16,6 @@
       document.getElementById("msg").innerHTML = msg;
     };
 
-    // This is jank but very temporary, I suppose
     let getFormData = () => {
       let form = {
         name: getElementValue("name"),

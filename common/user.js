@@ -51,7 +51,10 @@ let userLogin = async (profile, registrationToken) => {
     );
 
     userToRegistrationToken.registrationToken = NULL_TOKEN;
-    await UserModel.findByIdAndUpdate(userToRegistrationToken.id, userToRegistrationToken);
+    await UserModel.findByIdAndUpdate(
+      userToRegistrationToken.id,
+      userToRegistrationToken
+    );
 
     for (let event of oldUserEvents.data) {
       unsubscriptionPromises.push(

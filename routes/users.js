@@ -3,9 +3,7 @@ const passport = require("passport");
 const passportConf = require("../middleware/passport");
 const router = new express.Router();
 const user = require("../common/user.js");
-
 const utils = require("../common/utils");
-const notifications = require("../common/notification");
 
 router
   .route("/oauth")

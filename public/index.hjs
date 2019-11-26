@@ -159,7 +159,7 @@
     <input type="text" name="tags" id="tags" value="{{ tags }}" />
   </div>
   <div>
-    <input type="submit" />
+    <input type="submit" id="submit" />
   </div>
 </form>
 <div id="msg"></div>

@@ -42,6 +42,8 @@ let userLogin = async (profile, registrationToken) => {
 
   notification.subscribeToTopic(EVENT_TOPIC, registrationToken);
 
+  let unsubscriptionPromises = [];
+
   if (userToRegistrationToken) {
     utils.debug("Unsubscribing old user.");
     let oldUserEvents = await event.getAttendedEvents(
@@ -52,20 +54,16 @@ let userLogin = async (profile, registrationToken) => {
     await userToRegistrationToken.save();
 
     for (let event of oldUserEvents.data) {
-      notification.unsubscribeFromTopic(event.id, registrationToken);
+      unsubscriptionPromises.push(notification.unsubscribeFromTopic(event.id, registrationToken));
     }
   }
+
+  await Promise.all(unsubscriptionPromises);
 
   if (existingUser) {
     utils.debug("Existing user, subscribing to events.");
     let newUserEvents = await event.getAttendedEvents(existingUser.id);
     for (let event of newUserEvents.data) {
-      if (existingUser.registrationToken !== registrationToken) {
-        notification.unsubscribeFromTopic(
-          event.id,
-          existingUser.registrationToken
-        );
-      }
       notification.subscribeToTopic(event.id, registrationToken);
     }
 

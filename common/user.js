@@ -51,10 +51,12 @@ let userLogin = async (profile, registrationToken) => {
     );
 
     userToRegistrationToken.registrationToken = NULL_TOKEN;
-    await userToRegistrationToken.save();
+    await UserModel.findByIdAndUpdate(userToRegistrationToken.id, userToRegistrationToken);
 
     for (let event of oldUserEvents.data) {
-      unsubscriptionPromises.push(notification.unsubscribeFromTopic(event.id, registrationToken));
+      unsubscriptionPromises.push(
+        notification.unsubscribeFromTopic(event.id, registrationToken)
+      );
     }
   }
 
@@ -69,7 +71,8 @@ let userLogin = async (profile, registrationToken) => {
 
     existingUser.registrationToken = registrationToken;
     existingUser.accessToken = generateToken();
-    await existingUser.save();
+    await UserModel.findByIdAndUpdate(existingUser.id, existingUser);
+
     utils.log(existingUser);
     return existingUser;
   }

@@ -27,7 +27,7 @@
     "retext": "^7.0.1",
     "retext-keywords": "^5.0.0",
     "retext-pos": "^2.0.2",
-    "socket.io": "^2.3.0"
+    "socket.io": "^2.4.0"
   },
   "prettier": {
     "arrowParens": "always"
